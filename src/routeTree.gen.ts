@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as MindsetRouteImport } from './routes/mindset'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as StyleguideRouteImport } from './routes/styleguide'
+import { Route as TradingRouteImport } from './routes/trading'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,6 +31,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MindsetRoute = MindsetRouteImport.update({
+  id: '/mindset',
+  path: '/mindset',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -46,55 +53,85 @@ const StyleguideRoute = StyleguideRouteImport.update({
   path: '/styleguide',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TradingRoute = TradingRouteImport.update({
+  id: '/trading',
+  path: '/trading',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/mindset': typeof MindsetRoute
   '/onboarding': typeof OnboardingRoute
   '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
+  '/trading': typeof TradingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/mindset': typeof MindsetRoute
   '/onboarding': typeof OnboardingRoute
   '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
+  '/trading': typeof TradingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/mindset': typeof MindsetRoute
   '/onboarding': typeof OnboardingRoute
   '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
+  '/trading': typeof TradingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/dashboard' | '/login' | '/onboarding' | '/signup' | '/styleguide'
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/mindset'
+    | '/onboarding'
+    | '/signup'
+    | '/styleguide'
+    | '/trading'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login' | '/onboarding' | '/signup' | '/styleguide'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/mindset'
+    | '/onboarding'
+    | '/signup'
+    | '/styleguide'
+    | '/trading'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
     | '/login'
+    | '/mindset'
     | '/onboarding'
     | '/signup'
     | '/styleguide'
+    | '/trading'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
+  MindsetRoute: typeof MindsetRoute
   OnboardingRoute: typeof OnboardingRoute
   SignupRoute: typeof SignupRoute
   StyleguideRoute: typeof StyleguideRoute
+  TradingRoute: typeof TradingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -120,6 +157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mindset': {
+      id: '/mindset'
+      path: '/mindset'
+      fullPath: '/mindset'
+      preLoaderRoute: typeof MindsetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
@@ -141,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StyleguideRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trading': {
+      id: '/trading'
+      path: '/trading'
+      fullPath: '/trading'
+      preLoaderRoute: typeof TradingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -148,9 +199,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
+  MindsetRoute: MindsetRoute,
   OnboardingRoute: OnboardingRoute,
   SignupRoute: SignupRoute,
   StyleguideRoute: StyleguideRoute,
+  TradingRoute: TradingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
