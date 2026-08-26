@@ -10,8 +10,8 @@ export function FieldMessage({
   error,
   helper,
 }: {
-  error?: string;
-  helper?: string;
+  error?: string | undefined;
+  helper?: string | undefined;
 }) {
   if (error) {
     return (
@@ -33,11 +33,11 @@ export function Field({
   className,
 }: {
   label: string;
-  htmlFor?: string;
-  error?: string;
-  helper?: string;
+  htmlFor?: string | undefined;
+  error?: string | undefined;
+  helper?: string | undefined;
   children: ReactNode;
-  className?: string;
+  className?: string | undefined;
 }) {
   return (
     <div className={cn("w-full", className)}>
@@ -52,8 +52,8 @@ export function Field({
 
 type InputFieldProps = React.ComponentProps<typeof Input> & {
   label: string;
-  error?: string;
-  helper?: string;
+  error?: string | undefined;
+  helper?: string | undefined;
 };
 
 export function InputField({ label, error, helper, className, ...props }: InputFieldProps) {
@@ -76,8 +76,8 @@ export function InputField({ label, error, helper, className, ...props }: InputF
 
 type TextareaFieldProps = React.ComponentProps<typeof Textarea> & {
   label: string;
-  error?: string;
-  helper?: string;
+  error?: string | undefined;
+  helper?: string | undefined;
 };
 
 export function TextareaField({ label, error, helper, className, ...props }: TextareaFieldProps) {
