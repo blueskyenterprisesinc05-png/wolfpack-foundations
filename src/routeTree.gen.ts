@@ -10,11 +10,35 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as StyleguideRouteImport } from './routes/styleguide'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StyleguideRoute = StyleguideRouteImport.update({
@@ -25,27 +49,51 @@ const StyleguideRoute = StyleguideRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
+  '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
+  '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
+  '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/styleguide'
+  fullPaths:
+    '/' | '/dashboard' | '/login' | '/onboarding' | '/signup' | '/styleguide'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/styleguide'
-  id: '__root__' | '/' | '/styleguide'
+  to: '/' | '/dashboard' | '/login' | '/onboarding' | '/signup' | '/styleguide'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/onboarding'
+    | '/signup'
+    | '/styleguide'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
+  LoginRoute: typeof LoginRoute
+  OnboardingRoute: typeof OnboardingRoute
+  SignupRoute: typeof SignupRoute
   StyleguideRoute: typeof StyleguideRoute
 }
 
@@ -56,6 +104,34 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/styleguide': {
@@ -70,6 +146,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
+  LoginRoute: LoginRoute,
+  OnboardingRoute: OnboardingRoute,
+  SignupRoute: SignupRoute,
   StyleguideRoute: StyleguideRoute,
 }
 export const routeTree = rootRouteImport
