@@ -212,3 +212,49 @@ export interface CommunityGuideline {
   title: string;
   body: string;
 }
+
+export type SessionCategory =
+  | "Mindset"
+  | "Trading Psychology"
+  | "Risk Management"
+  | "Discipline"
+  | "Learning"
+  | "Accountability"
+  | "Pack Review";
+export type SessionStatus = "upcoming" | "past" | "full";
+export interface SessionHost {
+  id: string;
+  name: string;
+  initials: string;
+  role: string;
+  bio: string;
+}
+export interface SessionResource {
+  id: string;
+  sessionId: string;
+  label: string;
+  type: "checklist" | "worksheet" | "recording";
+}
+export interface SessionAttendance {
+  sessionId: string;
+  status: "registered" | "cancelled" | "none";
+  addedToSchedule: boolean;
+}
+export interface Session {
+  id: string;
+  title: string;
+  description: string;
+  fullDescription: string;
+  category: SessionCategory;
+  hostId: string;
+  dateLabel: string;
+  dateValue: number;
+  timeLabel: string;
+  durationMinutes: number;
+  status: SessionStatus;
+  attendeeCount: number;
+  capacity: number;
+  recordingAvailable: boolean;
+  learningPoints: string[];
+  preparation: string[];
+}

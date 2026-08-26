@@ -11,6 +11,7 @@ const pageCopy = {
     links: [
       ["Continue Mind Lab", "/courses/mind-lab"],
       ["Open Progress", "/progress"],
+      ["View Wolf Sessions", "/sessions"],
     ],
   },
   mindset: {
