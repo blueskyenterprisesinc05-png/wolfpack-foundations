@@ -12,8 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountabilityRouteImport } from './routes/accountability'
 import { Route as CommunityRouteImport } from './routes/community'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MindsetRouteImport } from './routes/mindset'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as StyleguideRouteImport } from './routes/styleguide'
+import { Route as TradingRouteImport } from './routes/trading'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses/$courseId'
 import { Route as LessonsLessonIdRouteImport } from './routes/lessons/$lessonId'
 
@@ -32,14 +38,44 @@ const CommunityRoute = CommunityRouteImport.update({
   path: '/community',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MindsetRoute = MindsetRouteImport.update({
+  id: '/mindset',
+  path: '/mindset',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProgressRoute = ProgressRouteImport.update({
   id: '/progress',
   path: '/progress',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StyleguideRoute = StyleguideRouteImport.update({
   id: '/styleguide',
   path: '/styleguide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TradingRoute = TradingRouteImport.update({
+  id: '/trading',
+  path: '/trading',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoursesCourseIdRoute = CoursesCourseIdRouteImport.update({
@@ -57,8 +93,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accountability': typeof AccountabilityRoute
   '/community': typeof CommunityRoute
+  '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
+  '/mindset': typeof MindsetRoute
+  '/onboarding': typeof OnboardingRoute
   '/progress': typeof ProgressRoute
+  '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
+  '/trading': typeof TradingRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
 }
@@ -66,8 +108,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accountability': typeof AccountabilityRoute
   '/community': typeof CommunityRoute
+  '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
+  '/mindset': typeof MindsetRoute
+  '/onboarding': typeof OnboardingRoute
   '/progress': typeof ProgressRoute
+  '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
+  '/trading': typeof TradingRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
 }
@@ -76,8 +124,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/accountability': typeof AccountabilityRoute
   '/community': typeof CommunityRoute
+  '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
+  '/mindset': typeof MindsetRoute
+  '/onboarding': typeof OnboardingRoute
   '/progress': typeof ProgressRoute
+  '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
+  '/trading': typeof TradingRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
 }
@@ -87,8 +141,14 @@ export interface FileRouteTypes {
     | '/'
     | '/accountability'
     | '/community'
+    | '/dashboard'
+    | '/login'
+    | '/mindset'
+    | '/onboarding'
     | '/progress'
+    | '/signup'
     | '/styleguide'
+    | '/trading'
     | '/courses/$courseId'
     | '/lessons/$lessonId'
   fileRoutesByTo: FileRoutesByTo
@@ -96,8 +156,14 @@ export interface FileRouteTypes {
     | '/'
     | '/accountability'
     | '/community'
+    | '/dashboard'
+    | '/login'
+    | '/mindset'
+    | '/onboarding'
     | '/progress'
+    | '/signup'
     | '/styleguide'
+    | '/trading'
     | '/courses/$courseId'
     | '/lessons/$lessonId'
   id:
@@ -105,8 +171,14 @@ export interface FileRouteTypes {
     | '/'
     | '/accountability'
     | '/community'
+    | '/dashboard'
+    | '/login'
+    | '/mindset'
+    | '/onboarding'
     | '/progress'
+    | '/signup'
     | '/styleguide'
+    | '/trading'
     | '/courses/$courseId'
     | '/lessons/$lessonId'
   fileRoutesById: FileRoutesById
@@ -115,8 +187,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountabilityRoute: typeof AccountabilityRoute
   CommunityRoute: typeof CommunityRoute
+  DashboardRoute: typeof DashboardRoute
+  LoginRoute: typeof LoginRoute
+  MindsetRoute: typeof MindsetRoute
+  OnboardingRoute: typeof OnboardingRoute
   ProgressRoute: typeof ProgressRoute
+  SignupRoute: typeof SignupRoute
   StyleguideRoute: typeof StyleguideRoute
+  TradingRoute: typeof TradingRoute
   CoursesCourseIdRoute: typeof CoursesCourseIdRoute
   LessonsLessonIdRoute: typeof LessonsLessonIdRoute
 }
@@ -144,6 +222,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mindset': {
+      id: '/mindset'
+      path: '/mindset'
+      fullPath: '/mindset'
+      preLoaderRoute: typeof MindsetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/progress': {
       id: '/progress'
       path: '/progress'
@@ -151,11 +257,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgressRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/styleguide': {
       id: '/styleguide'
       path: '/styleguide'
       fullPath: '/styleguide'
       preLoaderRoute: typeof StyleguideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trading': {
+      id: '/trading'
+      path: '/trading'
+      fullPath: '/trading'
+      preLoaderRoute: typeof TradingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/courses/$courseId': {
@@ -179,8 +299,14 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountabilityRoute: AccountabilityRoute,
   CommunityRoute: CommunityRoute,
+  DashboardRoute: DashboardRoute,
+  LoginRoute: LoginRoute,
+  MindsetRoute: MindsetRoute,
+  OnboardingRoute: OnboardingRoute,
   ProgressRoute: ProgressRoute,
+  SignupRoute: SignupRoute,
   StyleguideRoute: StyleguideRoute,
+  TradingRoute: TradingRoute,
   CoursesCourseIdRoute: CoursesCourseIdRoute,
   LessonsLessonIdRoute: LessonsLessonIdRoute,
 }
