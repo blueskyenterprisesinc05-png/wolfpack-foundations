@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountabilityRouteImport } from './routes/accountability'
+import { Route as CommunityRouteImport } from './routes/community'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as StyleguideRouteImport } from './routes/styleguide'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses/$courseId'
@@ -24,6 +25,11 @@ const IndexRoute = IndexRouteImport.update({
 const AccountabilityRoute = AccountabilityRouteImport.update({
   id: '/accountability',
   path: '/accountability',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProgressRoute = ProgressRouteImport.update({
@@ -50,6 +56,7 @@ const LessonsLessonIdRoute = LessonsLessonIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accountability': typeof AccountabilityRoute
+  '/community': typeof CommunityRoute
   '/progress': typeof ProgressRoute
   '/styleguide': typeof StyleguideRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/accountability': typeof AccountabilityRoute
+  '/community': typeof CommunityRoute
   '/progress': typeof ProgressRoute
   '/styleguide': typeof StyleguideRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/accountability': typeof AccountabilityRoute
+  '/community': typeof CommunityRoute
   '/progress': typeof ProgressRoute
   '/styleguide': typeof StyleguideRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
@@ -77,6 +86,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/accountability'
+    | '/community'
     | '/progress'
     | '/styleguide'
     | '/courses/$courseId'
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/accountability'
+    | '/community'
     | '/progress'
     | '/styleguide'
     | '/courses/$courseId'
@@ -93,6 +104,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/accountability'
+    | '/community'
     | '/progress'
     | '/styleguide'
     | '/courses/$courseId'
@@ -102,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountabilityRoute: typeof AccountabilityRoute
+  CommunityRoute: typeof CommunityRoute
   ProgressRoute: typeof ProgressRoute
   StyleguideRoute: typeof StyleguideRoute
   CoursesCourseIdRoute: typeof CoursesCourseIdRoute
@@ -122,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/accountability'
       fullPath: '/accountability'
       preLoaderRoute: typeof AccountabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/progress': {
@@ -158,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountabilityRoute: AccountabilityRoute,
+  CommunityRoute: CommunityRoute,
   ProgressRoute: ProgressRoute,
   StyleguideRoute: StyleguideRoute,
   CoursesCourseIdRoute: CoursesCourseIdRoute,

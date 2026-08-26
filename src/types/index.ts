@@ -174,3 +174,41 @@ export interface WeeklyReview {
   responses: Record<string, string>;
   submitted: boolean;
 }
+
+export interface CommunityCategory {
+  id: string;
+  label: string;
+  count: number;
+}
+export interface CommunityMember {
+  id: string;
+  name: string;
+  handle: string;
+  initials: string;
+  role: "Member" | "Moderator";
+  streak: number;
+}
+export interface CommunityPost {
+  id: string;
+  memberId: string;
+  category: string;
+  title: string;
+  body: string;
+  createdLabel: string;
+  createdAt: number;
+  likes: number;
+  comments: number;
+  bookmarked: boolean;
+}
+export interface CommunityComment {
+  id: string;
+  postId: string;
+  memberId: string;
+  body: string;
+  createdLabel: string;
+}
+export interface CommunityGuideline {
+  id: string;
+  title: string;
+  body: string;
+}
