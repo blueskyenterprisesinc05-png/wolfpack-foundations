@@ -109,3 +109,68 @@ export interface Member {
   joinedLabel: string;
   progress: Progress;
 }
+
+export interface ProgressMetric {
+  id: string;
+  category: "Mindset" | "Trading" | "Discipline" | "Learning" | "Accountability";
+  percentage: number;
+  completed: number;
+  total: number;
+  status: "completed" | "active" | "not-started";
+}
+
+export interface Mission {
+  id: string;
+  title: string;
+  description: string;
+  status: "active" | "completed" | "missed" | "none";
+  dueLabel: string;
+}
+
+export interface Commitment {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  completionPercentage: number;
+  status: "active" | "completed" | "missed";
+}
+
+export interface CheckIn {
+  id: string;
+  dateLabel: string;
+  status: "completed" | "partial" | "not-completed" | "support-needed";
+}
+
+export interface Reflection {
+  id: string;
+  prompt: string;
+  response: string;
+  dateLabel: string;
+}
+
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  state: "locked" | "unlocked" | "recent";
+  earnedLabel?: string;
+}
+
+export interface PackMember {
+  id: string;
+  name: string;
+  initials: string;
+  focus: string;
+  commitment: string;
+  progressPercentage: number;
+  checkInStatus: "checked-in" | "needs-support" | "pending";
+}
+
+export interface WeeklyReview {
+  id: string;
+  weekLabel: string;
+  responses: Record<string, string>;
+  submitted: boolean;
+}

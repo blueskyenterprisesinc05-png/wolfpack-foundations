@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccountabilityRouteImport } from './routes/accountability'
+import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as StyleguideRouteImport } from './routes/styleguide'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses/$courseId'
 import { Route as LessonsLessonIdRouteImport } from './routes/lessons/$lessonId'
@@ -17,6 +19,16 @@ import { Route as LessonsLessonIdRouteImport } from './routes/lessons/$lessonId'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountabilityRoute = AccountabilityRouteImport.update({
+  id: '/accountability',
+  path: '/accountability',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgressRoute = ProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StyleguideRoute = StyleguideRouteImport.update({
@@ -37,12 +49,16 @@ const LessonsLessonIdRoute = LessonsLessonIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accountability': typeof AccountabilityRoute
+  '/progress': typeof ProgressRoute
   '/styleguide': typeof StyleguideRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accountability': typeof AccountabilityRoute
+  '/progress': typeof ProgressRoute
   '/styleguide': typeof StyleguideRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
@@ -50,18 +66,34 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/accountability': typeof AccountabilityRoute
+  '/progress': typeof ProgressRoute
   '/styleguide': typeof StyleguideRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/styleguide' | '/courses/$courseId' | '/lessons/$lessonId'
+  fullPaths:
+    | '/'
+    | '/accountability'
+    | '/progress'
+    | '/styleguide'
+    | '/courses/$courseId'
+    | '/lessons/$lessonId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/styleguide' | '/courses/$courseId' | '/lessons/$lessonId'
+  to:
+    | '/'
+    | '/accountability'
+    | '/progress'
+    | '/styleguide'
+    | '/courses/$courseId'
+    | '/lessons/$lessonId'
   id:
     | '__root__'
     | '/'
+    | '/accountability'
+    | '/progress'
     | '/styleguide'
     | '/courses/$courseId'
     | '/lessons/$lessonId'
@@ -69,6 +101,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountabilityRoute: typeof AccountabilityRoute
+  ProgressRoute: typeof ProgressRoute
   StyleguideRoute: typeof StyleguideRoute
   CoursesCourseIdRoute: typeof CoursesCourseIdRoute
   LessonsLessonIdRoute: typeof LessonsLessonIdRoute
@@ -81,6 +115,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accountability': {
+      id: '/accountability'
+      path: '/accountability'
+      fullPath: '/accountability'
+      preLoaderRoute: typeof AccountabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/progress': {
+      id: '/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof ProgressRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/styleguide': {
@@ -109,6 +157,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountabilityRoute: AccountabilityRoute,
+  ProgressRoute: ProgressRoute,
   StyleguideRoute: StyleguideRoute,
   CoursesCourseIdRoute: CoursesCourseIdRoute,
   LessonsLessonIdRoute: LessonsLessonIdRoute,
