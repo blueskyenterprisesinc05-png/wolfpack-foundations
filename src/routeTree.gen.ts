@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccountabilityRouteImport } from './routes/accountability'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CommunityRouteImport } from './routes/community'
@@ -17,6 +18,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MindsetRouteImport } from './routes/mindset'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as SessionsRouteImport } from './routes/sessions'
@@ -30,6 +32,11 @@ import { Route as LessonsLessonIdRouteImport } from './routes/lessons/$lessonId'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountabilityRoute = AccountabilityRouteImport.update({
@@ -65,6 +72,11 @@ const MindsetRoute = MindsetRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -115,6 +127,7 @@ const LessonsLessonIdRoute = LessonsLessonIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/accountability': typeof AccountabilityRoute
   '/admin': typeof AdminRoute
   '/community': typeof CommunityRoute
@@ -122,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/mindset': typeof MindsetRoute
   '/onboarding': typeof OnboardingRoute
+  '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/sessions': typeof SessionsRoute
@@ -134,6 +148,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/accountability': typeof AccountabilityRoute
   '/admin': typeof AdminRoute
   '/community': typeof CommunityRoute
@@ -141,6 +156,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/mindset': typeof MindsetRoute
   '/onboarding': typeof OnboardingRoute
+  '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/sessions': typeof SessionsRoute
@@ -154,6 +170,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/accountability': typeof AccountabilityRoute
   '/admin': typeof AdminRoute
   '/community': typeof CommunityRoute
@@ -161,6 +178,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/mindset': typeof MindsetRoute
   '/onboarding': typeof OnboardingRoute
+  '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/sessions': typeof SessionsRoute
@@ -175,6 +193,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/accountability'
     | '/admin'
     | '/community'
@@ -182,6 +201,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mindset'
     | '/onboarding'
+    | '/pricing'
     | '/profile'
     | '/progress'
     | '/sessions'
@@ -194,6 +214,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/accountability'
     | '/admin'
     | '/community'
@@ -201,6 +222,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mindset'
     | '/onboarding'
+    | '/pricing'
     | '/profile'
     | '/progress'
     | '/sessions'
@@ -213,6 +235,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/accountability'
     | '/admin'
     | '/community'
@@ -220,6 +243,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mindset'
     | '/onboarding'
+    | '/pricing'
     | '/profile'
     | '/progress'
     | '/sessions'
@@ -233,6 +257,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AccountabilityRoute: typeof AccountabilityRoute
   AdminRoute: typeof AdminRoute
   CommunityRoute: typeof CommunityRoute
@@ -240,6 +265,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MindsetRoute: typeof MindsetRoute
   OnboardingRoute: typeof OnboardingRoute
+  PricingRoute: typeof PricingRoute
   ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
   SessionsRoute: typeof SessionsRoute
@@ -258,6 +284,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/accountability': {
@@ -307,6 +340,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -377,6 +417,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AccountabilityRoute: AccountabilityRoute,
   AdminRoute: AdminRoute,
   CommunityRoute: CommunityRoute,
@@ -384,6 +425,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MindsetRoute: MindsetRoute,
   OnboardingRoute: OnboardingRoute,
+  PricingRoute: PricingRoute,
   ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
   SessionsRoute: SessionsRoute,

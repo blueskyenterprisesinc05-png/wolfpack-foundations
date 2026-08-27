@@ -9,9 +9,23 @@ export function PublicLanding() {
     <main className="min-h-screen bg-background">
       <TopBar
         action={
-          <Link className="text-sm font-semibold text-primary hover:text-primary/80" to="/login">
-            Member login
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              className="text-sm font-medium text-muted-foreground hover:text-foreground"
+              to="/about"
+            >
+              About
+            </Link>
+            <Link
+              className="text-sm font-medium text-muted-foreground hover:text-foreground"
+              to="/pricing"
+            >
+              Pricing
+            </Link>
+            <Link className="text-sm font-semibold text-primary hover:text-primary/80" to="/login">
+              Member login
+            </Link>
+          </div>
         }
       />
       <section className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-16 sm:px-8 lg:flex-row lg:items-center lg:py-24">
@@ -76,9 +90,17 @@ export function PublicLanding() {
       <footer className="border-t border-border px-4 py-6 sm:px-8">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <Logo size="sm" />
-          <Link className="text-sm text-muted-foreground hover:text-foreground" to="/styleguide">
-            View styleguide
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link className="text-sm text-muted-foreground hover:text-foreground" to="/about">
+              About
+            </Link>
+            <Link className="text-sm text-muted-foreground hover:text-foreground" to="/pricing">
+              Pricing
+            </Link>
+            <Link className="text-sm text-muted-foreground hover:text-foreground" to="/styleguide">
+              View styleguide
+            </Link>
+          </div>
         </div>
       </footer>
     </main>
