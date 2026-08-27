@@ -66,5 +66,5 @@ Remove `src/routes/about.tsx` and `src/routes/pricing.tsx`. Revert changes in `s
 - [x] 4. Create `src/routes/pricing.tsx`.
 - [x] 5. Update navigation in `src/components/brand/navigation.tsx`.
 - [x] 6. Update landing/footer links in `src/components/brand/public-landing.tsx` and `src/routes/index.tsx` if necessary.
-- [ ] 7. Run formatting, linting, and build commands.
-- [ ] 8. Update Issue statuses in `implementation/ISSUES.md`.
+- [x] 7. Run formatting, linting, and build commands.
+- [x] 8. Update Issue statuses in `implementation/ISSUES.md`.
