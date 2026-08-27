@@ -135,9 +135,16 @@ function LessonDetail() {
           progress={progress}
           onComplete={complete}
           onNotes={setNotes}
-          resource={mockResources.find((item) => item.lessonId === lesson.id)}
+          {...(() => {
+            const resource = mockResources.find((item) => item.lessonId === lesson.id);
+            return resource ? { resource } : {};
+          })()}
         />
-        <LessonNav course={course} previous={previous} next={next} />
+        <LessonNav
+          course={course}
+          {...(previous ? { previous } : {})}
+          {...(next ? { next } : {})}
+        />
       </div>
     </main>
   );

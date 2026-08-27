@@ -168,10 +168,7 @@ export function ConsistencyMeter({ pct, weeks = 12 }: { pct: number; weeks?: num
           {Array.from({ length: weeks }).map((_, i) => (
             <span
               key={i}
-              className={cn(
-                "h-7 flex-1 rounded-sm",
-                i < filled ? "bg-forest/80" : "bg-border/70",
-              )}
+              className={cn("h-7 flex-1 rounded-sm", i < filled ? "bg-forest/80" : "bg-border/70")}
             />
           ))}
         </div>

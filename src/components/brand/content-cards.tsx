@@ -54,7 +54,9 @@ export function LessonCard({ lesson, onOpen }: { lesson: Lesson; onOpen?: () => 
         locked ? "opacity-60" : "cursor-pointer hover:border-muted-foreground/40 hover:bg-card",
       )}
     >
-      <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-md", meta.bg, meta.tone)}>
+      <span
+        className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-md", meta.bg, meta.tone)}
+      >
         <Icon className="size-4" />
       </span>
       <div className="min-w-0 flex-1">
