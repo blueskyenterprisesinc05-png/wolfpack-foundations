@@ -258,3 +258,50 @@ export interface Session {
   learningPoints: string[];
   preparation: string[];
 }
+
+export interface MemberProfile {
+  id: string;
+  name: string;
+  handle: string;
+  initials: string;
+  role: string;
+  bio: string;
+  location: string;
+  joinedLabel: string;
+  tier: MembershipTier;
+  streak: number;
+  totalMarks: number;
+  completedLessons: number;
+  accountabilityScore: number;
+}
+export interface ProfileActivity {
+  id: string;
+  label: string;
+  detail: string;
+  dateLabel: string;
+  tone: "gold" | "green" | "red";
+}
+export interface ProfileMark {
+  id: string;
+  title: string;
+  description: string;
+  earnedLabel: string;
+  category: string;
+}
+export interface ProfilePreferences {
+  weeklyReview: boolean;
+  sessionReminders: boolean;
+  communityUpdates: boolean;
+  profileVisibility: "members" | "private";
+}
+export interface MembershipInfo {
+  tier: MembershipTier;
+  status: "active" | "trial";
+  renewalLabel: string;
+  benefits: string[];
+}
+export interface ProfileFaq {
+  id: string;
+  question: string;
+  answer: string;
+}

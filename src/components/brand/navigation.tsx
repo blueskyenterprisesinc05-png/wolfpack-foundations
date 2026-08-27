@@ -53,6 +53,20 @@ export function TopBar({ action }: { action?: ReactNode }) {
       </nav>
       <div className="flex shrink-0 items-center gap-2">
         {action}
+        <Link
+          to="/profile"
+          aria-label="Open profile"
+          className="motion-base hidden size-9 items-center justify-center rounded-full border border-border bg-secondary font-mono text-xs font-bold text-primary hover:border-primary md:flex"
+        >
+          AM
+        </Link>
+        <Link
+          to="/settings"
+          aria-label="Open settings"
+          className="motion-base hidden rounded-md px-2 py-2 text-xs font-semibold text-muted-foreground hover:bg-secondary hover:text-foreground lg:inline-flex"
+        >
+          Settings
+        </Link>
         <Button variant="ghost" size="icon" aria-label="Open menu" className="md:hidden">
           <Menu />
         </Button>

@@ -16,8 +16,10 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MindsetRouteImport } from './routes/mindset'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as SessionsRouteImport } from './routes/sessions'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as StyleguideRouteImport } from './routes/styleguide'
 import { Route as TradingRouteImport } from './routes/trading'
@@ -59,6 +61,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProgressRoute = ProgressRouteImport.update({
   id: '/progress',
   path: '/progress',
@@ -67,6 +74,11 @@ const ProgressRoute = ProgressRouteImport.update({
 const SessionsRoute = SessionsRouteImport.update({
   id: '/sessions',
   path: '/sessions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -103,8 +115,10 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/mindset': typeof MindsetRoute
   '/onboarding': typeof OnboardingRoute
+  '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/sessions': typeof SessionsRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
   '/trading': typeof TradingRoute
@@ -119,8 +133,10 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/mindset': typeof MindsetRoute
   '/onboarding': typeof OnboardingRoute
+  '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/sessions': typeof SessionsRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
   '/trading': typeof TradingRoute
@@ -136,8 +152,10 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/mindset': typeof MindsetRoute
   '/onboarding': typeof OnboardingRoute
+  '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/sessions': typeof SessionsRoute
+  '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
   '/trading': typeof TradingRoute
@@ -154,8 +172,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/mindset'
     | '/onboarding'
+    | '/profile'
     | '/progress'
     | '/sessions'
+    | '/settings'
     | '/signup'
     | '/styleguide'
     | '/trading'
@@ -170,8 +190,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/mindset'
     | '/onboarding'
+    | '/profile'
     | '/progress'
     | '/sessions'
+    | '/settings'
     | '/signup'
     | '/styleguide'
     | '/trading'
@@ -186,8 +208,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/mindset'
     | '/onboarding'
+    | '/profile'
     | '/progress'
     | '/sessions'
+    | '/settings'
     | '/signup'
     | '/styleguide'
     | '/trading'
@@ -203,8 +227,10 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MindsetRoute: typeof MindsetRoute
   OnboardingRoute: typeof OnboardingRoute
+  ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
   SessionsRoute: typeof SessionsRoute
+  SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
   StyleguideRoute: typeof StyleguideRoute
   TradingRoute: typeof TradingRoute
@@ -263,6 +289,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/progress': {
       id: '/progress'
       path: '/progress'
@@ -275,6 +308,13 @@ declare module '@tanstack/react-router' {
       path: '/sessions'
       fullPath: '/sessions'
       preLoaderRoute: typeof SessionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -323,8 +363,10 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MindsetRoute: MindsetRoute,
   OnboardingRoute: OnboardingRoute,
+  ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
   SessionsRoute: SessionsRoute,
+  SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
   StyleguideRoute: StyleguideRoute,
   TradingRoute: TradingRoute,
