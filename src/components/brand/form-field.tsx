@@ -41,7 +41,10 @@ export function Field({
 }) {
   return (
     <div className={cn("w-full", className)}>
-      <Label htmlFor={htmlFor} className="mb-1.5 block font-body text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <Label
+        htmlFor={htmlFor}
+        className="mb-1.5 block font-body text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+      >
         {label}
       </Label>
       {children}

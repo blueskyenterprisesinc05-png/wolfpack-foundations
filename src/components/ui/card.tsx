@@ -21,8 +21,7 @@ const cardVariants = cva("motion-base rounded-xl text-card-foreground", {
 });
 
 export interface CardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof cardVariants> {}
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant, interactive, ...props }, ref) => (
@@ -52,7 +51,11 @@ CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("text-sm leading-relaxed text-muted-foreground", className)} {...props} />
+    <div
+      ref={ref}
+      className={cn("text-sm leading-relaxed text-muted-foreground", className)}
+      {...props}
+    />
   ),
 );
 CardDescription.displayName = "CardDescription";
