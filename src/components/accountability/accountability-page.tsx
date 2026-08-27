@@ -105,7 +105,7 @@ export function AccountabilityPage() {
                   <button
                     key={id}
                     onClick={() => {
-                      setCheckIn(id);
+                      setCheckIn(id as NonNullable<typeof checkIn>);
                       notify("Check-in submitted");
                     }}
                     className={cn(

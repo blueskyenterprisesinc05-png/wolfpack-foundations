@@ -109,7 +109,7 @@ export const checkIns: CheckIn[] = [
   { id: "c4", dateLabel: "Thu", status: "completed" },
   { id: "c5", dateLabel: "Fri", status: "completed" },
   { id: "c6", dateLabel: "Sat", status: "completed" },
-  { id: "c7", dateLabel: "Sun", status: "pending" },
+  { id: "c7", dateLabel: "Sun", status: "not-completed" },
 ];
 
 export const achievements: Achievement[] = [

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ShieldCheck, Target, Users } from "lucide-react";
+import { ArrowRight, ShieldCheck, Target, Users, type LucideIcon } from "lucide-react";
 import { TopBar } from "@/components/brand/navigation";
 import { Logo } from "@/components/brand/logo";
 import { RiskDisclaimer } from "@/components/brand/risk-disclaimer";
@@ -40,23 +40,25 @@ export function PublicLanding() {
           </div>
         </div>
         <div className="grid flex-1 gap-4 sm:grid-cols-3 lg:grid-cols-1">
-          {[
+          {(
             [
-              Target,
-              "Practice",
-              "Structured Mind Lab lessons that turn intention into repeatable action.",
-            ],
-            [
-              Users,
-              "Accountability",
-              "Visible commitments and a calm community built around follow-through.",
-            ],
-            [
-              ShieldCheck,
-              "Process",
-              "Trading education grounded in risk awareness, review, and no promises.",
-            ],
-          ].map(([Icon, title, body]) => {
+              [
+                Target,
+                "Practice",
+                "Structured Mind Lab lessons that turn intention into repeatable action.",
+              ],
+              [
+                Users,
+                "Accountability",
+                "Visible commitments and a calm community built around follow-through.",
+              ],
+              [
+                ShieldCheck,
+                "Process",
+                "Trading education grounded in risk awareness, review, and no promises.",
+              ],
+            ] as [LucideIcon, string, string][]
+          ).map(([Icon, title, body]) => {
             const Mark = Icon as typeof Target;
             return (
               <div key={title as string} className="border border-border bg-card p-5">

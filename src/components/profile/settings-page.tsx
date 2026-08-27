@@ -20,7 +20,7 @@ export function SettingsPage() {
       <TopBar />
       <main className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6">
         <div className="mb-8 flex items-center gap-3">
-          <Logo compact />
+          <Logo size="sm" withWordmark={false} />
           <span className="font-mono text-xs uppercase tracking-[0.24em] text-muted-foreground">
             Settings
           </span>

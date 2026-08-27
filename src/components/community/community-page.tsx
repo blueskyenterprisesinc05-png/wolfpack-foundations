@@ -65,8 +65,7 @@ export function CommunityPage() {
         `${post.title} ${post.body}`.toLowerCase().includes(query.toLowerCase()),
     )
     .sort((a, b) => (sort === "popular" ? b.likes - a.likes : b.createdAt - a.createdAt));
-  const member = (id: string) =>
-    communityMembers.find((item) => item.id === id) ?? communityMembers[0];
+  const member = (id: string) => communityMembers.find((item) => item.id === id);
   const addComment = (postId: string) => {
     const body = commentText[postId]?.trim();
     if (!body) return;
@@ -78,8 +77,10 @@ export function CommunityPage() {
     toast.success("Comment added");
   };
   const publish = () => {
-    if (!newPost.title.trim() || !newPost.body.trim())
-      return toast.error("Add a title and reflection first");
+    if (!newPost.title.trim() || !newPost.body.trim()) {
+      toast.error("Add a title and reflection first");
+      return;
+    }
     setPosts((items) => [
       {
         id: `local-${Date.now()}`,
@@ -230,6 +231,7 @@ export function CommunityPage() {
             {visible.length ? (
               visible.map((post) => {
                 const author = member(post.memberId);
+                if (!author) return null;
                 const postComments = comments.filter((comment) => comment.postId === post.id);
                 const isLiked = liked.includes(post.id);
                 return (
@@ -307,17 +309,19 @@ export function CommunityPage() {
                           />
                         </Button>
                       </div>
-                      {postComments.map((comment) => (
-                        <div key={comment.id} className="border-l-2 border-border pl-3 text-sm">
-                          <p className="text-muted-foreground">
-                            <strong className="text-foreground">
-                              {member(comment.memberId).name}
-                            </strong>{" "}
-                            · {comment.createdLabel}
-                          </p>
-                          <p className="mt-1 leading-5">{comment.body}</p>
-                        </div>
-                      ))}
+                      {postComments.map((comment) => {
+                        const commentAuthor = member(comment.memberId);
+                        if (!commentAuthor) return null;
+                        return (
+                          <div key={comment.id} className="border-l-2 border-border pl-3 text-sm">
+                            <p className="text-muted-foreground">
+                              <strong className="text-foreground">{commentAuthor.name}</strong> ·{" "}
+                              {comment.createdLabel}
+                            </p>
+                            <p className="mt-1 leading-5">{comment.body}</p>
+                          </div>
+                        );
+                      })}
                       <div className="flex gap-2">
                         <Input
                           id={`comment-${post.id}`}
