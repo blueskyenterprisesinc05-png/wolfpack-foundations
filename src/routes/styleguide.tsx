@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Trophy } from "lucide-react";
@@ -100,6 +100,7 @@ function Block({
 
 function Styleguide() {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <main className="grain min-h-screen bg-background">
@@ -234,8 +235,16 @@ function Styleguide() {
         <Block title="Forms" eyebrow="Inputs">
           <div className="grid gap-6 rounded-xl border border-border bg-charcoal p-6 lg:grid-cols-2">
             <div className="space-y-4">
-              <InputField label="Email" placeholder="you@example.com" helper="Demo only — nothing is stored." />
-              <InputField label="Password" type="password" error="Password must be 8+ characters." />
+              <InputField
+                label="Email"
+                placeholder="you@example.com"
+                helper="Demo only — nothing is stored."
+              />
+              <InputField
+                label="Password"
+                type="password"
+                error="Password must be 8+ characters."
+              />
               <TextareaField label="Session notes" placeholder="What did you follow today?" />
             </div>
             <div className="space-y-5">
@@ -254,24 +263,32 @@ function Styleguide() {
               </div>
               <div className="flex items-center gap-2.5">
                 <Checkbox id="sg-check" defaultChecked />
-                <Label htmlFor="sg-check" className="text-sm">I'll show up daily.</Label>
+                <Label htmlFor="sg-check" className="text-sm">
+                  I'll show up daily.
+                </Label>
               </div>
               <div>
                 <Label className="eyebrow mb-2 block">Radio group</Label>
                 <RadioGroup defaultValue="am" className="space-y-2">
                   <div className="flex items-center gap-2.5">
                     <RadioGroupItem value="am" id="sg-am" />
-                    <Label htmlFor="sg-am" className="text-sm">Morning session</Label>
+                    <Label htmlFor="sg-am" className="text-sm">
+                      Morning session
+                    </Label>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <RadioGroupItem value="pm" id="sg-pm" />
-                    <Label htmlFor="sg-pm" className="text-sm">Evening session</Label>
+                    <Label htmlFor="sg-pm" className="text-sm">
+                      Evening session
+                    </Label>
                   </div>
                 </RadioGroup>
               </div>
               <div className="flex items-center gap-3">
                 <Switch id="sg-switch" defaultChecked />
-                <Label htmlFor="sg-switch" className="text-sm">Daily reminder</Label>
+                <Label htmlFor="sg-switch" className="text-sm">
+                  Daily reminder
+                </Label>
               </div>
             </div>
           </div>
@@ -280,7 +297,13 @@ function Styleguide() {
         <Block title="Navigation" eyebrow="Chrome">
           <div className="space-y-5">
             <div className="overflow-hidden rounded-xl border border-border">
-              <TopBar action={<Button size="sm" variant="secondary">Check in</Button>} />
+              <TopBar
+                action={
+                  <Button size="sm" variant="secondary">
+                    Check in
+                  </Button>
+                }
+              />
             </div>
             <div className="flex flex-wrap gap-5">
               <MemberSidebar />
@@ -303,7 +326,9 @@ function Styleguide() {
                 </Tabs>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="secondary" size="sm">Account menu</Button>
+                    <Button variant="secondary" size="sm">
+                      Account menu
+                    </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
                     <DropdownMenuLabel>Demo Member</DropdownMenuLabel>
@@ -323,7 +348,10 @@ function Styleguide() {
 
         <Block title="Progress" eyebrow="Gold active · green complete · crimson broken">
           <div className="grid gap-4 lg:grid-cols-3">
-            <StreakCard days={mockMember.progress.streakDays} bestDays={mockMember.progress.bestStreakDays} />
+            <StreakCard
+              days={mockMember.progress.streakDays}
+              bestDays={mockMember.progress.bestStreakDays}
+            />
             <StreakCard days={0} bestDays={51} broken />
             <ConsistencyMeter pct={mockMember.progress.consistencyPct} />
           </div>
@@ -344,13 +372,21 @@ function Styleguide() {
         <Block title="Content" eyebrow="Courses, goals, marks">
           <div className="grid gap-4 lg:grid-cols-3">
             {mockCourses.map((c) => (
-              <CourseCard key={c.id} course={c} />
+              <CourseCard
+                key={c.id}
+                course={c}
+                onOpen={() => navigate({ to: "/courses/$courseId", params: { courseId: c.id } })}
+              />
             ))}
           </div>
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="space-y-2">
               {mockLessons.map((l) => (
-                <LessonCard key={l.id} lesson={l} />
+                <LessonCard
+                  key={l.id}
+                  lesson={l}
+                  onOpen={() => navigate({ to: "/lessons/$lessonId", params: { lessonId: l.id } })}
+                />
               ))}
             </div>
             <div className="space-y-2">

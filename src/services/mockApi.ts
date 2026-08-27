@@ -1,5 +1,6 @@
 import { mockCourses, mockGoals, mockLessons, mockMarks, mockMember } from "@/data/mock";
-import type { Course, Goal, Lesson, Mark, Member } from "@/types";
+import type { Course, Goal, Instructor, Lesson, Mark, Member, Resource } from "@/types";
+import { mockInstructors, mockResources } from "@/data/mock";
 
 /**
  * Phase 0 scaffolding: pages never hold their own data. Swap these resolvers for
@@ -17,6 +18,12 @@ export const mockApi = {
     resolve(mockCourses.find((c) => c.id === id)),
   getLessons: (courseId: string): Promise<Lesson[]> =>
     resolve(mockLessons.filter((l) => l.courseId === courseId)),
+  getLesson: (id: string): Promise<Lesson | undefined> =>
+    resolve(mockLessons.find((lesson) => lesson.id === id)),
+  getInstructor: (id: string): Promise<Instructor | undefined> =>
+    resolve(mockInstructors.find((instructor) => instructor.id === id)),
+  getResources: (lessonId: string): Promise<Resource[]> =>
+    resolve(mockResources.filter((resource) => resource.lessonId === lessonId)),
   getGoals: (): Promise<Goal[]> => resolve(mockGoals),
   getMarks: (): Promise<Mark[]> => resolve(mockMarks),
   getMember: (): Promise<Member> => resolve(mockMember),

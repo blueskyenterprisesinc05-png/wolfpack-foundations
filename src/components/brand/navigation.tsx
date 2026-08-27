@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { BarChart3, BookOpen, Home, Menu, Trophy, User } from "lucide-react";
+import { BarChart3, BookOpen, CalendarDays, Home, Menu, Trophy, User } from "lucide-react";
 
+import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/brand/logo";
@@ -14,6 +15,7 @@ export interface NavItem {
 export const demoNav: NavItem[] = [
   { label: "The Den", icon: Home, active: true },
   { label: "Courses", icon: BookOpen },
+  { label: "Sessions", icon: CalendarDays },
   { label: "Progress", icon: BarChart3 },
   { label: "Marks", icon: Trophy },
 ];
@@ -24,22 +26,47 @@ export function TopBar({ action }: { action?: ReactNode }) {
     <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-border bg-charcoal/80 px-4 py-3 backdrop-blur sm:flex sm:justify-between sm:px-6">
       <Logo size="sm" />
       <nav className="hidden items-center gap-1 md:flex">
-        {demoNav.map((item) => (
-          <button
-            key={item.label}
-            className={cn(
-              "motion-base rounded-md px-3 py-2 font-body text-sm font-medium",
-              item.active
-                ? "bg-secondary text-foreground"
-                : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-            )}
-          >
-            {item.label}
-          </button>
-        ))}
+        {demoNav.map((item) =>
+          item.label === "Sessions" ? (
+            <Link
+              key={item.label}
+              to="/sessions"
+              className="motion-base rounded-md px-3 py-2 font-body text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+            >
+              <CalendarDays className="mr-1 inline size-4" />
+              Sessions
+            </Link>
+          ) : (
+            <button
+              key={item.label}
+              className={cn(
+                "motion-base rounded-md px-3 py-2 font-body text-sm font-medium",
+                item.active
+                  ? "bg-secondary text-foreground"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+              )}
+            >
+              {item.label}
+            </button>
+          ),
+        )}
       </nav>
       <div className="flex shrink-0 items-center gap-2">
         {action}
+        <Link
+          to="/profile"
+          aria-label="Open profile"
+          className="motion-base hidden size-9 items-center justify-center rounded-full border border-border bg-secondary font-mono text-xs font-bold text-primary hover:border-primary md:flex"
+        >
+          AM
+        </Link>
+        <Link
+          to="/settings"
+          aria-label="Open settings"
+          className="motion-base hidden rounded-md px-2 py-2 text-xs font-semibold text-muted-foreground hover:bg-secondary hover:text-foreground lg:inline-flex"
+        >
+          Settings
+        </Link>
         <Button variant="ghost" size="icon" aria-label="Open menu" className="md:hidden">
           <Menu />
         </Button>
@@ -88,7 +115,9 @@ export function MobileBottomNav({ items = demoNav }: { items?: NavItem[] }) {
             key={item.label}
             className={cn(
               "motion-base flex min-h-11 flex-1 flex-col items-center justify-center gap-1 rounded-lg px-1 py-1.5",
-              item.active ? "bg-secondary text-gold" : "text-muted-foreground hover:text-foreground",
+              item.active
+                ? "bg-secondary text-gold"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             <Icon className="size-4" />
