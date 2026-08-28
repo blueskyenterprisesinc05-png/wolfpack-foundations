@@ -47,7 +47,7 @@ Ensure no actual payment functionality or API calls are made. Emphasize trading-
 
 - Format code (`bun run format`).
 - Lint code (`bun run lint`).
-- TypeScript check (`bunx tsc --noEmit` if available, or just verify no errors in editor).
+- TypeScript check (`bunx tsc --noEmit`).
 - Production build (`bun run build`).
 - Verify `/about` and `/pricing` load directly and via browser refresh.
 - Verify desktop and mobile (300x535) layouts.
@@ -68,3 +68,47 @@ Remove `src/routes/about.tsx` and `src/routes/pricing.tsx`. Revert changes in `s
 - [x] 6. Update landing/footer links in `src/components/brand/public-landing.tsx` and `src/routes/index.tsx` if necessary.
 - [x] 7. Run formatting, linting, and build commands.
 - [x] 8. Update Issue statuses in `implementation/ISSUES.md`.
+
+## Verification Record
+
+**Vercel Deployment URL:** https://wolfpack-foundations.vercel.app/
+
+**Verification method:** Manual — performed by the product owner on 2026-08-27.
+
+**Routes verified (direct navigation + browser refresh):**
+
+| Route | Status |
+|---|---|
+| / | ✅ OK |
+| /about | ✅ OK |
+| /pricing | ✅ OK |
+| /login | ✅ OK |
+| /signup | ✅ OK |
+| /onboarding | ✅ OK |
+| /dashboard | ✅ OK |
+| /mindset | ✅ OK |
+| /trading | ✅ OK |
+| /progress | ✅ OK |
+| /accountability | ✅ OK |
+| /community | ✅ OK |
+| /sessions | ✅ OK |
+| /profile | ✅ OK |
+| /settings | ✅ OK |
+| /admin | ✅ OK |
+| /styleguide | ✅ OK |
+| /courses/mind-lab | ✅ OK |
+| /lessons/ml2 | ✅ OK |
+
+**Viewport checks:**
+- Desktop: ✅ Passed
+- 300×535 mobile (/, /about, /pricing): ✅ Passed
+
+**Navigation and footer links:** ✅ Passed
+
+**Browser console errors:** ✅ None
+
+**Profit guarantees or income claims on /pricing:** ✅ None present
+
+**Checkout on /pricing:** ✅ Placeholder only
+
+**Deployment protection:** ✅ Not blocked — deployment is publicly accessible

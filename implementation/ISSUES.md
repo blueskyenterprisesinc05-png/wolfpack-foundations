@@ -49,18 +49,27 @@ Issue #1
 implementation/FRONTEND_ROUTES_PLAN.md
 
 **Completion Notes:**
-About and Pricing implementation and validation completed successfully. All commands and browser layout verifications passed.
+Closed on 2026-08-27. Implementation and full remote verification completed.
+Vercel URL: https://wolfpack-foundations.vercel.app/
+All 19 routes verified via direct navigation and browser refresh. Desktop and 300×535 mobile layouts verified for /, /about, and /pricing. No 404s, no unexpected redirects, no console errors. Checkout is a placeholder. No profit guarantees present. Deployment is publicly accessible.
 
-### Issue #3: Phase 6B - Supabase Database Setup
-**Status:** Open
+### Issue #3: Phase 6B - Supabase Database Setup & Migrations
+**Status:** In Progress
 **Scope:** Backend
 **Description:**
-Initialize the Supabase project schemas for `profiles`, `membership_plans`, and `memberships` tables. Define RLS policies and necessary triggers (e.g., auto-creating profiles on signup).
+Write version-controlled SQL migration files for `profiles`, `membership_plans`, and `memberships` tables. Define all RLS policies and the profile-creation trigger. Apply migrations using the Supabase CLI. No manual SQL in the dashboard without a corresponding migration file.
 
 **Acceptance Criteria:**
-- [ ] Create `profiles` table and RLS policies.
-- [ ] Create `membership_plans` and `memberships` tables with admin-only RLS policies.
-- [ ] Add trigger to create a profile automatically when a user signs up.
+- [x] Create `supabase/migrations/` directory and all Phase 6B migration files.
+- [x] `profiles` table uses `display_name`, `handle`, `avatar_path`, `bio`, `location`, `timezone`, `onboarding_completed_at`. No `role` column. No `initials` column.
+- [x] `memberships` table uses `user_id` referencing `auth.users.id` (not `profile_id`).
+- [x] RLS: Users can read and update only their own profile. No public read. No all-authenticated-users read.
+- [x] RLS: Membership status is read-only to the user. No user INSERT/UPDATE/DELETE on `memberships`.
+- [x] RLS: `membership_plans` is publicly readable (active plans only).
+- [x] Profile-creation trigger is `SECURITY DEFINER`, idempotent, and logs errors without blocking auth.
+- [x] No default membership row insertion in Phase 6B.
+- [ ] Migrations applied to dev Supabase project via CLI (or manual dashboard fallback).
+- [ ] Both allowed and denied RLS tests pass (see plan §15).
 
 **Dependencies:**
 Issue #2
@@ -69,20 +78,25 @@ Issue #2
 implementation/BACKEND_AUTH_PROFILE_PLAN.md
 
 **Completion Notes:**
-Pending.
+Supabase CLI access restored. Remote migration history currently shows no applied versions, confirming migration-history drift after manual Dashboard SQL execution. Read-only schema reconciliation is pending.
 
 ### Issue #4: Phase 6B - Auth Service & SSR Session Handling
 **Status:** Open
 **Scope:** Backend/Frontend
 **Description:**
-Set up `@supabase/ssr` to securely manage authentication and session cookies via TanStack Start server functions. Wire up the login and signup UIs to the real backend.
+Install `@supabase/ssr`. Create per-request server and browser Supabase clients. Implement auth server functions. Wire up login and signup UIs. Implement email-confirmation branch. Add SSR session protection to all protected routes.
 
 **Acceptance Criteria:**
 - [ ] Install `@supabase/supabase-js` and `@supabase/ssr`.
-- [ ] Create server and browser Supabase clients.
-- [ ] Implement `signIn`, `signUp`, and `signOut` server functions.
-- [ ] Secure protected routes using an SSR route loader.
-- [ ] Handle Zod validation and error states on auth forms.
+- [ ] Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` to Vercel dashboard and local `.env.local` (gitignored). No service-role key in Phase 6B.
+- [ ] `src/lib/supabase/server.ts` creates a new per-request `createServerClient`. No shared mutable client.
+- [ ] `src/lib/supabase/browser.ts` uses `createBrowserClient`.
+- [ ] Auth server functions: `signUpFn`, `signInWithEmailFn`, `signOutFn`, `getSessionFn`, `requestPasswordResetFn`.
+- [ ] No `userId` accepted from the client; user identity derived from server-side session only.
+- [ ] Email confirmation branch: show "Check your email" state if no session returned. No redirect to `/dashboard` without a valid session.
+- [ ] Protected routes use `beforeLoad` to validate session and redirect unauthenticated users.
+- [ ] Zod validates all server function inputs.
+- [ ] Error states wired to UI (wrong credentials, unconfirmed email, network error).
 
 **Dependencies:**
 Issue #3
@@ -97,12 +111,15 @@ Pending.
 **Status:** Open
 **Scope:** Backend/Frontend
 **Description:**
-Connect the onboarding flow to the Supabase backend to allow users to update their profiles securely. Transition away from mock data for profiles.
+Implement profile server functions. Wire the onboarding route to `completeOnboardingFn()`. Map database profile row to frontend `MemberProfile` interface. Gate mock fallback behind `import.meta.env.DEV`.
 
 **Acceptance Criteria:**
-- [ ] Implement `getProfile` and `updateProfile` server functions.
-- [ ] Connect the frontend onboarding steps to `updateProfile` with Zod validation.
-- [ ] Merge the real profile data into the main SSR layout context.
+- [ ] `getCurrentProfileFn()` reads profile for `auth.uid()` only.
+- [ ] `updateCurrentProfileFn()` accepts only safe fields: `display_name`, `handle`, `bio`, `location`, `timezone`. Role, id, and timestamps are excluded and rejected by Zod.
+- [ ] `completeOnboardingFn()` sets `onboarding_completed_at` server-side. Never client-supplied.
+- [ ] Frontend derives `initials` from `display_name`; not stored in DB.
+- [ ] Mock fallback in `src/services/mockApi.ts` gated behind `import.meta.env.DEV`. Must not run silently in production.
+- [ ] Profile data merged into root SSR context for downstream components.
 
 **Dependencies:**
 Issue #4
@@ -113,16 +130,19 @@ implementation/BACKEND_AUTH_PROFILE_PLAN.md
 **Completion Notes:**
 Pending.
 
-### Issue #6: Phase 6B - Membership Status Logic
+### Issue #6: Phase 6B - Membership Entitlement Logic
 **Status:** Open
 **Scope:** Backend/Frontend
 **Description:**
-Retrieve the user's active membership plan from the backend and enforce basic access control for premium paths (e.g., Trading Room) without implementing payments yet.
+Implement `getCurrentEntitlementFn()` to resolve the authenticated user's membership tier. Return Explorer if no active membership row exists. Enforce tier-based access guards on the frontend using server-provided context only.
 
 **Acceptance Criteria:**
-- [ ] Implement `getCurrentMembership` server function.
-- [ ] Create mock data fallback or assign default "Explorer" status.
-- [ ] Restrict access to premium components based on server-verified tier.
+- [ ] `getCurrentEntitlementFn()` queries `memberships` for `auth.uid()`. No client-supplied `userId`.
+- [ ] If no active membership exists, returns Explorer tier without inserting any default row.
+- [ ] Membership status is never writable by the user.
+- [ ] Frontend access guards read tier from server-provided SSR context only. Never from URL params, local storage, or client state.
+- [ ] RLS test: user cannot insert or update their own membership — denied.
+- [ ] RLS test: user can read only their own membership — allowed.
 
 **Dependencies:**
 Issue #5

@@ -177,9 +177,15 @@ These non-negotiable requirements must be followed:
 ## 13. Deployment
 
 - **Frontend deployment target:** Vercel
+- **Vercel production URL:** `https://wolfpack-foundations.vercel.app/`
 - **Build command:** `bun run build`
 - **Preview / dev command:** `bun run dev`
-- Further deployment protection details, branch preview settings, and environment variable requirements are pending confirmation based on the eventual Vercel project configuration.
+
+**Backend (Supabase):**
+- **Supabase project URL:** `https://kyyoesormuenlwmlgiti.supabase.co` *(public / VITE_SUPABASE_URL)*
+- **Supabase project ref:** `kyyoesormuenlwmlgiti`
+- The Supabase project URL is the browser-safe public value. The database password and service-role key must never be committed to the repository.
+- Migration execution: `supabase link --project-ref kyyoesormuenlwmlgiti && supabase db push`
 
 ## 14. Development Commands
 
@@ -194,10 +200,10 @@ _Note:_ There is no explicit type-check command (like `tsc --noEmit`) or test co
 
 ## 15. Known Technical Debt
 
-- **Missing intended routes:** `/about` and `/pricing` do not exist.
-- **Missing type-check script:** `tsc --noEmit` is not in `package.json` scripts.
-- Existing frontend features rely completely on mock data.
-- Vercel deployment configuration or direct-route fallback settings (like `vercel.json` rewrites) have not been fully audited or established in the repository root.
+- **Missing type-check script:** `tsc --noEmit` is not defined in `package.json` scripts; must be run via `bunx tsc --noEmit`.
+- Existing frontend features rely completely on mock data pending backend integration.
+- Vercel deployment configuration (`vercel.json` rewrites for direct-route refresh) has not been fully audited.
+- ~~Missing intended routes `/about` and `/pricing`~~ — resolved in Issue #2 (2026-08-27).
 
 ## 16. Source-of-Truth Rules
 
@@ -226,6 +232,9 @@ The recommended next phases:
 
 ## 18. Change Log
 
-| Date       | Summary                                | Related Plan                             | Related Issue | Author      |
-| ---------- | -------------------------------------- | ---------------------------------------- | ------------- | ----------- |
-| 2026-08-27 | Initial creation of PROJECT_CONTEXT.md | `implementation/PROJECT_CONTEXT_PLAN.md` | Issue #1      | Antigravity |
+| Date       | Summary                                                              | Related Plan                                   | Related Issue | Author      |
+| ---------- | -------------------------------------------------------------------- | ---------------------------------------------- | ------------- | ----------- |
+| 2026-08-27 | Initial creation of PROJECT_CONTEXT.md                               | `implementation/PROJECT_CONTEXT_PLAN.md`       | Issue #1      | Antigravity |
+| 2026-08-27 | Added /about and /pricing routes; verified on Vercel                 | `implementation/FRONTEND_ROUTES_PLAN.md`       | Issue #2      | Antigravity |
+| 2026-08-27 | Phase 6B plan approved; SQL migrations created for 3 tables          | `implementation/BACKEND_AUTH_PROFILE_PLAN.md`  | Issue #3      | Antigravity |
+| 2026-08-27 | Recorded Supabase project URL (kyyoesormuenlwmlgiti) in context      | `implementation/BACKEND_AUTH_PROFILE_PLAN.md`  | Issue #3      | Antigravity |
