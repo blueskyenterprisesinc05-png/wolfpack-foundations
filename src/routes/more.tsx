@@ -1,15 +1,15 @@
 import { createFileRoute, redirect, Link, useRouter } from "@tanstack/react-router";
 import { AppShell } from "@/components/brand/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-  User, 
-  Settings, 
-  CreditCard, 
-  HelpCircle, 
+import {
+  User,
+  Settings,
+  CreditCard,
+  HelpCircle,
   LogOut,
   ChevronRight,
   ShieldCheck,
-  Bell
+  Bell,
 } from "lucide-react";
 import { signOutFn } from "@/lib/auth";
 
@@ -36,21 +36,19 @@ function MorePage() {
         { icon: User, label: "Profile", href: "/profile" },
         { icon: Settings, label: "Settings", href: "/settings" },
         { icon: Bell, label: "Notifications", href: "/settings/notifications" },
-      ]
+      ],
     },
     {
       title: "Membership",
       items: [
         { icon: CreditCard, label: "Billing & Subscription", href: "/pricing" },
         { icon: ShieldCheck, label: "Membership Tier", href: "/pricing" },
-      ]
+      ],
     },
     {
       title: "Support",
-      items: [
-        { icon: HelpCircle, label: "Help Center", href: "/about" },
-      ]
-    }
+      items: [{ icon: HelpCircle, label: "Help Center", href: "/about" }],
+    },
   ];
 
   return (
@@ -72,10 +70,17 @@ function MorePage() {
                   {profile?.initials ?? "M"}
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-foreground text-lg">{profile?.name ?? "Member"}</p>
-                  <p className="text-sm text-muted-foreground">{profile?.handle ?? "Member account"}</p>
+                  <p className="font-semibold text-foreground text-lg">
+                    {profile?.name ?? "Member"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {profile?.handle ?? "Member account"}
+                  </p>
                 </div>
-                <Link to="/profile" className="rounded-full border border-border bg-secondary px-4 py-2 text-xs font-semibold text-foreground hover:bg-accent hover:text-gold transition-colors">
+                <Link
+                  to="/profile"
+                  className="rounded-full border border-border bg-secondary px-4 py-2 text-xs font-semibold text-foreground hover:bg-accent hover:text-gold transition-colors"
+                >
                   View Profile
                 </Link>
               </CardContent>
@@ -116,7 +121,9 @@ function MorePage() {
               >
                 <div className="flex items-center gap-3">
                   <LogOut className="size-5 text-crimson group-hover:text-crimson-tint transition-colors" />
-                  <span className="font-medium text-crimson group-hover:text-crimson-tint">Sign Out</span>
+                  <span className="font-medium text-crimson group-hover:text-crimson-tint">
+                    Sign Out
+                  </span>
                 </div>
               </button>
             </div>

@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { ArrowRight, Check, Flame, Lock, Play, Sparkles, Target, TrendingUp } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import {
-  achievements,
-  currentMission,
-  progressHistory,
-  progressMetrics,
-} from "@/data/progress";
+import { achievements, currentMission, progressHistory, progressMetrics } from "@/data/progress";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProgressBar } from "@/components/brand/progress";
@@ -37,13 +32,12 @@ export function ProgressDashboard() {
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto flex max-w-5xl flex-col gap-10 px-4 py-8 sm:px-6 lg:px-8">
-        
         <header className="border-b border-border pb-8">
           <p className="eyebrow text-gold">The 1% Club / Progress</p>
           <h1 className="display-xl mt-3 text-foreground">Your Progress</h1>
           <p className="mt-4 max-w-2xl text-pretty text-base leading-7 text-muted-foreground">
-            Measured in consistent behaviour, honest learning and the small decisions that
-            compound — not only financial results.
+            Measured in consistent behaviour, honest learning and the small decisions that compound
+            — not only financial results.
           </p>
         </header>
 
@@ -69,20 +63,20 @@ export function ProgressDashboard() {
         <section className="grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
           <Card className="overflow-hidden border-border bg-charcoal">
             <div className="relative overflow-hidden bg-forest/10 p-6 sm:p-8">
-               <div className="absolute right-6 top-6 size-24 rounded-full border border-forest/20 opacity-60" />
-               <div className="absolute right-14 top-14 size-10 rounded-full bg-forest/10" />
-               <div className="relative">
-                 <div className="flex items-center justify-between gap-3">
-                   <p className="eyebrow text-forest">1% Mission</p>
-                   <span className="text-xs font-semibold text-forest">
-                     {completedMission ? "Completed" : currentMission.dueLabel}
-                   </span>
-                 </div>
-                 <h2 className="display-lg mt-4 text-foreground">{currentMission.title}</h2>
-                 <p className="mt-2 text-sm leading-6 text-muted-foreground max-w-xl">
-                   {currentMission.description}
-                 </p>
-               </div>
+              <div className="absolute right-6 top-6 size-24 rounded-full border border-forest/20 opacity-60" />
+              <div className="absolute right-14 top-14 size-10 rounded-full bg-forest/10" />
+              <div className="relative">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="eyebrow text-forest">1% Mission</p>
+                  <span className="text-xs font-semibold text-forest">
+                    {completedMission ? "Completed" : currentMission.dueLabel}
+                  </span>
+                </div>
+                <h2 className="display-lg mt-4 text-foreground">{currentMission.title}</h2>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground max-w-xl">
+                  {currentMission.description}
+                </p>
+              </div>
             </div>
             <CardContent className="flex flex-wrap items-center gap-3 p-6 sm:p-8">
               <Button onClick={completeMission} loading={loading} disabled={completedMission}>
@@ -100,7 +94,7 @@ export function ProgressDashboard() {
               </span>
             </CardContent>
           </Card>
-          
+
           <Card className="border-border bg-charcoal">
             <CardHeader className="p-6">
               <CardTitle>Weekly summary</CardTitle>
@@ -181,7 +175,7 @@ export function ProgressDashboard() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="border-border bg-charcoal">
             <CardHeader className="p-6">
               <CardTitle>Recent activity</CardTitle>
@@ -226,9 +220,9 @@ export function ProgressDashboard() {
                     )}
                   </span>
                   {achievement.state === "recent" && (
-                     <span className="inline-flex items-center gap-1 rounded-full border border-gold/30 bg-gold/10 px-2 py-0.5 text-[10px] text-gold uppercase tracking-wider font-semibold">
-                       New
-                     </span>
+                    <span className="inline-flex items-center gap-1 rounded-full border border-gold/30 bg-gold/10 px-2 py-0.5 text-[10px] text-gold uppercase tracking-wider font-semibold">
+                      New
+                    </span>
                   )}
                 </div>
                 <p className="mt-5 font-semibold text-foreground text-sm">{achievement.name}</p>
@@ -241,7 +235,6 @@ export function ProgressDashboard() {
             ))}
           </div>
         </section>
-
       </div>
     </main>
   );

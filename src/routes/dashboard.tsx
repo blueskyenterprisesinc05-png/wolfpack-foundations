@@ -34,7 +34,6 @@ function DashboardPage() {
     <AppShell>
       <main className="min-h-screen bg-background">
         <div className="mx-auto flex max-w-5xl flex-col gap-10 px-4 py-8 sm:px-6 lg:px-8">
-          
           <header className="border-b border-border pb-8">
             <p className="eyebrow text-gold">The Den</p>
             <h1 className="display-xl mt-3 text-foreground">Welcome back, {displayName}.</h1>
@@ -56,7 +55,11 @@ function DashboardPage() {
                     </div>
                     <p className="eyebrow mt-5 text-gold">Today's next right step</p>
                     <h2 className="display-lg mt-2 text-foreground">
-                      {isComplete ? "Mind Lab Complete" : nextLesson ? nextLesson.title : "Mind Lab"}
+                      {isComplete
+                        ? "Mind Lab Complete"
+                        : nextLesson
+                          ? nextLesson.title
+                          : "Mind Lab"}
                     </h2>
                   </div>
                 </div>
@@ -83,9 +86,7 @@ function DashboardPage() {
                       </Button>
                     )}
                     <Button variant="secondary" asChild>
-                      <Link to="/progress">
-                        View Progress
-                      </Link>
+                      <Link to="/progress">View Progress</Link>
                     </Button>
                   </div>
                 </CardContent>
@@ -137,7 +138,6 @@ function DashboardPage() {
               </Link>
             </div>
           </section>
-
         </div>
       </main>
     </AppShell>
