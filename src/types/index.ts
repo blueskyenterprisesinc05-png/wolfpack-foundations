@@ -264,15 +264,15 @@ export interface MemberProfile {
   name: string;
   handle: string;
   initials: string;
-  role: string;
-  bio: string;
-  location: string;
-  joinedLabel: string;
-  tier: MembershipTier;
-  streak: number;
-  totalMarks: number;
-  completedLessons: number;
-  accountabilityScore: number;
+  bio?: string;
+  location?: string;
+  joinedLabel?: string;
+  role?: string;
+  tier?: MembershipTier;
+  streak?: number;
+  totalMarks?: number;
+  completedLessons?: number;
+  accountabilityScore?: number;
 }
 export interface ProfileActivity {
   id: string;

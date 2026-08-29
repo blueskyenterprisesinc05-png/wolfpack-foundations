@@ -14,6 +14,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import type { RouterContext } from "../router";
 import { getSessionFn } from "../lib/session";
+import { getCurrentProfileFn } from "../lib/profile";
 
 function NotFoundComponent() {
   return (
@@ -81,7 +82,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
    */
   beforeLoad: async () => {
     const { user } = await getSessionFn();
-    return { user };
+    let profile = null;
+    if (user) {
+      const res = await getCurrentProfileFn();
+      profile = res.profile;
+    }
+    return { user, profile };
   },
   head: () => ({
     meta: [

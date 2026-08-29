@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LockKeyhole, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
 import { signInWithEmailFn, signUpFn, requestPasswordResetFn } from "@/lib/auth";
+import { completeOnboardingFn } from "@/lib/profile";
 
 // ── Schemas ───────────────────────────────────────────────────────────────────
 
@@ -32,9 +33,19 @@ const resetSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
 });
 
+const onboardingSchema = z.object({
+  display_name: z.string().min(1, "Display name is required."),
+  handle: z
+    .string()
+    .min(3, "Handle must be at least 3 characters.")
+    .max(30, "Handle must be at most 30 characters.")
+    .regex(/^[a-z0-9_]{3,30}$/, "Handle can only contain lowercase letters, numbers, and underscores."),
+});
+
 type LoginValues = z.infer<typeof loginSchema>;
 type SignupValues = z.infer<typeof signupSchema>;
 type ResetValues = z.infer<typeof resetSchema>;
+type OnboardingValues = z.infer<typeof onboardingSchema>;
 
 // ── Sub-views ─────────────────────────────────────────────────────────────────
 
@@ -282,26 +293,99 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
   );
 }
 
+function OnboardingForm() {
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<OnboardingValues>({ resolver: zodResolver(onboardingSchema) });
+
+  const onSubmit = async (values: OnboardingValues) => {
+    setServerError(null);
+    const result = await completeOnboardingFn({ data: values });
+    if (!result.success) {
+      setServerError(result.error);
+      return;
+    }
+    // Refresh to reload context with new profile, or just navigate to dashboard
+    window.location.href = "/dashboard";
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+      <div className="space-y-1">
+        <Label htmlFor="onboarding-display-name">Display name</Label>
+        <Input
+          id="onboarding-display-name"
+          type="text"
+          placeholder="e.g. Alex"
+          {...register("display_name")}
+        />
+        {errors.display_name && (
+          <p className="text-xs text-destructive">{errors.display_name.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="onboarding-handle">Handle</Label>
+        <Input
+          id="onboarding-handle"
+          type="text"
+          placeholder="e.g. alex_1"
+          {...register("handle")}
+        />
+        {errors.handle && (
+          <p className="text-xs text-destructive">{errors.handle.message}</p>
+        )}
+      </div>
+
+      {serverError && (
+        <p role="alert" className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">
+          {serverError}
+        </p>
+      )}
+
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
+        {isSubmitting ? (
+          <Loader2 className="mr-2 size-4 animate-spin" />
+        ) : (
+          <ArrowRight className="mr-2 size-4" />
+        )}
+        Complete profile
+      </Button>
+    </form>
+  );
+}
+
 // ── Public AccessPage component ────────────────────────────────────────────────
 
-type View = "login" | "signup" | "forgot";
+type View = "login" | "signup" | "forgot" | "onboarding";
 
 export function AccessPage({ kind }: { kind: "login" | "signup" | "onboarding" }) {
-  const [view, setView] = useState<View>(kind === "signup" ? "signup" : "login");
+  const [view, setView] = useState<View>(
+    kind === "signup" ? "signup" : kind === "onboarding" ? "onboarding" : "login",
+  );
 
   const heading =
     view === "signup"
       ? "Join The 1% Club."
       : view === "forgot"
         ? "Reset your password."
-        : "Welcome back.";
+        : view === "onboarding"
+          ? "Set up your profile."
+          : "Welcome back.";
 
   const subheading =
     view === "signup"
       ? "Start with one honest commitment and build from there."
       : view === "forgot"
         ? "We'll send a link to your email address."
-        : "Return to the practice you are building.";
+        : view === "onboarding"
+          ? "Choose how you'll appear in The Den."
+          : "Return to the practice you are building.";
 
   return (
     <main className="grid min-h-screen place-items-center bg-background px-4 py-8">
@@ -319,8 +403,9 @@ export function AccessPage({ kind }: { kind: "login" | "signup" | "onboarding" }
           {view === "login" && <LoginForm onForgot={() => setView("forgot")} />}
           {view === "signup" && <SignupForm />}
           {view === "forgot" && <ForgotPasswordForm onBack={() => setView("login")} />}
+          {view === "onboarding" && <OnboardingForm />}
 
-          {view !== "forgot" && (
+          {view !== "forgot" && view !== "onboarding" && (
             <p className="text-center text-xs text-muted-foreground">
               {view === "login" ? (
                 <>

@@ -8,6 +8,10 @@ import { mockInstructors, mockResources } from "@/data/mock";
  */
 const latency = 220;
 
+if (!import.meta.env.DEV) {
+  throw new Error("CRITICAL: mockApi is for development only and must not be used in production.");
+}
+
 function resolve<T>(value: T): Promise<T> {
   return new Promise((r) => setTimeout(() => r(value), latency));
 }

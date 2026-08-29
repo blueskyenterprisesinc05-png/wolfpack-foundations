@@ -114,12 +114,12 @@ Pending.
 Implement profile server functions. Wire the onboarding route to `completeOnboardingFn()`. Map database profile row to frontend `MemberProfile` interface. Gate mock fallback behind `import.meta.env.DEV`.
 
 **Acceptance Criteria:**
-- [ ] `getCurrentProfileFn()` reads profile for `auth.uid()` only.
-- [ ] `updateCurrentProfileFn()` accepts only safe fields: `display_name`, `handle`, `bio`, `location`, `timezone`. Role, id, and timestamps are excluded and rejected by Zod.
-- [ ] `completeOnboardingFn()` sets `onboarding_completed_at` server-side. Never client-supplied.
-- [ ] Frontend derives `initials` from `display_name`; not stored in DB.
-- [ ] Mock fallback in `src/services/mockApi.ts` gated behind `import.meta.env.DEV`. Must not run silently in production.
-- [ ] Profile data merged into root SSR context for downstream components.
+- [x] `getCurrentProfileFn()` reads profile for `auth.uid()` only.
+- [x] `updateCurrentProfileFn()` accepts only safe fields: `display_name`, `handle`, `bio`, `location`, `timezone`. Role, id, and timestamps are excluded and rejected by Zod. (Replaced with one-step `completeOnboardingFn` per approval)
+- [x] `completeOnboardingFn()` sets `onboarding_completed_at` server-side. Never client-supplied.
+- [x] Frontend derives `initials` from `display_name`; not stored in DB.
+- [x] Mock fallback in `src/services/mockApi.ts` gated behind `import.meta.env.DEV`. Must not run silently in production.
+- [x] Profile data merged into root SSR context for downstream components.
 
 **Dependencies:**
 Issue #4
@@ -128,7 +128,7 @@ Issue #4
 implementation/BACKEND_AUTH_PROFILE_PLAN.md
 
 **Completion Notes:**
-Pending.
+Backend functions and frontend onboarding form are implemented. Awaiting manual verification (unauthenticated access, ownership, duplicate-handle, idempotency, and missing-profile) before closing.
 
 ### Issue #6: Phase 6B - Membership Entitlement Logic
 **Status:** Open
