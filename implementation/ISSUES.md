@@ -139,7 +139,7 @@ Closed after manual verification confirming:
 - **Production mock protection:** `mockApi.ts` safely fails closed when not in DEV.
 
 ### Issue #6: Phase 6B - Membership Entitlement Logic
-**Status:** Open
+**Status:** Closed
 **Scope:** Backend/Frontend
 **Description:**
 Implement `getCurrentEntitlementFn()` to resolve the authenticated user's membership tier. Return Explorer if no active membership row exists. Enforce tier-based access guards on the frontend using server-provided context only.
@@ -149,8 +149,8 @@ Implement `getCurrentEntitlementFn()` to resolve the authenticated user's member
 - [x] If no active membership exists, returns Explorer tier without inserting any default row.
 - [x] Membership status is never writable by the user.
 - [x] Frontend access guards read tier from server-provided SSR context only. Never from URL params, local storage, or client state.
-- [ ] RLS test: user cannot insert or update their own membership — denied.
-- [ ] RLS test: user can read only their own membership — allowed.
+- [x] RLS test: user cannot insert or update their own membership — denied.
+- [x] RLS test: user can read only their own membership — allowed.
 
 **Dependencies:**
 Issue #5
@@ -159,4 +159,11 @@ Issue #5
 implementation/BACKEND_AUTH_PROFILE_PLAN.md
 
 **Completion Notes:**
-Backend function `getCurrentEntitlementFn()` is implemented to safely fetch tier and fallback to `"free"` deterministically. SSR context provides `profile.tier` for presentation only. Awaiting manual user-session verification (RLS read/write isolation) before closing.
+Backend function `getCurrentEntitlementFn()` is implemented to safely fetch tier and fallback to `"free"` deterministically. SSR context provides `profile.tier` for presentation only.
+
+Closed after manual verification using a real authenticated user session:
+- **Read Own Membership:** PASS (Allowed)
+- **Read Other Membership:** PASS (Filtered by RLS, returns 0 rows safely)
+- **Unauthorized Insert:** PASS (Blocked with 42501 unique violation/RLS policy)
+- **Unauthorized Update:** PASS (Blocked by RLS, returns 0 rows updated)
+Temporary test screen removed.

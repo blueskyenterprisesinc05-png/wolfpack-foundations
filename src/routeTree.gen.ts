@@ -22,7 +22,6 @@ import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as RlsTestRouteImport } from './routes/rls-test'
 import { Route as SessionsRouteImport } from './routes/sessions'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -96,11 +95,6 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RlsTestRoute = RlsTestRouteImport.update({
-  id: '/rls-test',
-  path: '/rls-test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SessionsRoute = SessionsRouteImport.update({
   id: '/sessions',
   path: '/sessions',
@@ -151,7 +145,6 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/rls-test': typeof RlsTestRoute
   '/sessions': typeof SessionsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
@@ -174,7 +167,6 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/rls-test': typeof RlsTestRoute
   '/sessions': typeof SessionsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
@@ -198,7 +190,6 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/rls-test': typeof RlsTestRoute
   '/sessions': typeof SessionsRoute
   '/settings': typeof SettingsRoute
   '/signup': typeof SignupRoute
@@ -223,7 +214,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/progress'
     | '/reset-password'
-    | '/rls-test'
     | '/sessions'
     | '/settings'
     | '/signup'
@@ -246,7 +236,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/progress'
     | '/reset-password'
-    | '/rls-test'
     | '/sessions'
     | '/settings'
     | '/signup'
@@ -269,7 +258,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/progress'
     | '/reset-password'
-    | '/rls-test'
     | '/sessions'
     | '/settings'
     | '/signup'
@@ -293,7 +281,6 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  RlsTestRoute: typeof RlsTestRoute
   SessionsRoute: typeof SessionsRoute
   SettingsRoute: typeof SettingsRoute
   SignupRoute: typeof SignupRoute
@@ -396,13 +383,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/rls-test': {
-      id: '/rls-test'
-      path: '/rls-test'
-      fullPath: '/rls-test'
-      preLoaderRoute: typeof RlsTestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sessions': {
       id: '/sessions'
       path: '/sessions'
@@ -469,7 +449,6 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  RlsTestRoute: RlsTestRoute,
   SessionsRoute: SessionsRoute,
   SettingsRoute: SettingsRoute,
   SignupRoute: SignupRoute,
