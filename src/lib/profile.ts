@@ -12,8 +12,10 @@ export function normalizeHandle(handle: string): string {
 export function deriveInitials(displayName: string | null | undefined): string {
   if (!displayName) return "M";
   const parts = displayName.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  const firstPart = parts[0] || "M";
+  if (parts.length === 1) return firstPart.substring(0, 2).toUpperCase();
+  const lastPart = parts[parts.length - 1] || "M";
+  return (firstPart.charAt(0) + lastPart.charAt(0)).toUpperCase();
 }
 
 /** Regex for handle validation (only a-z, 0-9, and underscores allowed, max 30 chars) */

@@ -43,7 +43,7 @@ export const getCurrentEntitlementFn = createServerFn({ method: "GET" }).handler
       return { tier: EXPLORER_TIER };
     }
 
-    const membership = rows[0];
+    const membership = rows[0]!;
     
     // Extract tier safely (Supabase joins return an array if it's a one-to-many, 
     // or an object if it's a many-to-one foreign key. Since memberships.plan_id 

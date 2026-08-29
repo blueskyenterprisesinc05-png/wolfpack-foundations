@@ -6,8 +6,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LessonContent, LessonNav } from "@/components/learning/learning-shell";
-import { mockApi, queryKeys } from "@/services/mockApi";
-import { mockCourses, mockLessonProgress, mockResources } from "@/data/mock";
+import { mockLessonProgress } from "@/data/mock";
+import { getLessonByIdFn, getCourseLessonsFn } from "@/lib/lessons";
+import { getCourseByIdFn } from "@/lib/courses";
 import type { LessonProgress } from "@/types";
 
 export const Route = createFileRoute("/lessons/$lessonId")({ component: LessonDetail });
@@ -16,14 +17,25 @@ function LessonDetail() {
   const { lessonId } = Route.useParams();
   const lessonQuery = useQuery({
     queryKey: ["lesson", lessonId],
-    queryFn: () => mockApi.getLesson(lessonId),
+    queryFn: () => getLessonByIdFn({ data: lessonId }),
   });
-  const lesson = lessonQuery.data;
-  const course = lesson ? mockCourses.find((item) => item.id === lesson.courseId) : undefined;
+  
+  const lesson = lessonQuery.data?.lesson;
+  const resources = lessonQuery.data?.resources ?? [];
+  const courseId = lesson?.courseId;
+  
+  const courseQuery = useQuery({
+    queryKey: ["course", courseId],
+    queryFn: () => getCourseByIdFn({ data: courseId! }),
+    enabled: Boolean(courseId),
+  });
+
+  const course = courseQuery.data?.course;
+
   const lessonsQuery = useQuery({
-    queryKey: queryKeys.lessons(lesson?.courseId ?? ""),
-    queryFn: () => mockApi.getLessons(lesson?.courseId ?? ""),
-    enabled: Boolean(lesson),
+    queryKey: ["lessons", courseId],
+    queryFn: () => getCourseLessonsFn({ data: courseId! }),
+    enabled: Boolean(courseId),
   });
   const initial = mockLessonProgress.find((item) => item.lessonId === lessonId) ?? {
     lessonId,
@@ -34,7 +46,7 @@ function LessonDetail() {
   useEffect(() => {
     setProgress(initial);
   }, [lessonId]);
-  if (lessonQuery.isLoading)
+  if (lessonQuery.isLoading || courseQuery.isLoading || lessonsQuery.isLoading)
     return (
       <main className="min-h-screen bg-background p-6">
         <div className="mx-auto max-w-3xl animate-pulse space-y-5">
@@ -57,7 +69,7 @@ function LessonDetail() {
         </Card>
       </main>
     );
-  const lessons = lessonsQuery.data ?? [];
+  const lessons = lessonsQuery.data?.lessons ?? [];
   const index = lessons.findIndex((item) => item.id === lesson.id);
   const previous = lessons[index - 1];
   const next = lessons[index + 1];
@@ -136,7 +148,7 @@ function LessonDetail() {
           onComplete={complete}
           onNotes={setNotes}
           {...(() => {
-            const resource = mockResources.find((item) => item.lessonId === lesson.id);
+            const resource = resources.length > 0 ? resources[0] : undefined;
             return resource ? { resource } : {};
           })()}
         />

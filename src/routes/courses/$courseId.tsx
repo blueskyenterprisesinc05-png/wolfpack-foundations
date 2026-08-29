@@ -9,25 +9,30 @@ import {
   CourseSafety,
   InstructorCard,
 } from "@/components/learning/learning-shell";
-import { mockApi, queryKeys } from "@/services/mockApi";
-import { mockCourses, mockInstructors } from "@/data/mock";
+import { getCourseByIdFn, getCoursesFn } from "@/lib/courses";
+import { getCourseLessonsFn } from "@/lib/lessons";
 
 export const Route = createFileRoute("/courses/$courseId")({ component: CourseDetail });
 
 function CourseDetail() {
   const { courseId } = Route.useParams();
   const courseQuery = useQuery({
-    queryKey: queryKeys.course(courseId),
-    queryFn: () => mockApi.getCourse(courseId),
+    queryKey: ["course", courseId],
+    queryFn: () => getCourseByIdFn({ data: courseId }),
   });
   const lessonsQuery = useQuery({
-    queryKey: queryKeys.lessons(courseId),
-    queryFn: () => mockApi.getLessons(courseId),
+    queryKey: ["lessons", courseId],
+    queryFn: () => getCourseLessonsFn({ data: courseId }),
   });
-  const course = courseQuery.data;
-  const instructor = course
-    ? mockInstructors.find((item) => item.id === course.instructorId)
-    : undefined;
+  const allCoursesQuery = useQuery({
+    queryKey: ["courses"],
+    queryFn: () => getCoursesFn(),
+  });
+  
+  const course = courseQuery.data?.course;
+  const instructor = courseQuery.data?.instructor;
+  const lessons = lessonsQuery.data?.lessons ?? [];
+  const allCourses = allCoursesQuery.data?.courses ?? [];
   if (courseQuery.isLoading || lessonsQuery.isLoading)
     return (
       <main className="min-h-screen bg-background p-6">
@@ -53,7 +58,6 @@ function CourseDetail() {
         </Card>
       </main>
     );
-  const lessons = lessonsQuery.data ?? [];
   const progress = course.lessonCount ? (course.lessonsComplete / course.lessonCount) * 100 : 0;
   const current =
     lessons.find((lesson) => lesson.state === "in-progress") ??
@@ -134,7 +138,7 @@ function CourseDetail() {
           <p className="eyebrow">Keep going</p>
           <h2 className="display-lg mt-2 text-foreground">Related courses</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            {mockCourses
+            {allCourses
               .filter((item) => item.id !== course.id)
               .map((item) => (
                 <Link

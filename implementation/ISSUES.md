@@ -167,3 +167,26 @@ Closed after manual verification using a real authenticated user session:
 - **Unauthorized Insert:** PASS (Blocked with 42501 unique violation/RLS policy)
 - **Unauthorized Update:** PASS (Blocked by RLS, returns 0 rows updated)
 Temporary test screen removed.
+
+### Issue #7: Phase 7 - Learning Data (Courses & Lessons)
+**Status:** In Progress
+**Scope:** Backend/Frontend
+**Description:**
+Migrate static mock learning data (Courses, Lessons, Instructors) into the database. Implement server functions to fetch the catalog and securely gate lesson content based on membership entitlement.
+
+**Acceptance Criteria:**
+- [x] Create `instructors`, `courses`, `course_objectives`, `lessons`, and `resources` tables (migration SQL files).
+- [x] Apply RLS policies: catalog is publicly readable, but `content` access is gated.
+- [x] Create seed SQL to insert the existing mock data.
+- [x] Implement `src/lib/courses.ts` and `src/lib/lessons.ts` server functions.
+- [x] Securely gate lesson `content` on the server based on `getCurrentEntitlementFn()`.
+- [x] Refactor frontend routes to use the new server functions instead of static mock files.
+
+**Dependencies:**
+Issue #6
+
+**Related Plan:**
+implementation_plan.md
+
+**Completion Notes:**
+Completed. The migration SQL files have been created in `supabase/migrations/` ready to be manually executed in the Supabase Dashboard. The frontend routes now use server functions which deterministically protect lesson content behind membership tier rules.
