@@ -1,7 +1,7 @@
 # Migration Reconciliation Report & Dependency Audit
 
 **Date:** 2026-08-27
-**Status:** Audit Completed. Pending reconciliation strategy execution.
+**Status:** Workflow decision recorded. Migration-history reconciliation pending user approval of repair commands.
 
 ## 1. Migration History Audit
 
@@ -12,20 +12,31 @@
 - **Remote Migration Versions:** `0` (None recorded). `supabase migration list --linked` confirms that the remote migration history is entirely empty.
 - **Remote Schema Objects:** The user has manually executed SQL in the Supabase Dashboard which means that the remote tables, policies, and triggers exist, but their creation was not recorded in the migration history (`supabase_migrations.schema_migrations`).
 
-### Schema Comparison (Blocked by Docker)
-Running `supabase db diff` to programmatically compare the remote schema with local migration files requires a local Docker engine to spin up a shadow database. Docker Desktop is not currently running (`failed to connect to the docker API`).
-Therefore, an automated, granular schema diff cannot be produced locally. However, the previously successful RLS tests and trigger execution confirm that at a minimum, the `profiles`, `membership_plans`, and `memberships` tables, the trigger `handle_new_user`, and the expected RLS policies exist and function identically to what the local migrations defined.
+### Schema Comparison — Docker Skipped (By User Preference)
+Docker-based schema diff was intentionally skipped by user preference. Remote schema operations will be performed manually through the hosted Supabase Dashboard. Migration history will be maintained through reviewed repository SQL and, where appropriate, host-side migration repair.
+
+Despite the lack of a programmatic diff, the previously successful RLS tests and trigger execution confirm that at a minimum, the `profiles`, `membership_plans`, and `memberships` tables, the trigger `handle_new_user`, and the expected RLS policies exist and function identically to what the local migrations defined.
+
+### Workflow Going Forward
+- **No local Docker stack.** The project uses a no-Docker Supabase workflow.
+- **Database operations** are performed manually in the hosted Supabase Dashboard SQL Editor.
+- **The local `supabase/migrations/` files** remain the source of truth for documentation and review.
+- **The Windows-hosted Supabase CLI** is used only for: `supabase login`, `supabase link`, `supabase migration list`, and `supabase migration repair`.
+- **Blocked commands:** `supabase db diff`, `supabase db pull`, `supabase db push`, `supabase db reset`, and any Docker-based command.
 
 ### Valuable Data
-The remote database currently holds the test users (`user_a` and `user_b`) created manually or by the test script, and the three canonical membership plans inserted by the seed script. Aside from potentially real user data if this were production, this is a development project, but we assume data should not be dropped destructively without cause.
+The remote database currently holds the test users (`user_a` and `user_b`) created during RLS testing, and the three canonical membership plans inserted by the seed script. Data must not be dropped destructively.
 
 ### Safe Reconciliation Strategy
-Because the remote schema was built manually and corresponds to our local migrations, the safest way to reconcile this without dropping the schema and losing data is to "fake" the migration history remotely.
+The non-Docker path that changes migration metadata but does not re-execute DDL; use only after the corresponding SQL has been verified. `supabase migration repair --status applied <version>` marks each version as applied in the remote `supabase_migrations.schema_migrations` table without re-running the migration SQL. This command does not require a local Docker engine.
 
-**Recommended Strategy:**
-Mark the local migrations as applied on the remote database without re-executing their DDL commands. Since Docker is not running, if the CLI's `supabase migration up` (or similar repair commands) require Docker, the safest alternative is to insert the migration records manually into the remote `supabase_migrations.schema_migrations` table, or use `supabase migration repair --status applied <version>` (which does not require a shadow database).
+> [!WARNING]
+> If a migration is incorrectly marked as applied, future deployments may skip SQL that the database actually needs. Each repair command must correspond precisely to SQL that has been executed and verified in the remote database. Never mark a version as applied unless the database objects it creates have been confirmed to exist and match the migration file.
 
-**Next Step:** Wait for the user to approve a repair command. Do not mark as applied yet.
+**Prerequisite before running repair:**
+The user must confirm — via the Supabase Dashboard — that each of the nine migration SQL files was successfully executed and that the resulting remote objects match the migration intent. Only then should repair be run, one version at a time.
+
+**Current State:** Do not mark as applied yet. Issue #3 remains In Progress.
 
 ---
 

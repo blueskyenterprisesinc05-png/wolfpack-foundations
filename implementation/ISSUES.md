@@ -81,7 +81,7 @@ implementation/BACKEND_AUTH_PROFILE_PLAN.md
 Supabase CLI access restored. Remote migration history currently shows no applied versions, confirming migration-history drift after manual Dashboard SQL execution. Read-only schema reconciliation is pending.
 
 ### Issue #4: Phase 6B - Auth Service & SSR Session Handling
-**Status:** Open
+**Status:** Closed
 **Scope:** Backend/Frontend
 **Description:**
 Install `@supabase/ssr`. Create per-request server and browser Supabase clients. Implement auth server functions. Wire up login and signup UIs. Implement email-confirmation branch. Add SSR session protection to all protected routes.

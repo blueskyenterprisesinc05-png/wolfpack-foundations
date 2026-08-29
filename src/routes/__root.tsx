@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import type { RouterContext } from "../router";
+import { getSessionFn } from "../lib/session";
 
 function NotFoundComponent() {
   return (
@@ -71,7 +73,16 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+export const Route = createRootRouteWithContext<RouterContext>()({
+  /**
+   * beforeLoad runs on every navigation (server and client).
+   * Fetching the user here means child routes can read context.user
+   * without making a separate network call.
+   */
+  beforeLoad: async () => {
+    const { user } = await getSessionFn();
+    return { user };
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
