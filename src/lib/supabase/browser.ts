@@ -6,6 +6,7 @@
  * Never import this file in server functions.
  */
 import { createBrowserClient } from "@supabase/ssr";
+import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./config";
 
 let _client: ReturnType<typeof createBrowserClient> | undefined;
 
@@ -13,8 +14,8 @@ let _client: ReturnType<typeof createBrowserClient> | undefined;
 export function getBrowserClient() {
   if (!_client) {
     _client = createBrowserClient(
-      import.meta.env["VITE_SUPABASE_URL"],
-      import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"],
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY,
     );
   }
   return _client;
