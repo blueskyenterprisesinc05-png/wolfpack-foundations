@@ -7,21 +7,14 @@ import {
   MoreHorizontal,
   Users,
   ChevronDown,
-  Brain,
-  CandlestickChart,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/brand/logo";
 import { BottomNav, isTabActive } from "@/components/brand/bottom-nav";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { NestedPathNav } from "@/components/brand/nested-path-nav";
 
 const SIDEBAR_LINKS = [
   { label: "Den", to: "/dashboard", icon: Home },
@@ -52,13 +45,7 @@ function getHeaderTitle(pathname: string): string {
 }
 
 function hasPathSwitcher(pathname: string): boolean {
-  const pathsWithSwitcher = [
-    "/dashboard",
-    "/courses",
-    "/lessons",
-    "/mindset",
-    "/trading",
-  ];
+  const pathsWithSwitcher = ["/dashboard", "/courses", "/lessons", "/mindset", "/trading"];
   return pathsWithSwitcher.some((p) => pathname.startsWith(p));
 }
 
@@ -102,41 +89,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 className="w-80 bg-charcoal p-5 border-r border-border text-foreground"
               >
                 <SheetHeader className="text-left mb-6">
-                  <SheetTitle className="text-foreground display-lg">
-                    My Paths
-                  </SheetTitle>
+                  <SheetTitle className="text-foreground display-lg">My Paths</SheetTitle>
                 </SheetHeader>
-                <nav className="flex flex-col gap-4" aria-label="Path selection">
-                  <div className="flex flex-col gap-1">
-                    <p className="eyebrow px-2 mb-2">Available Paths</p>
-                    <Link
-                      to="/mindset"
-                      onClick={() => setDrawerOpen(false)}
-                      className={cn(
-                        "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold motion-base",
-                        pathname.startsWith("/mindset") || pathname.includes("mind-lab")
-                          ? "bg-accent text-gold"
-                          : "text-muted-foreground hover:bg-accent hover:text-foreground",
-                      )}
-                    >
-                      <Brain className="size-4 shrink-0" />
-                      Mind Lab
-                    </Link>
-                    <Link
-                      to="/trading"
-                      onClick={() => setDrawerOpen(false)}
-                      className={cn(
-                        "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-semibold motion-base",
-                        pathname.startsWith("/trading") || pathname.includes("trading-room")
-                          ? "bg-accent text-gold"
-                          : "text-muted-foreground hover:bg-accent hover:text-foreground",
-                      )}
-                    >
-                      <CandlestickChart className="size-4 shrink-0" />
-                      Trading Room
-                    </Link>
-                  </div>
-                </nav>
+                <NestedPathNav pathname={pathname} onClose={() => setDrawerOpen(false)} />
               </SheetContent>
             </Sheet>
           )}
