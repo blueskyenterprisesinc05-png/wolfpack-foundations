@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AppShell } from "@/components/brand/app-shell";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -11,7 +12,15 @@ import { getLessonByIdFn, getCourseLessonsFn } from "@/lib/lessons";
 import { getCourseByIdFn } from "@/lib/courses";
 import type { LessonProgress } from "@/types";
 
-export const Route = createFileRoute("/lessons/$lessonId")({ component: LessonDetail });
+export const Route = createFileRoute("/lessons/$lessonId")({
+  component: function LessonDetailWrapper() {
+    return (
+      <AppShell>
+        <LessonDetail />
+      </AppShell>
+    );
+  },
+});
 
 function LessonDetail() {
   const { lessonId } = Route.useParams();
@@ -19,11 +28,11 @@ function LessonDetail() {
     queryKey: ["lesson", lessonId],
     queryFn: () => getLessonByIdFn({ data: lessonId }),
   });
-  
+
   const lesson = lessonQuery.data?.lesson;
   const resources = lessonQuery.data?.resources ?? [];
   const courseId = lesson?.courseId;
-  
+
   const courseQuery = useQuery({
     queryKey: ["course", courseId],
     queryFn: () => getCourseByIdFn({ data: courseId! }),
@@ -45,7 +54,7 @@ function LessonDetail() {
   const [progress, setProgress] = useState<LessonProgress>(initial);
   useEffect(() => {
     setProgress(initial);
-  }, [lessonId]);
+  }, [lessonId, initial]);
   if (lessonQuery.isLoading || courseQuery.isLoading || lessonsQuery.isLoading)
     return (
       <main className="min-h-screen bg-background p-6">

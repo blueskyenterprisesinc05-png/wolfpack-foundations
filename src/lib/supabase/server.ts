@@ -15,28 +15,24 @@ import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./config";
 export function createSupabaseServerClient() {
   const request = getRequest();
 
-  return createServerClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY,
-    {
-      cookies: {
-        getAll() {
-          // Parse the Cookie header from the incoming request.
-          return parseCookieHeader(request?.headers.get("Cookie") ?? "");
-        },
-        setAll(cookiesToSet) {
-          // Write each auth cookie into the response.
-          // httpOnly + secure flags prevent client-side JS from accessing these.
-          cookiesToSet.forEach(({ name, value, options }) => {
-            setCookie(name, value, {
-              ...options,
-              httpOnly: true,
-              secure: import.meta.env.PROD,
-              sameSite: "lax",
-            });
+  return createServerClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    cookies: {
+      getAll() {
+        // Parse the Cookie header from the incoming request.
+        return parseCookieHeader(request?.headers.get("Cookie") ?? "");
+      },
+      setAll(cookiesToSet) {
+        // Write each auth cookie into the response.
+        // httpOnly + secure flags prevent client-side JS from accessing these.
+        cookiesToSet.forEach(({ name, value, options }) => {
+          setCookie(name, value, {
+            ...options,
+            httpOnly: true,
+            secure: import.meta.env.PROD,
+            sameSite: "lax",
           });
-        },
+        });
       },
     },
-  );
+  });
 }

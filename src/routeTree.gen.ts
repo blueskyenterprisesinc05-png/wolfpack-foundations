@@ -13,10 +13,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccountabilityRouteImport } from './routes/accountability'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ChecklistRouteImport } from './routes/checklist'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MindsetRouteImport } from './routes/mindset'
+import { Route as MoreRouteImport } from './routes/more'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -27,6 +29,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as StyleguideRouteImport } from './routes/styleguide'
 import { Route as TradingRouteImport } from './routes/trading'
+import { Route as CoursesIndexRouteImport } from './routes/courses/index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses/$courseId'
 import { Route as LessonsLessonIdRouteImport } from './routes/lessons/$lessonId'
 
@@ -50,6 +53,11 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChecklistRoute = ChecklistRouteImport.update({
+  id: '/checklist',
+  path: '/checklist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CommunityRoute = CommunityRouteImport.update({
   id: '/community',
   path: '/community',
@@ -68,6 +76,11 @@ const LoginRoute = LoginRouteImport.update({
 const MindsetRoute = MindsetRouteImport.update({
   id: '/mindset',
   path: '/mindset',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MoreRoute = MoreRouteImport.update({
+  id: '/more',
+  path: '/more',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -120,6 +133,11 @@ const TradingRoute = TradingRouteImport.update({
   path: '/trading',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoursesIndexRoute = CoursesIndexRouteImport.update({
+  id: '/courses/',
+  path: '/courses/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CoursesCourseIdRoute = CoursesCourseIdRouteImport.update({
   id: '/courses/$courseId',
   path: '/courses/$courseId',
@@ -136,10 +154,12 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/accountability': typeof AccountabilityRoute
   '/admin': typeof AdminRoute
+  '/checklist': typeof ChecklistRoute
   '/community': typeof CommunityRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/mindset': typeof MindsetRoute
+  '/more': typeof MoreRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
@@ -152,16 +172,19 @@ export interface FileRoutesByFullPath {
   '/trading': typeof TradingRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
+  '/courses/': typeof CoursesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/accountability': typeof AccountabilityRoute
   '/admin': typeof AdminRoute
+  '/checklist': typeof ChecklistRoute
   '/community': typeof CommunityRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/mindset': typeof MindsetRoute
+  '/more': typeof MoreRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
@@ -174,6 +197,7 @@ export interface FileRoutesByTo {
   '/trading': typeof TradingRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
+  '/courses': typeof CoursesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -181,10 +205,12 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/accountability': typeof AccountabilityRoute
   '/admin': typeof AdminRoute
+  '/checklist': typeof ChecklistRoute
   '/community': typeof CommunityRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/mindset': typeof MindsetRoute
+  '/more': typeof MoreRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
@@ -197,6 +223,7 @@ export interface FileRoutesById {
   '/trading': typeof TradingRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
+  '/courses/': typeof CoursesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -205,10 +232,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/accountability'
     | '/admin'
+    | '/checklist'
     | '/community'
     | '/dashboard'
     | '/login'
     | '/mindset'
+    | '/more'
     | '/onboarding'
     | '/pricing'
     | '/profile'
@@ -221,16 +250,19 @@ export interface FileRouteTypes {
     | '/trading'
     | '/courses/$courseId'
     | '/lessons/$lessonId'
+    | '/courses/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/accountability'
     | '/admin'
+    | '/checklist'
     | '/community'
     | '/dashboard'
     | '/login'
     | '/mindset'
+    | '/more'
     | '/onboarding'
     | '/pricing'
     | '/profile'
@@ -243,16 +275,19 @@ export interface FileRouteTypes {
     | '/trading'
     | '/courses/$courseId'
     | '/lessons/$lessonId'
+    | '/courses'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/accountability'
     | '/admin'
+    | '/checklist'
     | '/community'
     | '/dashboard'
     | '/login'
     | '/mindset'
+    | '/more'
     | '/onboarding'
     | '/pricing'
     | '/profile'
@@ -265,6 +300,7 @@ export interface FileRouteTypes {
     | '/trading'
     | '/courses/$courseId'
     | '/lessons/$lessonId'
+    | '/courses/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -272,10 +308,12 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AccountabilityRoute: typeof AccountabilityRoute
   AdminRoute: typeof AdminRoute
+  ChecklistRoute: typeof ChecklistRoute
   CommunityRoute: typeof CommunityRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
   MindsetRoute: typeof MindsetRoute
+  MoreRoute: typeof MoreRoute
   OnboardingRoute: typeof OnboardingRoute
   PricingRoute: typeof PricingRoute
   ProfileRoute: typeof ProfileRoute
@@ -288,6 +326,7 @@ export interface RootRouteChildren {
   TradingRoute: typeof TradingRoute
   CoursesCourseIdRoute: typeof CoursesCourseIdRoute
   LessonsLessonIdRoute: typeof LessonsLessonIdRoute
+  CoursesIndexRoute: typeof CoursesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -320,6 +359,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checklist': {
+      id: '/checklist'
+      path: '/checklist'
+      fullPath: '/checklist'
+      preLoaderRoute: typeof ChecklistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/community': {
       id: '/community'
       path: '/community'
@@ -346,6 +392,13 @@ declare module '@tanstack/react-router' {
       path: '/mindset'
       fullPath: '/mindset'
       preLoaderRoute: typeof MindsetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/more': {
+      id: '/more'
+      path: '/more'
+      fullPath: '/more'
+      preLoaderRoute: typeof MoreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -418,6 +471,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TradingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/courses/': {
+      id: '/courses/'
+      path: '/courses'
+      fullPath: '/courses/'
+      preLoaderRoute: typeof CoursesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/courses/$courseId': {
       id: '/courses/$courseId'
       path: '/courses/$courseId'
@@ -440,10 +500,12 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AccountabilityRoute: AccountabilityRoute,
   AdminRoute: AdminRoute,
+  ChecklistRoute: ChecklistRoute,
   CommunityRoute: CommunityRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
   MindsetRoute: MindsetRoute,
+  MoreRoute: MoreRoute,
   OnboardingRoute: OnboardingRoute,
   PricingRoute: PricingRoute,
   ProfileRoute: ProfileRoute,
@@ -456,6 +518,7 @@ const rootRouteChildren: RootRouteChildren = {
   TradingRoute: TradingRoute,
   CoursesCourseIdRoute: CoursesCourseIdRoute,
   LessonsLessonIdRoute: LessonsLessonIdRoute,
+  CoursesIndexRoute: CoursesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -39,7 +39,10 @@ const onboardingSchema = z.object({
     .string()
     .min(3, "Handle must be at least 3 characters.")
     .max(30, "Handle must be at most 30 characters.")
-    .regex(/^[a-z0-9_]{3,30}$/, "Handle can only contain lowercase letters, numbers, and underscores."),
+    .regex(
+      /^[a-z0-9_]{3,30}$/,
+      "Handle can only contain lowercase letters, numbers, and underscores.",
+    ),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;
@@ -337,9 +340,7 @@ function OnboardingForm() {
           placeholder="e.g. alex_1"
           {...register("handle")}
         />
-        {errors.handle && (
-          <p className="text-xs text-destructive">{errors.handle.message}</p>
-        )}
+        {errors.handle && <p className="text-xs text-destructive">{errors.handle.message}</p>}
       </div>
 
       {serverError && (

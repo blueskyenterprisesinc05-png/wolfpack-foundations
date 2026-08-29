@@ -11,7 +11,7 @@ const tierSchema = z.enum(["free", "member", "inner-circle"]).catch(EXPLORER_TIE
  * Resolves the authenticated user's current membership tier.
  * Never trusts the client. Always queries the database using auth.uid().
  * If multiple active memberships exist, it deterministically picks the newest one.
- * Fails closed to EXPLORER_TIER ("free") if no active membership is found, 
+ * Fails closed to EXPLORER_TIER ("free") if no active membership is found,
  * or if the tier is unknown/invalid.
  */
 export const getCurrentEntitlementFn = createServerFn({ method: "GET" }).handler(
@@ -44,9 +44,9 @@ export const getCurrentEntitlementFn = createServerFn({ method: "GET" }).handler
     }
 
     const membership = rows[0]!;
-    
-    // Extract tier safely (Supabase joins return an array if it's a one-to-many, 
-    // or an object if it's a many-to-one foreign key. Since memberships.plan_id 
+
+    // Extract tier safely (Supabase joins return an array if it's a one-to-many,
+    // or an object if it's a many-to-one foreign key. Since memberships.plan_id
     // references membership_plans.id, it should be a single object).
     const plan = membership.membership_plans as unknown as { tier: unknown } | null;
     const rawTier = plan?.tier;

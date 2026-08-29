@@ -13,10 +13,7 @@ let _client: ReturnType<typeof createBrowserClient> | undefined;
 /** Returns a singleton browser Supabase client. */
 export function getBrowserClient() {
   if (!_client) {
-    _client = createBrowserClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY,
-    );
+    _client = createBrowserClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
   }
   return _client;
 }

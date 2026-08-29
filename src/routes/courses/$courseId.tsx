@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AppShell } from "@/components/brand/app-shell";
 import { useQuery } from "@tanstack/react-query";
 import { BookOpen, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,15 @@ import {
 import { getCourseByIdFn, getCoursesFn } from "@/lib/courses";
 import { getCourseLessonsFn } from "@/lib/lessons";
 
-export const Route = createFileRoute("/courses/$courseId")({ component: CourseDetail });
+export const Route = createFileRoute("/courses/$courseId")({
+  component: function CourseDetailWrapper() {
+    return (
+      <AppShell>
+        <CourseDetail />
+      </AppShell>
+    );
+  },
+});
 
 function CourseDetail() {
   const { courseId } = Route.useParams();
@@ -28,7 +37,7 @@ function CourseDetail() {
     queryKey: ["courses"],
     queryFn: () => getCoursesFn(),
   });
-  
+
   const course = courseQuery.data?.course;
   const instructor = courseQuery.data?.instructor;
   const lessons = lessonsQuery.data?.lessons ?? [];
