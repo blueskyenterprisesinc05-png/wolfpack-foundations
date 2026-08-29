@@ -2,10 +2,17 @@ import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/brand/app-shell";
 import { getCourseLessonsFn } from "@/lib/lessons";
-import { getCoursesFn } from "@/lib/courses";
-import { ArrowRight, BookOpen, Brain, CheckSquare, LineChart, Target, Video } from "lucide-react";
+import {
+  ArrowRight,
+  Brain,
+  CheckSquare,
+  Flame,
+  LineChart,
+  Target,
+  TrendingUp,
+  Video,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const Route = createFileRoute("/dashboard")({
   beforeLoad: ({ context }) => {
@@ -25,119 +32,151 @@ function DashboardPage() {
     queryFn: () => getCourseLessonsFn({ data: courseId }),
   });
   const lessons = lessonsQuery.data?.lessons ?? [];
+  const done = lessons.filter((l) => l.state === "complete").length;
+  const total = lessons.length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   const nextLesson =
     lessons.find((l) => l.state === "in-progress") ??
     lessons.find((l) => l.state !== "locked" && l.state !== "complete");
   const isComplete = lessons.length > 0 && lessons.every((l) => l.state === "complete");
 
+  const quickLinks = [
+    {
+      icon: CheckSquare,
+      label: "Daily Checklist",
+      detail: "Morning & Evening",
+      to: "/checklist",
+    },
+    {
+      icon: LineChart,
+      label: "Accountability Log",
+      detail: "Log your work",
+      to: "/accountability",
+    },
+    { icon: Video, label: "Wolf Sessions", detail: "Live recordings", to: "/sessions" },
+    { icon: Brain, label: "Mind Lab", detail: "Continue your path", to: "/mindset" },
+    { icon: TrendingUp, label: "Trading Room", detail: "Educational track", to: "/trading" },
+  ] as const;
+
   return (
     <AppShell>
       <main className="min-h-screen bg-background">
-        <div className="mx-auto flex max-w-5xl flex-col gap-10 px-4 py-8 sm:px-6 lg:px-8">
-          <header className="border-b border-border pb-8">
-            <p className="eyebrow text-gold">The Den</p>
-            <h1 className="display-xl mt-3 text-foreground">Welcome back, {displayName}.</h1>
-            <p className="mt-4 max-w-2xl text-pretty text-base leading-7 text-muted-foreground">
-              Your practice, in one place. Keep the bar clear and the promise small.
+        <div className="mx-auto flex max-w-2xl flex-col gap-0 px-4 py-6 sm:px-6 lg:px-8">
+          {/* Header */}
+          <header className="border-b border-border pb-5">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+              The 1% Club
+            </p>
+            <h1 className="display-xl mt-2 text-foreground">The Den</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Welcome back, {displayName}.
             </p>
           </header>
 
-          <section className="grid gap-6 md:grid-cols-3" aria-label="Dashboard Overview">
-            {/* Today's Action */}
-            <div className="md:col-span-2">
-              <Card className="h-full overflow-hidden border-border bg-charcoal">
-                <div className="relative overflow-hidden bg-forest/10 p-6 sm:p-8">
-                  <div className="absolute right-6 top-6 size-24 rounded-full border border-gold/20 opacity-60" />
-                  <div className="absolute right-14 top-14 size-10 rounded-full bg-gold/10" />
-                  <div className="relative">
-                    <div className="flex size-12 items-center justify-center rounded-full border border-forest/40 bg-forest/15">
-                      <Target className="size-5 text-forest" />
-                    </div>
-                    <p className="eyebrow mt-5 text-gold">Today's next right step</p>
-                    <h2 className="display-lg mt-2 text-foreground">
-                      {isComplete
-                        ? "Mind Lab Complete"
-                        : nextLesson
-                          ? nextLesson.title
-                          : "Mind Lab"}
-                    </h2>
-                  </div>
+          {/* Today's mission — operational panel */}
+          <p className="mt-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+            Today's Mission
+          </p>
+          <div className="mt-2 overflow-hidden rounded-xl border border-border bg-charcoal">
+            {/* Identity row */}
+            <div className="flex items-center gap-3 border-b border-border p-4">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-forest/40 bg-forest/15">
+                <Target className="size-4 text-forest" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold uppercase tracking-widest text-gold">
+                  Next right step
+                </p>
+                <p className="mt-0.5 truncate text-sm font-semibold text-foreground">
+                  {isComplete
+                    ? "Mind Lab complete — keep your daily check-ins"
+                    : nextLesson?.title ?? "Start Mind Lab"}
+                </p>
+              </div>
+              {!isComplete && (
+                <span className="shrink-0 font-mono text-xs font-bold text-gold">{pct}%</span>
+              )}
+            </div>
+
+            {/* Progress bar */}
+            {!isComplete && (
+              <div className="h-1 w-full bg-secondary">
+                <div
+                  className="h-full bg-gold transition-all duration-700"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            )}
+
+            {/* CTA */}
+            <div className="p-4">
+              {nextLesson ? (
+                <Button className="w-full" asChild>
+                  <Link to="/lessons/$lessonId" params={{ lessonId: nextLesson.id }}>
+                    Continue Lesson {nextLesson.order}
+                    <ArrowRight className="ml-auto size-4" />
+                  </Link>
+                </Button>
+              ) : (
+                <Button className="w-full" asChild>
+                  <Link to="/mindset">
+                    Open Mind Lab
+                    <ArrowRight className="ml-auto size-4" />
+                  </Link>
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Quick stats — horizontal bar */}
+          <p className="mt-6 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+            Your Stats
+          </p>
+          <div className="mt-2 grid grid-cols-3 divide-x divide-border overflow-hidden rounded-xl border border-border bg-charcoal">
+            <div className="flex flex-col items-center gap-1 p-4">
+              <span className="font-display text-2xl text-gold">{profile?.streak ?? 12}</span>
+              <span className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                <Flame className="size-3" /> Streak
+              </span>
+            </div>
+            <div className="flex flex-col items-center gap-1 p-4">
+              <span className="font-display text-2xl text-foreground">{done}/{total}</span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                Lessons
+              </span>
+            </div>
+            <div className="flex flex-col items-center gap-1 p-4">
+              <span className="font-display text-2xl text-foreground">
+                {profile?.completedLessons ?? 0}
+              </span>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                Total Done
+              </span>
+            </div>
+          </div>
+
+          {/* Quick links — Discord-style channel list */}
+          <p className="mt-6 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+            Do This Daily
+          </p>
+          <div className="mt-2 divide-y divide-border overflow-hidden rounded-xl border border-border bg-charcoal">
+            {quickLinks.map(({ icon: Icon, label, detail, to }) => (
+              <Link
+                key={to}
+                to={to}
+                className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/5"
+              >
+                <div className="flex size-7 shrink-0 items-center justify-center rounded bg-secondary text-muted-foreground group-hover:bg-gold/15 group-hover:text-gold transition-colors">
+                  <Icon className="size-3.5" />
                 </div>
-                <CardContent className="p-6 sm:p-8">
-                  <p className="text-base leading-7 text-muted-foreground">
-                    {isComplete
-                      ? "You've completed the foundation. Keep up your daily check-ins."
-                      : "Return to the work that is already in front of you."}
-                  </p>
-                  <div className="mt-6 flex flex-wrap gap-4">
-                    {nextLesson ? (
-                      <Button asChild>
-                        <Link to="/lessons/$lessonId" params={{ lessonId: nextLesson.id }}>
-                          Continue Lesson {nextLesson.order}
-                          <ArrowRight className="ml-2 size-4" />
-                        </Link>
-                      </Button>
-                    ) : (
-                      <Button asChild>
-                        <Link to="/mindset">
-                          Open Mind Lab
-                          <ArrowRight className="ml-2 size-4" />
-                        </Link>
-                      </Button>
-                    )}
-                    <Button variant="secondary" asChild>
-                      <Link to="/progress">View Progress</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Quick Links */}
-            <div className="flex flex-col gap-4">
-              <Link to="/checklist" className="group">
-                <Card className="h-full border-border bg-charcoal transition-all hover:border-gold/40 hover:shadow-lg hover:shadow-gold/5">
-                  <CardContent className="flex items-center gap-4 p-5">
-                    <div className="flex size-10 items-center justify-center rounded-full bg-secondary text-muted-foreground group-hover:bg-gold/10 group-hover:text-gold transition-colors">
-                      <CheckSquare className="size-4" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">Daily Checklist</p>
-                      <p className="text-xs text-muted-foreground">Morning & Evening</p>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-foreground">{label}</p>
+                  <p className="text-[11px] text-muted-foreground">{detail}</p>
+                </div>
+                <ArrowRight className="size-3.5 shrink-0 text-muted-foreground/40 group-hover:text-gold transition-colors" />
               </Link>
-
-              <Link to="/accountability" className="group">
-                <Card className="h-full border-border bg-charcoal transition-all hover:border-gold/40 hover:shadow-lg hover:shadow-gold/5">
-                  <CardContent className="flex items-center gap-4 p-5">
-                    <div className="flex size-10 items-center justify-center rounded-full bg-secondary text-muted-foreground group-hover:bg-gold/10 group-hover:text-gold transition-colors">
-                      <LineChart className="size-4" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">Accountability</p>
-                      <p className="text-xs text-muted-foreground">Log your trades</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-
-              <Link to="/sessions" className="group">
-                <Card className="h-full border-border bg-charcoal transition-all hover:border-gold/40 hover:shadow-lg hover:shadow-gold/5">
-                  <CardContent className="flex items-center gap-4 p-5">
-                    <div className="flex size-10 items-center justify-center rounded-full bg-secondary text-muted-foreground group-hover:bg-gold/10 group-hover:text-gold transition-colors">
-                      <Video className="size-4" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">Wolf Sessions</p>
-                      <p className="text-xs text-muted-foreground">Live recordings</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            </div>
-          </section>
+            ))}
+          </div>
         </div>
       </main>
     </AppShell>

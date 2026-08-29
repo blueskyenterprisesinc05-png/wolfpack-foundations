@@ -17,38 +17,6 @@ export const Route = createFileRoute("/mindset")({
   component: MindLabPage,
 });
 
-function LessonStateIcon({
-  state,
-  order,
-}: {
-  state: "complete" | "in-progress" | "locked" | string;
-  order: number;
-}) {
-  if (state === "complete")
-    return (
-      <div className="grid size-9 shrink-0 place-items-center rounded-md bg-forest/15">
-        <Check className="size-4 text-forest" />
-      </div>
-    );
-  if (state === "locked")
-    return (
-      <div className="grid size-9 shrink-0 place-items-center rounded-md bg-secondary opacity-50">
-        <Lock className="size-4 text-muted-foreground" />
-      </div>
-    );
-  if (state === "in-progress")
-    return (
-      <div className="grid size-9 shrink-0 place-items-center rounded-md bg-gold/15">
-        <Play className="ml-0.5 size-4 text-gold" />
-      </div>
-    );
-  return (
-    <div className="grid size-9 shrink-0 place-items-center rounded-md bg-secondary text-sm font-semibold text-muted-foreground">
-      {order}
-    </div>
-  );
-}
-
 function MindLabPage() {
   const courseQuery = useQuery({
     queryKey: ["course", COURSE_ID],
@@ -76,175 +44,183 @@ function MindLabPage() {
 
   return (
     <AppShell>
-      <div className="mx-auto flex max-w-4xl flex-col gap-10 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-2xl flex-col gap-0 px-4 py-6 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <nav
-          className="flex items-center gap-2 text-sm text-muted-foreground"
-          aria-label="Breadcrumb"
-        >
-          <Link to="/courses" className="hover:text-foreground transition-colors">
+        <nav className="flex items-center gap-2 text-xs text-muted-foreground" aria-label="Breadcrumb">
+          <Link to="/courses" className="transition-colors hover:text-foreground">
             Learning
           </Link>
           <span>/</span>
           <span className="text-foreground">Mind Lab</span>
         </nav>
 
-        {/* Hero */}
-        <header className="relative overflow-hidden rounded-xl border border-border bg-charcoal p-6 sm:p-8">
-          {/* Decorative */}
-          <div className="pointer-events-none absolute right-8 top-8 size-32 rounded-full border border-forest/20 opacity-60" />
-          <div className="pointer-events-none absolute right-20 top-20 size-14 rounded-full bg-forest/10" />
-          <div className="pointer-events-none absolute -bottom-6 -right-6 size-48 rounded-full border border-gold/10" />
-
-          <div className="relative">
-            <div className="flex items-center gap-3">
-              <div className="flex size-12 items-center justify-center rounded-full border border-forest/40 bg-forest/15">
-                <Brain className="size-6 text-forest" />
-              </div>
-              <div>
-                <p className="eyebrow text-gold">Mind Lab</p>
-                <p className="text-xs text-muted-foreground">
-                  {instructor ? `With ${instructor.name}` : ""}
-                </p>
-              </div>
+        {/* Hero — compact operational header */}
+        <header className="mt-4 overflow-hidden rounded-xl border border-border bg-charcoal">
+          {/* Top identity row */}
+          <div className="flex items-center gap-3 border-b border-border p-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-forest/40 bg-forest/15">
+              <Brain className="size-5 text-forest" />
             </div>
-
-            <h1 className="display-xl mt-5 max-w-lg text-foreground">
-              {course?.title ?? "Mind Lab"}
-            </h1>
-            <p className="mt-3 max-w-xl text-base leading-7 text-muted-foreground">
-              {course?.description ?? "Build the inner habits that make consistency possible."}
-            </p>
-
-            {/* Stats row */}
-            <div className="mt-5 flex flex-wrap gap-5 text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-2">
-                <Clock3 className="size-4 text-gold" />
-                {course?.durationMinutes ?? 81} min total
-              </span>
-              <span>{course?.lessonCount ?? 5} lessons</span>
-              <span className="capitalize">{course?.level ?? "foundation"}</span>
-            </div>
-
-            {/* Progress bar */}
-            <div className="mt-6 max-w-md space-y-1.5">
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>
-                  {done} of {total} lessons complete
-                </span>
-                <span>{pct}%</span>
-              </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
-                <div
-                  className="h-full rounded-full bg-gold transition-all duration-700"
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-            </div>
-
-            {/* CTA */}
-            <div className="mt-7 flex flex-wrap gap-3">
-              {complete ? (
-                <Button variant="secondary" size="default" asChild>
-                  <Link to="/courses/$courseId" params={{ courseId: COURSE_ID }}>
-                    <CheckCircle2 className="mr-2 size-4 text-forest" />
-                    Path complete — Review
-                  </Link>
-                </Button>
-              ) : current ? (
-                <Button size="default" asChild>
-                  <Link to="/lessons/$lessonId" params={{ lessonId: current.id }}>
-                    {done > 0 ? "Continue" : "Start"} Mind Lab
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
-                </Button>
-              ) : (
-                <Button size="default" asChild>
-                  <Link to="/courses/$courseId" params={{ courseId: COURSE_ID }}>
-                    View curriculum
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
-                </Button>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-foreground">{course?.title ?? "Mind Lab"}</p>
+              {instructor && (
+                <p className="text-xs text-muted-foreground">With {instructor.name}</p>
               )}
-              <Button variant="ghost" size="default" asChild>
+            </div>
+            <span className="shrink-0 text-xs font-mono font-bold text-gold">{pct}%</span>
+          </div>
+
+          {/* Progress bar — prominent, full-width */}
+          <div className="h-1.5 w-full bg-secondary">
+            <div
+              className="h-full bg-gold transition-all duration-700"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+
+          {/* Meta row */}
+          <div className="flex flex-wrap items-center gap-4 px-4 py-3 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1">
+              <Clock3 className="size-3 text-gold" />
+              {course?.durationMinutes ?? 81} min
+            </span>
+            <span>{done} of {total} lessons complete</span>
+            <span className="capitalize">{course?.level ?? "Foundation"}</span>
+          </div>
+
+          {/* CTA */}
+          <div className="border-t border-border p-4">
+            {complete ? (
+              <Button variant="secondary" className="w-full" asChild>
                 <Link to="/courses/$courseId" params={{ courseId: COURSE_ID }}>
-                  Full curriculum
+                  <CheckCircle2 className="size-4 text-forest" />
+                  Path complete — Review
                 </Link>
               </Button>
-            </div>
+            ) : current ? (
+              <Button className="w-full" asChild>
+                <Link to="/lessons/$lessonId" params={{ lessonId: current.id }}>
+                  {done > 0 ? "Continue" : "Start"} Mind Lab
+                  <ArrowRight className="ml-auto size-4" />
+                </Link>
+              </Button>
+            ) : (
+              <Button variant="secondary" className="w-full" asChild>
+                <Link to="/courses/$courseId" params={{ courseId: COURSE_ID }}>
+                  View curriculum
+                  <ArrowRight className="ml-auto size-4" />
+                </Link>
+              </Button>
+            )}
           </div>
         </header>
 
-        {/* Lesson list */}
-        <section aria-label="Lessons">
-          <div className="mb-5 flex items-end justify-between gap-4">
-            <div>
-              <p className="eyebrow">Curriculum</p>
-              <h2 className="display-md mt-1 text-foreground">Lessons</h2>
-            </div>
-            <span className="text-sm text-muted-foreground">
-              {done}/{total} complete
-            </span>
-          </div>
+        {/* Lesson list — Discord/TWR dense rows */}
+        <section className="mt-6" aria-label="Lessons">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+            Curriculum · {done}/{total} complete
+          </p>
 
           {isLoading ? (
-            <div className="space-y-3">
+            <div className="space-y-px overflow-hidden rounded-xl border border-border">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-20 animate-pulse rounded-lg bg-charcoal" />
+                <div key={i} className="h-14 animate-pulse bg-charcoal" />
               ))}
             </div>
           ) : (
-            <Card className="overflow-hidden divide-y divide-border">
+            <div className="overflow-hidden rounded-xl border border-border bg-charcoal divide-y divide-border">
               {lessons.map((lesson) => {
-                const locked = lesson.state === "locked";
-                const done = lesson.state === "complete";
-                return (
+                const isLocked = lesson.state === "locked";
+                const isComplete = lesson.state === "complete";
+                const isActive = lesson.state === "in-progress";
+
+                const row = (
                   <div
-                    key={lesson.id}
                     className={cn(
-                      "flex items-center gap-4 px-5 py-4 transition-colors",
-                      locked ? "opacity-50" : "hover:bg-accent/40 cursor-pointer",
+                      "flex items-center gap-3 px-4 py-3 transition-colors",
+                      isLocked
+                        ? "cursor-default opacity-45"
+                        : "cursor-pointer hover:bg-white/5",
                     )}
                   >
-                    <LessonStateIcon state={lesson.state} order={lesson.order} />
+                    {/* Lesson number badge */}
+                    <div
+                      className={cn(
+                        "flex size-7 shrink-0 items-center justify-center rounded font-mono text-xs font-bold",
+                        isComplete
+                          ? "bg-forest/20 text-forest"
+                          : isActive
+                            ? "bg-gold/20 text-gold"
+                            : "bg-secondary text-muted-foreground",
+                      )}
+                    >
+                      {isComplete ? (
+                        <Check className="size-3.5" />
+                      ) : isActive ? (
+                        <Play className="ml-0.5 size-3.5" />
+                      ) : (
+                        lesson.order
+                      )}
+                    </div>
+
+                    {/* Title */}
                     <div className="min-w-0 flex-1">
                       <p
                         className={cn(
-                          "text-sm font-semibold",
-                          done ? "text-forest" : "text-foreground",
+                          "text-sm font-medium leading-tight",
+                          isComplete
+                            ? "text-forest"
+                            : isActive
+                              ? "text-foreground"
+                              : isLocked
+                                ? "text-muted-foreground"
+                                : "text-foreground",
                         )}
                       >
                         {lesson.title}
                       </p>
-                      <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                        {lesson.description} · {lesson.durationMinutes} min
+                      <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                        {lesson.durationMinutes} min
                       </p>
                     </div>
-                    {locked ? (
-                      <span className="shrink-0 text-xs text-muted-foreground">Locked</span>
+
+                    {/* State indicator — flush right */}
+                    {isLocked ? (
+                      <Lock className="size-3.5 shrink-0 text-muted-foreground" />
+                    ) : isComplete ? (
+                      <ArrowRight className="size-3.5 shrink-0 text-forest/60" />
                     ) : (
-                      <Button size="sm" variant={done ? "ghost" : "secondary"} asChild>
-                        <Link to="/lessons/$lessonId" params={{ lessonId: lesson.id }}>
-                          {done ? "Review" : lesson.state === "in-progress" ? "Continue" : "Open"}
-                        </Link>
-                      </Button>
+                      <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" />
                     )}
                   </div>
                 );
+
+                return isLocked ? (
+                  <div key={lesson.id}>{row}</div>
+                ) : (
+                  <Link
+                    key={lesson.id}
+                    to="/lessons/$lessonId"
+                    params={{ lessonId: lesson.id }}
+                  >
+                    {row}
+                  </Link>
+                );
               })}
-            </Card>
+            </div>
           )}
         </section>
 
         {/* What you'll learn */}
         {course?.objectives && course.objectives.length > 0 && (
-          <section>
-            <p className="eyebrow">What you&apos;ll build</p>
-            <h2 className="display-md mt-1 text-foreground">Learning objectives</h2>
-            <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+          <section className="mt-6">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+              What you&apos;ll build
+            </p>
+            <ul className="grid gap-2 sm:grid-cols-2">
               {course.objectives.map((obj) => (
-                <li key={obj} className="flex gap-3 text-sm leading-6 text-muted-foreground">
-                  <span className="mt-2 size-1.5 shrink-0 rounded-full bg-gold" />
+                <li key={obj} className="flex gap-2 text-sm leading-6 text-muted-foreground">
+                  <span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-gold" />
                   {obj}
                 </li>
               ))}
@@ -254,11 +230,13 @@ function MindLabPage() {
 
         {/* Instructor */}
         {instructor && (
-          <section>
-            <p className="eyebrow">Your guide</p>
-            <Card className="mt-4">
-              <CardContent className="flex gap-4 p-5">
-                <div className="grid size-12 shrink-0 place-items-center rounded-full border border-gold/40 bg-gold/10 font-semibold text-gold">
+          <section className="mt-6">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+              Your guide
+            </p>
+            <Card className="border-border bg-charcoal">
+              <CardContent className="flex gap-4 p-4">
+                <div className="grid size-10 shrink-0 place-items-center rounded-full border border-gold/40 bg-gold/10 font-semibold text-gold">
                   {instructor.initials}
                 </div>
                 <div>
