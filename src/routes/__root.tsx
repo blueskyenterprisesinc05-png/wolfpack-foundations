@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import type { RouterContext } from "../router";
 import { getSessionFn } from "../lib/session";
 import { getCurrentProfileFn } from "../lib/profile";
+import { getCurrentEntitlementFn } from "../lib/entitlement";
 
 function NotFoundComponent() {
   return (
@@ -84,8 +85,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const { user } = await getSessionFn();
     let profile = null;
     if (user) {
-      const res = await getCurrentProfileFn();
-      profile = res.profile;
+      const profileRes = await getCurrentProfileFn();
+      profile = profileRes.profile;
+
+      if (profile) {
+        const entitlementRes = await getCurrentEntitlementFn();
+        profile.tier = entitlementRes.tier;
+      }
     }
     return { user, profile };
   },

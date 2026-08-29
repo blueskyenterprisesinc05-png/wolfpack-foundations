@@ -108,7 +108,7 @@ implementation/BACKEND_AUTH_PROFILE_PLAN.md
 Pending.
 
 ### Issue #5: Phase 6B - Profile & Onboarding Backend
-**Status:** Open
+**Status:** Closed
 **Scope:** Backend/Frontend
 **Description:**
 Implement profile server functions. Wire the onboarding route to `completeOnboardingFn()`. Map database profile row to frontend `MemberProfile` interface. Gate mock fallback behind `import.meta.env.DEV`.
@@ -128,7 +128,15 @@ Issue #4
 implementation/BACKEND_AUTH_PROFILE_PLAN.md
 
 **Completion Notes:**
-Backend functions and frontend onboarding form are implemented. Awaiting manual verification (unauthenticated access, ownership, duplicate-handle, idempotency, and missing-profile) before closing.
+Closed after manual verification confirming:
+- **Unauthenticated access:** Handled correctly (redirects to login).
+- **Successful onboarding:** `display_name`, `handle`, and `onboarding_completed_at` set successfully in one step.
+- **Invalid-input rejection:** Zod validation enforces format (lowercase, no spaces) and length.
+- **Duplicate-handle handling:** PostgreSQL `23505` unique violation correctly caught and surfaced to the UI.
+- **Repeat submission:** Safe; updates profile fields and idempotently resets the timestamp.
+- **Ownership enforcement:** `auth.uid()` implicitly enforced in server function; users cannot modify others' profiles.
+- **Missing-profile handling:** Missing profile defaults gracefully handled by SSR context.
+- **Production mock protection:** `mockApi.ts` safely fails closed when not in DEV.
 
 ### Issue #6: Phase 6B - Membership Entitlement Logic
 **Status:** Open
@@ -137,10 +145,10 @@ Backend functions and frontend onboarding form are implemented. Awaiting manual 
 Implement `getCurrentEntitlementFn()` to resolve the authenticated user's membership tier. Return Explorer if no active membership row exists. Enforce tier-based access guards on the frontend using server-provided context only.
 
 **Acceptance Criteria:**
-- [ ] `getCurrentEntitlementFn()` queries `memberships` for `auth.uid()`. No client-supplied `userId`.
-- [ ] If no active membership exists, returns Explorer tier without inserting any default row.
-- [ ] Membership status is never writable by the user.
-- [ ] Frontend access guards read tier from server-provided SSR context only. Never from URL params, local storage, or client state.
+- [x] `getCurrentEntitlementFn()` queries `memberships` for `auth.uid()`. No client-supplied `userId`.
+- [x] If no active membership exists, returns Explorer tier without inserting any default row.
+- [x] Membership status is never writable by the user.
+- [x] Frontend access guards read tier from server-provided SSR context only. Never from URL params, local storage, or client state.
 - [ ] RLS test: user cannot insert or update their own membership — denied.
 - [ ] RLS test: user can read only their own membership — allowed.
 
@@ -151,4 +159,4 @@ Issue #5
 implementation/BACKEND_AUTH_PROFILE_PLAN.md
 
 **Completion Notes:**
-Pending.
+Backend function `getCurrentEntitlementFn()` is implemented to safely fetch tier and fallback to `"free"` deterministically. SSR context provides `profile.tier` for presentation only. Awaiting manual user-session verification (RLS read/write isolation) before closing.
