@@ -29,6 +29,8 @@ Your plan is sound. I agree with all four of your challenge resolutions. Below i
 
 **9. Two header bars maximum.** The reference stacks browser chrome, promo bar, context header, and tab strip before any content — on a 375px screen content starts halfway down. Proposal: sticky context header (title + optional context switcher + up to 3 icon actions) and a segmented tab strip. Nothing else above the fold.
 
+**10. Card titles stay Barlow.** Bebas is uppercase and tightly tracked; the reference's wrapping title-case course titles would become unreadable blocks. Bebas is reserved for section headers and stat numerals.
+
 
 ## Improvements over the reference (agreed)
 
