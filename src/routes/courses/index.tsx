@@ -5,6 +5,7 @@ import { getCoursesFn } from "@/lib/courses";
 import { getCourseLessonsFn } from "@/lib/lessons";
 import { ArrowRight, BookOpen, Brain, CandlestickChart, Clock3, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/courses/")({
   beforeLoad: ({ context }) => {
@@ -112,13 +113,12 @@ function LearningCenter() {
 
               {/* CTA */}
               <div className="mt-auto pt-2">
-                <Link
-                  to="/mindset"
-                  className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-                >
-                  Enter Mind Lab
-                  <ArrowRight className="size-4" />
-                </Link>
+                <Button className="w-full" asChild>
+                  <Link to="/mindset">
+                    Enter Mind Lab
+                    <ArrowRight className="ml-2 size-4" />
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>
@@ -179,13 +179,12 @@ function LearningCenter() {
 
               {/* CTA */}
               <div className="mt-auto pt-2">
-                <Link
-                  to="/trading"
-                  className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-                >
-                  Enter Trading Room
-                  <ArrowRight className="size-4" />
-                </Link>
+                <Button className="w-full" asChild>
+                  <Link to="/trading">
+                    Enter Trading Room
+                    <ArrowRight className="ml-2 size-4" />
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>
