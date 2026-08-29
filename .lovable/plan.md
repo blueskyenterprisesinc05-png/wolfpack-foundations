@@ -31,6 +31,16 @@ Your plan is sound. I agree with all four of your challenge resolutions. Below i
 
 **10. Card titles stay Barlow.** Bebas is uppercase and tightly tracked; the reference's wrapping title-case course titles would become unreadable blocks. Bebas is reserved for section headers and stat numerals.
 
+
+## Improvements over the reference (agreed)
+
+1. **Focus over hype** — emojis and mixed weights out, brand-tinted Lucide icons in.
+2. **Clearer hierarchy** — The Den separates "must do today" (checklist, check-in, missed-streak recovery) from "can read" (announcements, sessions), instead of one undifferentiated vertical list.
+3. **Premium empty and loading states** — real skeletons per card shape, and empty states in brand voice ("All tasks completed. Take a breath."), reusing `states.tsx`.
+4. **Meaningful gamification** — Consistency Streak, Risk Adherence, Accountability Score instead of coins/power levels. Rewards process adherence, not app activity.
+
+
+
 ## Proposed changes
 
 ### 1. Shell and navigation
