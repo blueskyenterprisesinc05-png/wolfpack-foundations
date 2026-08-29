@@ -10,13 +10,14 @@
  */
 import { createServerClient, parseCookieHeader } from "@supabase/ssr";
 import { getRequest, setCookie } from "@tanstack/react-start/server";
+import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./config";
 
 export function createSupabaseServerClient() {
   const request = getRequest();
 
   return createServerClient(
-    import.meta.env["VITE_SUPABASE_URL"],
-    import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"],
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY,
     {
       cookies: {
         getAll() {
