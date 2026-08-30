@@ -35,6 +35,7 @@ import { Route as TradingRouteImport } from './routes/trading'
 import { Route as CoursesIndexRouteImport } from './routes/courses/index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses/$courseId'
 import { Route as LessonsLessonIdRouteImport } from './routes/lessons/$lessonId'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsAccountRouteImport } from './routes/settings.account'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
 
@@ -168,6 +169,11 @@ const LessonsLessonIdRoute = LessonsLessonIdRouteImport.update({
   path: '/lessons/$lessonId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRoute,
+} as any)
 const SettingsAccountRoute = SettingsAccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/settings/account': typeof SettingsAccountRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/courses/': typeof CoursesIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -229,7 +236,6 @@ export interface FileRoutesByTo {
   '/progress': typeof ProgressRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sessions': typeof SessionsRoute
-  '/settings': typeof SettingsRouteWithChildren
   '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
   '/trading': typeof TradingRoute
@@ -238,6 +244,7 @@ export interface FileRoutesByTo {
   '/settings/account': typeof SettingsAccountRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/courses': typeof CoursesIndexRoute
+  '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -269,6 +276,7 @@ export interface FileRoutesById {
   '/settings/account': typeof SettingsAccountRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/courses/': typeof CoursesIndexRoute
+  '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -301,6 +309,7 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/settings/notifications'
     | '/courses/'
+    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -322,7 +331,6 @@ export interface FileRouteTypes {
     | '/progress'
     | '/reset-password'
     | '/sessions'
-    | '/settings'
     | '/signup'
     | '/styleguide'
     | '/trading'
@@ -331,6 +339,7 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/settings/notifications'
     | '/courses'
+    | '/settings'
   id:
     | '__root__'
     | '/'
@@ -361,6 +370,7 @@ export interface FileRouteTypes {
     | '/settings/account'
     | '/settings/notifications'
     | '/courses/'
+    | '/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -576,6 +586,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LessonsLessonIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRoute
+    }
     '/settings/account': {
       id: '/settings/account'
       path: '/account'
@@ -596,11 +613,13 @@ declare module '@tanstack/react-router' {
 interface SettingsRouteChildren {
   SettingsAccountRoute: typeof SettingsAccountRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 const SettingsRouteChildren: SettingsRouteChildren = {
   SettingsAccountRoute: SettingsAccountRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
 }
 
 const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
