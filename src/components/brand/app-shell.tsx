@@ -1,12 +1,14 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import {
-  BarChart2,
   BookOpen,
   Home,
   LogOut,
-  MoreHorizontal,
-  Users,
   ChevronDown,
+  MessageCircle,
+  Brain,
+  Inbox,
+  Briefcase,
+  MoreVertical,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -17,11 +19,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { NestedPathNav } from "@/components/brand/nested-path-nav";
 
 const SIDEBAR_LINKS = [
-  { label: "Den", to: "/dashboard", icon: Home },
-  { label: "Learning", to: "/courses", icon: BookOpen },
-  { label: "Pack", to: "/community", icon: Users },
-  { label: "Progress", to: "/progress", icon: BarChart2 },
-  { label: "More", to: "/more", icon: MoreHorizontal },
+  { label: "Chat", to: "/chat", icon: MessageCircle },
+  { label: "Courses", to: "/courses", icon: Brain },
+  { label: "Inbox", to: "/inbox", icon: Inbox },
+  { label: "Market", to: "/market", icon: Briefcase },
+  { label: "More", to: "/more", icon: MoreVertical },
 ] as const;
 
 function getHeaderTitle(pathname: string): string {
