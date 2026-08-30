@@ -1,145 +1,124 @@
 import { useState } from "react";
-import { Check, ChevronDown, LockKeyhole, Save, SlidersHorizontal } from "lucide-react";
-import { TopBar } from "@/components/brand/navigation";
-import { Logo } from "@/components/brand/logo";
-import { Button } from "@/components/ui/button";
-import { membershipInfo, profileFaqs, profilePreferences } from "@/data/profile";
+import { Link, useRouter } from "@tanstack/react-router";
+import {
+  User,
+  Bell,
+  UserCircle,
+  MonitorSmartphone,
+  Crown,
+  BarChart2,
+  Share2,
+  Sliders,
+  MessageSquare,
+  Sparkles,
+  LogOut,
+  Lock,
+  ChevronRight,
+  MessageCircleQuestion,
+} from "lucide-react";
+import { signOutFn } from "@/lib/auth";
+import { useRouteContext } from "@tanstack/react-router";
 
 export function SettingsPage() {
-  const [preferences, setPreferences] = useState(profilePreferences);
-  const [visibility, setVisibility] = useState(profilePreferences.profileVisibility);
-  const [saved, setSaved] = useState(false);
-  const toggle = (key: "weeklyReview" | "sessionReminders" | "communityUpdates") =>
-    setPreferences((current) => ({ ...current, [key]: !current[key] }));
-  const save = () => {
-    setSaved(true);
-    window.setTimeout(() => setSaved(false), 2200);
+  const router = useRouter();
+  // Using profile from route context if available, otherwise fallback
+  // In a real app we'd get this from a hook, assuming context.user is available
+  const handleLogout = async () => {
+    await signOutFn();
+    router.invalidate();
   };
+
+  const settingsLinks = [
+    { label: "My Account", icon: User, href: "#" },
+    { label: "Notifications", icon: Bell, href: "/settings/notifications" },
+    { label: "Profile", icon: UserCircle, href: "/profile" },
+    { label: "Connected Devices", icon: MonitorSmartphone, href: "#" },
+    { label: "My Membership", icon: Crown, href: "/pricing" },
+    { label: "Affiliate Dashboard", icon: BarChart2, href: "#" },
+    { label: "Refer a Friend", icon: Share2, href: "#" },
+    { label: "Advanced", icon: Sliders, href: "#" },
+    { label: "Provide Feedback", icon: MessageSquare, href: "/about" },
+    { label: "What's New", icon: Sparkles, href: "#" },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
-      <TopBar />
-      <main className="mx-auto max-w-5xl px-4 pb-16 pt-8 sm:px-6">
-        <div className="mb-8 flex items-center gap-3">
-          <Logo size="sm" withWordmark={false} />
-          <span className="font-mono text-xs uppercase tracking-[0.24em] text-muted-foreground">
-            Settings
-          </span>
+    <div className="min-h-screen bg-background relative pb-24">
+      {/* Spacer for mobile header if needed, though AppShell handles some of this */}
+      <main className="mx-auto max-w-3xl px-4 pt-6 sm:px-6">
+        {/* Profile Header Block */}
+        <div className="bg-charcoal/80 rounded-2xl p-4 flex items-center gap-4 mb-8">
+          <div className="relative">
+            {/* Avatar Placeholder */}
+            <div className="size-16 rounded-full bg-gradient-to-tr from-secondary to-accent border-2 border-border overflow-hidden">
+              <img
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=wolf"
+                alt="Avatar"
+                className="w-full h-full object-cover opacity-80"
+              />
+            </div>
+            {/* Crown Badge */}
+            <div className="absolute -bottom-1 -right-1 bg-charcoal rounded-full p-1 border border-border">
+              <Crown className="size-4 text-gold" />
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm text-muted-foreground">Welcome,</span>
+            <span className="text-xl font-bold text-foreground">wolf billion</span>
+          </div>
         </div>
-        <div className="grid gap-6 lg:grid-cols-[1fr_0.68fr]">
-          <div className="space-y-6">
-            <section className="panel p-6 sm:p-8">
-              <div className="section-heading">
-                <div>
-                  <p className="eyebrow">Preferences</p>
-                  <h1 className="font-display text-3xl font-bold">Shape your signal</h1>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    Choose what deserves your attention. These controls are saved locally in this
-                    preview.
-                  </p>
-                </div>
-                <SlidersHorizontal className="size-5 text-primary" />
-              </div>
-              <div className="mt-7 divide-y divide-border">
-                {(
-                  [
-                    ["weeklyReview", "Weekly review", "A reminder to reflect on your commitments."],
-                    [
-                      "sessionReminders",
-                      "Session reminders",
-                      "Keep upcoming Wolf Sessions visible.",
-                    ],
-                    [
-                      "communityUpdates",
-                      "Community updates",
-                      "Hear when The Pack has something worth reading.",
-                    ],
-                  ] as const
-                ).map(([key, label, detail]) => (
-                  <div className="flex items-center justify-between gap-4 py-5" key={key}>
-                    <div>
-                      <p className="font-semibold">{label}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">{detail}</p>
-                    </div>
-                    <button
-                      type="button"
-                      aria-pressed={preferences[key]}
-                      onClick={() => toggle(key)}
-                      className={`relative h-6 w-11 rounded-full transition ${preferences[key] ? "bg-primary" : "bg-muted"}`}
-                    >
-                      <span
-                        className={`absolute top-1 size-4 rounded-full bg-background transition ${preferences[key] ? "left-6" : "left-1"}`}
-                      />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </section>
-            <section className="panel p-6 sm:p-8">
-              <p className="eyebrow">Privacy</p>
-              <h2 className="mt-2 font-display text-2xl font-bold">Profile visibility</h2>
-              <label className="mt-5 grid gap-2 text-sm font-semibold">
-                Who can see your profile
-                <select
-                  className="field-control"
-                  value={visibility}
-                  onChange={(e) => setVisibility(e.target.value as typeof visibility)}
+
+        {/* Settings Title */}
+        <h1 className="text-2xl font-bold text-foreground mb-4 px-1">Settings</h1>
+
+        {/* Settings Links List */}
+        <div className="border border-border rounded-xl overflow-hidden bg-charcoal/30 mb-8">
+          <nav className="flex flex-col divide-y divide-border/50">
+            {settingsLinks.map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={idx}
+                  to={item.href}
+                  className="group flex items-center justify-between p-4 transition-colors hover:bg-secondary/50"
                 >
-                  <option value="members">Members of The 1% Club</option>
-                  <option value="private">Only me</option>
-                </select>
-              </label>
-              <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                <LockKeyhole className="size-3.5" />
-                Your personal information stays in this local preview.
-              </p>
-              <Button className="mt-6" onClick={save}>
-                <Save className="mr-2 size-4" />
-                Save settings
-              </Button>
-            </section>
-          </div>
-          <aside className="space-y-6">
-            <section className="panel p-6">
-              <p className="eyebrow">Membership</p>
-              <h2 className="mt-2 font-display text-2xl font-bold capitalize">
-                {membershipInfo.tier} membership
-              </h2>
-              <p className="mt-1 text-sm text-primary">{membershipInfo.renewalLabel}</p>
-              <div className="mt-5 grid gap-3">
-                {membershipInfo.benefits.map((benefit) => (
-                  <p className="flex items-start gap-2 text-sm text-muted-foreground" key={benefit}>
-                    <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                    {benefit}
-                  </p>
-                ))}
-              </div>
-            </section>
-            <section className="panel p-6">
-              <p className="eyebrow">Support</p>
-              <h2 className="mt-2 font-display text-2xl font-bold">Common questions</h2>
-              <div className="mt-4 divide-y divide-border">
-                {profileFaqs.map((faq) => (
-                  <details className="group py-3" key={faq.id}>
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold">
-                      {faq.question}
-                      <ChevronDown className="size-4 transition group-open:rotate-180" />
-                    </summary>
-                    <p className="pt-3 text-sm leading-relaxed text-muted-foreground">
-                      {faq.answer}
-                    </p>
-                  </details>
-                ))}
-              </div>
-            </section>
-          </aside>
+                  <div className="flex items-center gap-4">
+                    <Icon
+                      className="size-5 text-foreground group-hover:text-gold transition-colors"
+                      strokeWidth={1.75}
+                    />
+                    <span className="font-medium text-foreground text-[15px]">{item.label}</span>
+                  </div>
+                  <ChevronRight className="size-5 text-muted-foreground group-hover:text-gold transition-colors" />
+                </Link>
+              );
+            })}
+          </nav>
         </div>
-        {saved ? (
-          <div className="toast-success">
-            <Check className="size-4" />
-            Settings saved locally
-          </div>
-        ) : null}
+
+        {/* Logout Actions */}
+        <div className="flex flex-col gap-4">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 w-full p-4 rounded-xl border border-crimson/40 bg-crimson/5 hover:bg-crimson/10 transition-colors"
+          >
+            <LogOut className="size-5 text-crimson" strokeWidth={2} />
+            <span className="font-medium text-crimson">Logout</span>
+          </button>
+
+          <button className="flex items-center gap-3 w-full p-4 rounded-xl border border-border/50 bg-charcoal/30 hover:bg-secondary/50 transition-colors">
+            <Lock className="size-5 text-muted-foreground" strokeWidth={2} />
+            <span className="font-medium text-muted-foreground">Logout All Devices</span>
+          </button>
+        </div>
       </main>
+
+      {/* Floating Action Button (Support) */}
+      <button
+        className="fixed bottom-20 right-4 lg:bottom-8 lg:right-8 size-14 rounded-full bg-gold flex items-center justify-center shadow-lg hover:bg-gold-tint transition-colors z-50"
+        aria-label="Support Chat"
+      >
+        <MessageCircleQuestion className="size-6 text-black fill-black" />
+      </button>
     </div>
   );
 }
