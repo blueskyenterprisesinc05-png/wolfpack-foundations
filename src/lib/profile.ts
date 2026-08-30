@@ -59,6 +59,7 @@ export const getCurrentProfileFn = createServerFn({ method: "GET" }).handler(
       id: row.id,
       name: row.display_name ?? "Member",
       handle: row.handle ?? `user_${row.id.substring(0, 6)}`,
+      username: row.username ?? undefined,
       initials: deriveInitials(row.display_name),
       bio: row.bio ?? undefined,
       location: row.location ?? undefined,
@@ -112,6 +113,7 @@ export const completeOnboardingFn = createServerFn({ method: "POST" })
 
 const updateProfileSchema = z.object({
   display_name: z.string().min(1, "Display name is required.").optional(),
+  username: z.string().min(1, "Username is required.").max(50).optional(),
   phone: z.string().optional(),
   avatar_url: z.string().url().optional().or(z.literal("")),
 });
@@ -135,6 +137,7 @@ export const updateProfileFn = createServerFn({ method: "POST" })
       .from("profiles")
       .update({
         ...(data.display_name !== undefined && { display_name: data.display_name }),
+        ...(data.username !== undefined && { username: data.username }),
         ...(data.phone !== undefined && { phone: data.phone }),
         ...(data.avatar_url !== undefined && { avatar_url: data.avatar_url }),
       })

@@ -271,6 +271,7 @@ export interface MemberProfile {
   id: string;
   name: string;
   handle: string;
+  username?: string;
   initials: string;
   avatar_url?: string;
   phone?: string;

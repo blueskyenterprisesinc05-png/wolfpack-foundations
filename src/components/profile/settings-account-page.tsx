@@ -89,7 +89,7 @@ function EditableField({
 
 export function SettingsAccountPage({ user, profile }: { user: any; profile: any }) {
   const [userData, setUserData] = useState({
-    username: profile?.name || profile?.handle || "wolf billion",
+    username: profile?.username || "",
     email: user?.email || "Not Set",
     phone: profile?.phone || user?.phone || "Not Set",
   });
@@ -108,7 +108,7 @@ export function SettingsAccountPage({ user, profile }: { user: any; profile: any
     setUserData(prev => ({ ...prev, [field]: val }));
     
     if (field === 'username') {
-      await updateProfileFn({ data: { display_name: val } });
+      await updateProfileFn({ data: { username: val } });
     } else if (field === 'phone') {
       await updateProfileFn({ data: { phone: val } });
     }
