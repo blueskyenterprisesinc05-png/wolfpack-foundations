@@ -36,7 +36,7 @@ function MorePage() {
         <div className="flex-1" />
 
         {/* Bottom-aligned panel */}
-        <div className="w-full max-w-3xl mx-auto bg-[#1a1f2c] rounded-t-2xl overflow-hidden shadow-2xl">
+        <div className="w-full max-w-3xl mx-auto bg-charcoal rounded-t-2xl overflow-hidden shadow-2xl border-t border-border">
           <nav className="flex flex-col py-2" aria-label="More navigation">
             {menuItems.map((item, idx) => {
               const Icon = item.icon;
@@ -44,13 +44,16 @@ function MorePage() {
                 <Link
                   key={idx}
                   to={item.href}
-                  className="group flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0"
+                  className="group flex items-center justify-between px-5 py-4 hover:bg-secondary/50 transition-colors border-b border-border last:border-b-0"
                 >
                   <div className="flex items-center gap-4">
-                    <Icon className="size-5 text-gray-300" strokeWidth={1.75} />
-                    <span className="text-[15px] text-gray-100">{item.label}</span>
+                    <Icon
+                      className="size-5 text-muted-foreground group-hover:text-gold transition-colors"
+                      strokeWidth={1.75}
+                    />
+                    <span className="text-[15px] text-foreground font-medium">{item.label}</span>
                   </div>
-                  <ChevronRight className="size-4 text-gray-500" />
+                  <ChevronRight className="size-4 text-muted-foreground/50 group-hover:text-gold transition-colors" />
                 </Link>
               );
             })}
