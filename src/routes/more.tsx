@@ -1,16 +1,15 @@
-import { createFileRoute, redirect, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/brand/app-shell";
 import {
   Settings,
   User,
-  CreditCard,
+  ListTodo,
+  Wallet,
+  Crown,
+  Users,
   HelpCircle,
-  LogOut,
   ChevronRight,
-  ShieldCheck,
-  Bell,
 } from "lucide-react";
-import { signOutFn } from "@/lib/auth";
 
 export const Route = createFileRoute("/more")({
   beforeLoad: ({ context }) => {
@@ -20,39 +19,24 @@ export const Route = createFileRoute("/more")({
 });
 
 function MorePage() {
-  const { profile } = Route.useRouteContext();
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await signOutFn();
-    router.invalidate();
-  };
-
-  const tierLabel =
-    profile?.tier === "inner-circle"
-      ? "Inner Circle"
-      : profile?.tier === "member"
-        ? "Member"
-        : "Free";
-
   const menuItems = [
     { icon: Settings, label: "Settings", href: "/settings" },
     { icon: User, label: "Profile", href: "/profile" },
-    { icon: Bell, label: "Notifications", href: "/settings/notifications" },
-    { icon: CreditCard, label: "Billing", href: "/pricing" },
-    { icon: ShieldCheck, label: tierLabel, href: "/pricing" },
+    { icon: ListTodo, label: "Checklist", href: "#" },
+    { icon: Wallet, label: "Wallet", href: "#" },
+    { icon: Crown, label: "Queen", href: "#" },
+    { icon: Users, label: "Friends", href: "#" },
     { icon: HelpCircle, label: "Live Chat Support", href: "/about" },
   ];
 
   return (
     <AppShell>
-      {/* Container acting as the overlay backdrop (e.g. dimming the rest of the view, though full screen here) */}
-      <main className="flex min-h-[calc(100dvh-4rem)] flex-col bg-background/50">
-        {/* Spacer to push the menu to the bottom */}
+      {/* Dimmed backdrop covering the whole screen above the bottom nav */}
+      <main className="flex min-h-[calc(100dvh-4rem)] flex-col bg-background/80 backdrop-blur-sm">
         <div className="flex-1" />
 
-        {/* The bottom-aligned sheet panel */}
-        <div className="w-full max-w-3xl mx-auto bg-charcoal rounded-t-[2rem] overflow-hidden shadow-2xl border-t border-border">
+        {/* Bottom-aligned panel */}
+        <div className="w-full max-w-3xl mx-auto bg-[#1a1f2c] rounded-t-2xl overflow-hidden shadow-2xl">
           <nav className="flex flex-col py-2" aria-label="More navigation">
             {menuItems.map((item, idx) => {
               const Icon = item.icon;
@@ -60,35 +44,16 @@ function MorePage() {
                 <Link
                   key={idx}
                   to={item.href}
-                  className="group flex items-center justify-between px-6 py-4 transition-colors hover:bg-secondary/50"
+                  className="group flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0"
                 >
                   <div className="flex items-center gap-4">
-                    <Icon
-                      className="size-6 text-muted-foreground group-hover:text-gold transition-colors"
-                      strokeWidth={1.5}
-                    />
-                    <span className="text-lg font-medium text-foreground">{item.label}</span>
+                    <Icon className="size-5 text-gray-300" strokeWidth={1.75} />
+                    <span className="text-[15px] text-gray-100">{item.label}</span>
                   </div>
-                  <ChevronRight className="size-5 text-muted-foreground/50 group-hover:text-gold transition-colors" />
+                  <ChevronRight className="size-4 text-gray-500" />
                 </Link>
               );
             })}
-
-            {/* Logout item */}
-            <button
-              onClick={handleLogout}
-              className="group flex w-full items-center justify-between px-6 py-4 transition-colors hover:bg-crimson/10 text-left"
-            >
-              <div className="flex items-center gap-4">
-                <LogOut
-                  className="size-6 text-muted-foreground group-hover:text-crimson transition-colors"
-                  strokeWidth={1.5}
-                />
-                <span className="text-lg font-medium text-foreground group-hover:text-crimson transition-colors">
-                  Sign Out
-                </span>
-              </div>
-            </button>
           </nav>
         </div>
       </main>
