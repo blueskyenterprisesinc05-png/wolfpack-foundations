@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "@tanstack/react-router";
+import { updateProfileFn } from "@/lib/profile";
+import { getBrowserClient } from "@/lib/supabase/browser";
 import {
   Crown,
   ChevronRight,
@@ -87,18 +89,59 @@ function EditableField({
 
 export function SettingsAccountPage({ user, profile }: { user: any; profile: any }) {
   const [userData, setUserData] = useState({
-    username: profile?.username || "wolf billion",
-    email: user?.email || "destinyokpare66@gmail.com",
+    username: profile?.name || profile?.handle || "wolf billion",
+    email: user?.email || "Not Set",
     phone: profile?.phone || user?.phone || "Not Set",
   });
 
   const userId = user?.id || "01KP9W3CBMFGCJ5XYQQF2FSTV1";
   const emailVerified = user?.email_confirmed_at || user?.user_metadata?.email_verified ? true : false;
-  const avatarUrl = profile?.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + userData.username;
+  
+  const [localAvatarUrl, setLocalAvatarUrl] = useState(
+    profile?.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + userData.username
+  );
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleUpdate = (field: string, val: string) => {
+  const handleUpdate = async (field: string, val: string) => {
     setUserData(prev => ({ ...prev, [field]: val }));
-    // API call to update user profile goes here
+    
+    if (field === 'username') {
+      await updateProfileFn({ data: { display_name: val } });
+    } else if (field === 'phone') {
+      await updateProfileFn({ data: { phone: val } });
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const supabase = getBrowserClient();
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}-${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      await updateProfileFn({ data: { avatar_url: publicUrl } });
+      setLocalAvatarUrl(publicUrl);
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      alert('Error uploading avatar!');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -144,17 +187,32 @@ export function SettingsAccountPage({ user, profile }: { user: any; profile: any
           {/* Profile Header */}
           <div className="flex items-center justify-between py-2">
             <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="size-16 rounded-full bg-gradient-to-tr from-secondary to-accent border-2 border-border overflow-hidden">
+              <div 
+                className="relative cursor-pointer group"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <div className="size-16 rounded-full bg-gradient-to-tr from-secondary to-accent border-2 border-border overflow-hidden relative">
                   <img
-                    src={avatarUrl}
+                    src={localAvatarUrl}
                     alt="Avatar"
-                    className="w-full h-full object-cover opacity-80"
+                    className={`w-full h-full object-cover transition-opacity ${isUploading ? 'opacity-50' : 'opacity-80 group-hover:opacity-100'}`}
                   />
+                  {isUploading && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="size-4 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
                 </div>
                 <div className="absolute -bottom-1 -right-1 bg-charcoal rounded-full p-1 border border-border">
-                  <Crown className="size-4 text-gold" />
+                  <Pencil className="size-3 text-gold" />
                 </div>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                />
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-foreground">@{userData.username}</span>
