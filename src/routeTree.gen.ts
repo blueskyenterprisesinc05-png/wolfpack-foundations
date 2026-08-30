@@ -35,6 +35,8 @@ import { Route as TradingRouteImport } from './routes/trading'
 import { Route as CoursesIndexRouteImport } from './routes/courses/index'
 import { Route as CoursesCourseIdRouteImport } from './routes/courses/$courseId'
 import { Route as LessonsLessonIdRouteImport } from './routes/lessons/$lessonId'
+import { Route as SettingsAccountRouteImport } from './routes/settings.account'
+import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -166,6 +168,16 @@ const LessonsLessonIdRoute = LessonsLessonIdRouteImport.update({
   path: '/lessons/$lessonId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsAccountRoute = SettingsAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => SettingsRoute,
+} as any)
+const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => SettingsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -187,12 +199,14 @@ export interface FileRoutesByFullPath {
   '/progress': typeof ProgressRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sessions': typeof SessionsRoute
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
   '/trading': typeof TradingRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
+  '/settings/account': typeof SettingsAccountRoute
+  '/settings/notifications': typeof SettingsNotificationsRoute
   '/courses/': typeof CoursesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -215,12 +229,14 @@ export interface FileRoutesByTo {
   '/progress': typeof ProgressRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sessions': typeof SessionsRoute
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
   '/trading': typeof TradingRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
+  '/settings/account': typeof SettingsAccountRoute
+  '/settings/notifications': typeof SettingsNotificationsRoute
   '/courses': typeof CoursesIndexRoute
 }
 export interface FileRoutesById {
@@ -244,12 +260,14 @@ export interface FileRoutesById {
   '/progress': typeof ProgressRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sessions': typeof SessionsRoute
-  '/settings': typeof SettingsRoute
+  '/settings': typeof SettingsRouteWithChildren
   '/signup': typeof SignupRoute
   '/styleguide': typeof StyleguideRoute
   '/trading': typeof TradingRoute
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
+  '/settings/account': typeof SettingsAccountRoute
+  '/settings/notifications': typeof SettingsNotificationsRoute
   '/courses/': typeof CoursesIndexRoute
 }
 export interface FileRouteTypes {
@@ -280,6 +298,8 @@ export interface FileRouteTypes {
     | '/trading'
     | '/courses/$courseId'
     | '/lessons/$lessonId'
+    | '/settings/account'
+    | '/settings/notifications'
     | '/courses/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -308,6 +328,8 @@ export interface FileRouteTypes {
     | '/trading'
     | '/courses/$courseId'
     | '/lessons/$lessonId'
+    | '/settings/account'
+    | '/settings/notifications'
     | '/courses'
   id:
     | '__root__'
@@ -336,6 +358,8 @@ export interface FileRouteTypes {
     | '/trading'
     | '/courses/$courseId'
     | '/lessons/$lessonId'
+    | '/settings/account'
+    | '/settings/notifications'
     | '/courses/'
   fileRoutesById: FileRoutesById
 }
@@ -359,7 +383,7 @@ export interface RootRouteChildren {
   ProgressRoute: typeof ProgressRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SessionsRoute: typeof SessionsRoute
-  SettingsRoute: typeof SettingsRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
   SignupRoute: typeof SignupRoute
   StyleguideRoute: typeof StyleguideRoute
   TradingRoute: typeof TradingRoute
@@ -552,8 +576,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LessonsLessonIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/account': {
+      id: '/settings/account'
+      path: '/account'
+      fullPath: '/settings/account'
+      preLoaderRoute: typeof SettingsAccountRouteImport
+      parentRoute: typeof SettingsRoute
+    }
+    '/settings/notifications': {
+      id: '/settings/notifications'
+      path: '/notifications'
+      fullPath: '/settings/notifications'
+      preLoaderRoute: typeof SettingsNotificationsRouteImport
+      parentRoute: typeof SettingsRoute
+    }
   }
 }
+
+interface SettingsRouteChildren {
+  SettingsAccountRoute: typeof SettingsAccountRoute
+  SettingsNotificationsRoute: typeof SettingsNotificationsRoute
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsAccountRoute: SettingsAccountRoute,
+  SettingsNotificationsRoute: SettingsNotificationsRoute,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -575,7 +627,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProgressRoute: ProgressRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SessionsRoute: SessionsRoute,
-  SettingsRoute: SettingsRoute,
+  SettingsRoute: SettingsRouteWithChildren,
   SignupRoute: SignupRoute,
   StyleguideRoute: StyleguideRoute,
   TradingRoute: TradingRoute,
