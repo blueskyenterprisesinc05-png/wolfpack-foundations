@@ -6,9 +6,12 @@ export const Route = createFileRoute("/settings")({
   beforeLoad: ({ context }) => {
     if (!context.user) throw redirect({ to: "/login" });
   },
-  component: () => (
-    <AppShell>
-      <SettingsPage />
-    </AppShell>
-  ),
+  component: function SettingsRoute() {
+    const { user, profile } = Route.useRouteContext();
+    return (
+      <AppShell>
+        <SettingsPage user={user} profile={profile} />
+      </AppShell>
+    );
+  },
 });
