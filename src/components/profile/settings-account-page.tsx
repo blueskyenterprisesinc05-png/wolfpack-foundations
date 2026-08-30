@@ -149,7 +149,7 @@ export function SettingsAccountPage({ user, profile }: { user: any; profile: any
       // Convert file to base64 to send to the server function
       const base64 = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.onload = () => resolve(((reader.result as string).split(',')[1] ?? ''));
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
