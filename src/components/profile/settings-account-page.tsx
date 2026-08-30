@@ -140,29 +140,42 @@ export function SettingsAccountPage({ user, profile }: { user: any; profile: any
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File too large. Please choose an image under 5MB.');
+      return;
+    }
+
     setIsUploading(true);
     try {
       const supabase = getBrowserClient();
       const fileExt = file.name.split('.').pop();
-      const fileName = `${userId}-${Math.random()}.${fileExt}`;
+      const fileName = `${userId}-${Date.now()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file);
+        .upload(fileName, file, { upsert: true });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Supabase upload error:', uploadError);
+        alert(`Upload failed: ${uploadError.message}`);
+        return;
+      }
+
+      console.log('Upload success:', uploadData);
 
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
 
-      await updateProfileFn({ data: { avatar_url: publicUrl } });
+      const result = await updateProfileFn({ data: { avatar_url: publicUrl } });
+      console.log('Profile update result:', result);
       setLocalAvatarUrl(publicUrl);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading avatar:', error);
-      alert('Error uploading avatar!');
+      alert(`Error: ${error?.message ?? 'Unknown error. Check the browser console.'}`);
     } finally {
       setIsUploading(false);
+      e.target.value = '';
     }
   };
 
