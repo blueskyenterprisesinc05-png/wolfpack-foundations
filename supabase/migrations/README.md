@@ -26,27 +26,27 @@ supabase db reset
 
 These must be set in the Supabase CLI environment before running migrations:
 
-| Variable | Where to set |
-|---|---|
+| Variable                | Where to set                     |
+| ----------------------- | -------------------------------- |
 | `SUPABASE_ACCESS_TOKEN` | Supabase CLI config or CI secret |
-| `SUPABASE_DB_PASSWORD` | Supabase project dashboard |
+| `SUPABASE_DB_PASSWORD`  | Supabase project dashboard       |
 
 **Do not commit these values to the repository.**
 
 ## Migration Order
 
-| File | Description |
-|---|---|
-| `20260827_001_create_profiles.sql` | Create `profiles` table and `set_updated_at` trigger function |
-| `20260827_002_profile_trigger_function.sql` | Create `handle_new_user()` SECURITY DEFINER function |
-| `20260827_003_auth_trigger.sql` | Attach trigger to `auth.users` |
-| `20260827_004_create_membership_plans.sql` | Create `membership_plans` table |
-| `20260827_005_seed_membership_plans.sql` | Seed Explorer, Member, Inner Circle plans |
-| `20260827_006_create_memberships.sql` | Create `memberships` table |
-| `20260827_007_indexes.sql` | Add performance indexes |
-| `20260827_008_enable_rls.sql` | Enable RLS on all three tables |
-| `20260827_009_rls_policies.sql` | Add all RLS policies |
-| `20260827_010_rls_tests.sql` | Executable RLS acceptance tests (rolled back after run) |
+| File                                        | Description                                                   |
+| ------------------------------------------- | ------------------------------------------------------------- |
+| `20260827_001_create_profiles.sql`          | Create `profiles` table and `set_updated_at` trigger function |
+| `20260827_002_profile_trigger_function.sql` | Create `handle_new_user()` SECURITY DEFINER function          |
+| `20260827_003_auth_trigger.sql`             | Attach trigger to `auth.users`                                |
+| `20260827_004_create_membership_plans.sql`  | Create `membership_plans` table                               |
+| `20260827_005_seed_membership_plans.sql`    | Seed Explorer, Member, Inner Circle plans                     |
+| `20260827_006_create_memberships.sql`       | Create `memberships` table                                    |
+| `20260827_007_indexes.sql`                  | Add performance indexes                                       |
+| `20260827_008_enable_rls.sql`               | Enable RLS on all three tables                                |
+| `20260827_009_rls_policies.sql`             | Add all RLS policies                                          |
+| `20260827_010_rls_tests.sql`                | Executable RLS acceptance tests (rolled back after run)       |
 
 ## RLS Test Execution
 

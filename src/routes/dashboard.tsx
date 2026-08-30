@@ -68,9 +68,7 @@ function DashboardPage() {
               The 1% Club
             </p>
             <h1 className="display-xl mt-2 text-foreground">The Den</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Welcome back, {displayName}.
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">Welcome back, {displayName}.</p>
           </header>
 
           {/* Today's mission — operational panel */}
@@ -90,7 +88,7 @@ function DashboardPage() {
                 <p className="mt-0.5 truncate text-sm font-semibold text-foreground">
                   {isComplete
                     ? "Mind Lab complete — keep your daily check-ins"
-                    : nextLesson?.title ?? "Start Mind Lab"}
+                    : (nextLesson?.title ?? "Start Mind Lab")}
                 </p>
               </div>
               {!isComplete && (
@@ -140,7 +138,9 @@ function DashboardPage() {
               </span>
             </div>
             <div className="flex flex-col items-center gap-1 p-4">
-              <span className="font-display text-2xl text-foreground">{done}/{total}</span>
+              <span className="font-display text-2xl text-foreground">
+                {done}/{total}
+              </span>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
                 Lessons
               </span>

@@ -41,6 +41,17 @@ Trading is one important learning path inside the club, not the entire identity 
 - Wolf symbolism used sparingly.
 - Calm, serious, focused, premium, and disciplined tone.
 
+**Negative Constraints (What NOT to copy from TWR / The Real World):**
+
+- **Do not use** TWR's navy palette.
+- **Do not use** TWR's hype or urgency language.
+- **Do not use** TWR's exact labels and screen copy.
+- **Do not use** TWR's proprietary artwork or assets.
+- **Do not use** TWR's emoji-heavy UI chrome.
+- **Do not use** TWR's gold-primary CTA rule.
+- **Do not implement** fake online counts, XP, rank, or progress.
+- **Do not build** features that do not yet have a real backend.
+
 ## 4. Frontend Ownership
 
 - **v0** is the primary production frontend tool.
@@ -182,7 +193,8 @@ These non-negotiable requirements must be followed:
 - **Preview / dev command:** `bun run dev`
 
 **Backend (Supabase):**
-- **Supabase project URL:** `https://kyyoesormuenlwmlgiti.supabase.co` *(public / VITE_SUPABASE_URL)*
+
+- **Supabase project URL:** `https://kyyoesormuenlwmlgiti.supabase.co` _(public / VITE_SUPABASE_URL)_
 - **Supabase project ref:** `kyyoesormuenlwmlgiti`
 - The Supabase project URL is the browser-safe public value. The database password and service-role key must never be committed to the repository.
 - Migration execution: `supabase link --project-ref kyyoesormuenlwmlgiti && supabase db push`
@@ -232,9 +244,9 @@ The recommended next phases:
 
 ## 18. Change Log
 
-| Date       | Summary                                                              | Related Plan                                   | Related Issue | Author      |
-| ---------- | -------------------------------------------------------------------- | ---------------------------------------------- | ------------- | ----------- |
-| 2026-08-27 | Initial creation of PROJECT_CONTEXT.md                               | `implementation/PROJECT_CONTEXT_PLAN.md`       | Issue #1      | Antigravity |
-| 2026-08-27 | Added /about and /pricing routes; verified on Vercel                 | `implementation/FRONTEND_ROUTES_PLAN.md`       | Issue #2      | Antigravity |
-| 2026-08-27 | Phase 6B plan approved; SQL migrations created for 3 tables          | `implementation/BACKEND_AUTH_PROFILE_PLAN.md`  | Issue #3      | Antigravity |
-| 2026-08-27 | Recorded Supabase project URL (kyyoesormuenlwmlgiti) in context      | `implementation/BACKEND_AUTH_PROFILE_PLAN.md`  | Issue #3      | Antigravity |
+| Date       | Summary                                                         | Related Plan                                  | Related Issue | Author      |
+| ---------- | --------------------------------------------------------------- | --------------------------------------------- | ------------- | ----------- |
+| 2026-08-27 | Initial creation of PROJECT_CONTEXT.md                          | `implementation/PROJECT_CONTEXT_PLAN.md`      | Issue #1      | Antigravity |
+| 2026-08-27 | Added /about and /pricing routes; verified on Vercel            | `implementation/FRONTEND_ROUTES_PLAN.md`      | Issue #2      | Antigravity |
+| 2026-08-27 | Phase 6B plan approved; SQL migrations created for 3 tables     | `implementation/BACKEND_AUTH_PROFILE_PLAN.md` | Issue #3      | Antigravity |
+| 2026-08-27 | Recorded Supabase project URL (kyyoesormuenlwmlgiti) in context | `implementation/BACKEND_AUTH_PROFILE_PLAN.md` | Issue #3      | Antigravity |

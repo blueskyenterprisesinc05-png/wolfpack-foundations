@@ -56,7 +56,10 @@ function TradingRoomPage() {
     <AppShell>
       <div className="mx-auto flex max-w-2xl flex-col gap-0 px-4 py-6 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-xs text-muted-foreground" aria-label="Breadcrumb">
+        <nav
+          className="flex items-center gap-2 text-xs text-muted-foreground"
+          aria-label="Breadcrumb"
+        >
           <Link to="/courses" className="transition-colors hover:text-foreground">
             Learning
           </Link>
@@ -133,8 +136,8 @@ function TradingRoomPage() {
           <div className="flex gap-3 rounded-lg border border-gold/25 bg-gold/5 p-3 text-xs leading-5 text-muted-foreground">
             <ShieldAlert className="mt-0.5 size-3.5 shrink-0 text-gold" />
             <p>
-              The Trading Room is for education and skill development only. Trading involves risk and
-              the 1% Club does not guarantee profits or financial results. This content does not
+              The Trading Room is for education and skill development only. Trading involves risk
+              and the 1% Club does not guarantee profits or financial results. This content does not
               constitute financial advice.
             </p>
           </div>
@@ -163,9 +166,7 @@ function TradingRoomPage() {
                   <div
                     className={cn(
                       "flex items-center gap-3 px-4 py-3 transition-colors",
-                      isLocked
-                        ? "cursor-default opacity-45"
-                        : "cursor-pointer hover:bg-white/5",
+                      isLocked ? "cursor-default opacity-45" : "cursor-pointer hover:bg-white/5",
                     )}
                   >
                     {/* Lesson number badge */}
@@ -226,11 +227,7 @@ function TradingRoomPage() {
                 return isLocked ? (
                   <div key={lesson.id}>{row}</div>
                 ) : (
-                  <Link
-                    key={lesson.id}
-                    to="/lessons/$lessonId"
-                    params={{ lessonId: lesson.id }}
-                  >
+                  <Link key={lesson.id} to="/lessons/$lessonId" params={{ lessonId: lesson.id }}>
                     {row}
                   </Link>
                 );

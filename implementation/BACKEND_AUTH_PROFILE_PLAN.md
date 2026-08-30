@@ -51,11 +51,13 @@ No authentication, profile storage, or membership logic exists yet.
 
 ## 5. Environment Variables Required
 
-**Browser-safe variables (VITE_ prefix):**
+**Browser-safe variables (VITE\_ prefix):**
+
 - `VITE_SUPABASE_URL` — Public Supabase project URL.
 - `VITE_SUPABASE_PUBLISHABLE_KEY` — The browser-safe publishable anon key for the Supabase project. Never a secret or service-role key.
 
 **Future phases only (not Phase 6B):**
+
 - `SUPABASE_SERVICE_ROLE_KEY` — Required for privileged server operations (e.g. webhooks, admin writes). This key must be:
   - Server-only — never prefixed with `VITE_`.
   - Never imported into browser code or client bundles.
@@ -81,40 +83,43 @@ Use `@supabase/ssr` to separate browser and server Supabase clients:
 > Scope is strictly limited to `profiles`, `membership_plans`, and `memberships`. No other tables in Phase 6B.
 
 ### `profiles`
-| Column | Type | Notes |
-|---|---|---|
-| `id` | UUID PK | References `auth.users.id`. Always identical to the auth UID. RLS uses `auth.uid() = id`. |
-| `display_name` | Text | User-editable display name. |
-| `handle` | Text UNIQUE | URL-safe identifier. |
-| `avatar_path` | Text | Storage path, nullable. |
-| `bio` | Text | Nullable. |
-| `location` | Text | Nullable. |
-| `timezone` | Text | Nullable. |
-| `onboarding_completed_at` | Timestamptz | Set server-side when onboarding completes. |
-| `created_at` | Timestamptz | Set on insert. |
-| `updated_at` | Timestamptz | Updated by trigger. |
+
+| Column                    | Type        | Notes                                                                                     |
+| ------------------------- | ----------- | ----------------------------------------------------------------------------------------- |
+| `id`                      | UUID PK     | References `auth.users.id`. Always identical to the auth UID. RLS uses `auth.uid() = id`. |
+| `display_name`            | Text        | User-editable display name.                                                               |
+| `handle`                  | Text UNIQUE | URL-safe identifier.                                                                      |
+| `avatar_path`             | Text        | Storage path, nullable.                                                                   |
+| `bio`                     | Text        | Nullable.                                                                                 |
+| `location`                | Text        | Nullable.                                                                                 |
+| `timezone`                | Text        | Nullable.                                                                                 |
+| `onboarding_completed_at` | Timestamptz | Set server-side when onboarding completes.                                                |
+| `created_at`              | Timestamptz | Set on insert.                                                                            |
+| `updated_at`              | Timestamptz | Updated by trigger.                                                                       |
 
 > **Removed fields vs. v1:** `name` (replaced by `display_name`), `initials` (derived on the frontend from `display_name`), `role` (must not be user-editable; roles are a future server-controlled concern tracked in Phase 6H).
 
 ### `membership_plans`
-| Column | Type | Notes |
-|---|---|---|
-| `id` | UUID PK | |
-| `name` | Text | "Explorer", "Member", "Inner Circle". |
-| `tier` | Text | "free", "member", "inner-circle". |
-| `price` | Numeric | Informational only in Phase 6B. |
-| `created_at` | Timestamptz | |
+
+| Column       | Type        | Notes                                 |
+| ------------ | ----------- | ------------------------------------- |
+| `id`         | UUID PK     |                                       |
+| `name`       | Text        | "Explorer", "Member", "Inner Circle". |
+| `tier`       | Text        | "free", "member", "inner-circle".     |
+| `price`      | Numeric     | Informational only in Phase 6B.       |
+| `created_at` | Timestamptz |                                       |
 
 ### `memberships`
-| Column | Type | Notes |
-|---|---|---|
-| `id` | UUID PK | |
-| `user_id` | UUID | References `auth.users.id` directly. RLS uses `auth.uid() = user_id`. |
-| `plan_id` | UUID | References `membership_plans.id`. |
-| `status` | Text | "active", "trial", "cancelled", "past_due". **Read-only to the user.** |
-| `start_date` | Timestamptz | |
-| `end_date` | Timestamptz | Nullable. |
-| `created_at` | Timestamptz | |
+
+| Column       | Type        | Notes                                                                  |
+| ------------ | ----------- | ---------------------------------------------------------------------- |
+| `id`         | UUID PK     |                                                                        |
+| `user_id`    | UUID        | References `auth.users.id` directly. RLS uses `auth.uid() = user_id`.  |
+| `plan_id`    | UUID        | References `membership_plans.id`.                                      |
+| `status`     | Text        | "active", "trial", "cancelled", "past_due". **Read-only to the user.** |
+| `start_date` | Timestamptz |                                                                        |
+| `end_date`   | Timestamptz | Nullable.                                                              |
+| `created_at` | Timestamptz |                                                                        |
 
 > **Note on default membership rows:** Phase 6B treats the _absence_ of an active membership record as Explorer access, resolved entirely in the `getCurrentEntitlementFn()` server function. No automatic default row insertion is performed. If a seeded default membership row is added in a later migration, it must document: seed order, trigger order, idempotency, failure handling, and RLS behavior before approval.
 
@@ -123,16 +128,19 @@ Use `@supabase/ssr` to separate browser and server Supabase clients:
 ## 8. RLS Policies
 
 ### `profiles`
+
 - **SELECT:** Users can read only their own profile (`auth.uid() = id`). No public read. No policy allowing all authenticated users to read all profiles. Community-visible profile data will be addressed later via a narrowly scoped view or dedicated server function.
 - **UPDATE:** Users can update only their own profile (`auth.uid() = id`). The `role`, `id`, `created_at`, and `onboarding_completed_at` columns are excluded from user-editable fields at the application layer and guarded by column-level Zod schemas.
 - **INSERT:** Handled exclusively by a `SECURITY DEFINER` trigger on `auth.users` insert — not by the user directly.
 - **DELETE:** No user policy. Future admin-only operation.
 
 ### `membership_plans`
+
 - **SELECT:** Public — anyone can read the plan catalogue.
 - **INSERT/UPDATE/DELETE:** No user or anon policy. Service Role only, applied outside Phase 6B.
 
 ### `memberships`
+
 - **SELECT:** Users can read only their own memberships (`auth.uid() = user_id`).
 - **INSERT/UPDATE/DELETE:** No user policy. Status changes are exclusively server-controlled operations (verified webhook, admin workflow). Direct client writes are not permitted.
 
@@ -143,6 +151,7 @@ Use `@supabase/ssr` to separate browser and server Supabase clients:
 All server functions derive the current user from the server-side session. No `userId` parameters are accepted from the client.
 
 **Auth (`src/server/auth.ts`):**
+
 - `signUpFn({ email, password, displayName })` — Creates auth user; trigger creates profile. Returns session or check-email state.
 - `signInWithEmailFn({ email, password })` — Returns session or error.
 - `signOutFn()` — Clears session cookies.
@@ -150,11 +159,13 @@ All server functions derive the current user from the server-side session. No `u
 - `requestPasswordResetFn({ email })` — Sends reset email.
 
 **Profiles (`src/server/profiles.ts`):**
+
 - `getCurrentProfileFn()` — Reads `profiles` for `auth.uid()`.
 - `updateCurrentProfileFn({ displayName, handle, bio, location, timezone })` — Updates only safe fields for `auth.uid()`. Validated by Zod.
 - `completeOnboardingFn({ displayName, handle })` — Sets `onboarding_completed_at` server-side for `auth.uid()`.
 
 **Memberships (`src/server/memberships.ts`):**
+
 - `getCurrentEntitlementFn()` — Returns the active membership for `auth.uid()`. If no active membership row exists, returns Explorer tier. Read-only; never mutates.
 
 ---
@@ -229,6 +240,7 @@ All server functions derive the current user from the server-side session. No `u
 ## 15. Testing Plan
 
 **Functional tests:**
+
 - Email signup → check-your-email state when confirmation required.
 - Email signup → session returned → redirect to `/onboarding` when no confirmation required.
 - Email login → session → redirect to `/dashboard`.
@@ -239,6 +251,7 @@ All server functions derive the current user from the server-side session. No `u
 - `getCurrentEntitlementFn()` returns Explorer when no active membership exists.
 
 **RLS tests (must test both allowed and denied):**
+
 - Anonymous profile read → denied.
 - Authenticated User A reading User B's profile → denied.
 - Authenticated User A updating User B's profile → denied.
@@ -249,6 +262,7 @@ All server functions derive the current user from the server-side session. No `u
 - User updating their own safe profile fields → allowed.
 
 **Secret scanning:**
+
 - `grep` the Vite build output for service-role key substrings — must return empty.
 - Confirm no `VITE_SUPABASE_SERVICE_ROLE_KEY` or equivalent in source files or `.env` files committed to Git.
 

@@ -77,29 +77,30 @@ Remove `src/routes/about.tsx` and `src/routes/pricing.tsx`. Revert changes in `s
 
 **Routes verified (direct navigation + browser refresh):**
 
-| Route | Status |
-|---|---|
-| / | ✅ OK |
-| /about | ✅ OK |
-| /pricing | ✅ OK |
-| /login | ✅ OK |
-| /signup | ✅ OK |
-| /onboarding | ✅ OK |
-| /dashboard | ✅ OK |
-| /mindset | ✅ OK |
-| /trading | ✅ OK |
-| /progress | ✅ OK |
-| /accountability | ✅ OK |
-| /community | ✅ OK |
-| /sessions | ✅ OK |
-| /profile | ✅ OK |
-| /settings | ✅ OK |
-| /admin | ✅ OK |
-| /styleguide | ✅ OK |
-| /courses/mind-lab | ✅ OK |
-| /lessons/ml2 | ✅ OK |
+| Route             | Status |
+| ----------------- | ------ |
+| /                 | ✅ OK  |
+| /about            | ✅ OK  |
+| /pricing          | ✅ OK  |
+| /login            | ✅ OK  |
+| /signup           | ✅ OK  |
+| /onboarding       | ✅ OK  |
+| /dashboard        | ✅ OK  |
+| /mindset          | ✅ OK  |
+| /trading          | ✅ OK  |
+| /progress         | ✅ OK  |
+| /accountability   | ✅ OK  |
+| /community        | ✅ OK  |
+| /sessions         | ✅ OK  |
+| /profile          | ✅ OK  |
+| /settings         | ✅ OK  |
+| /admin            | ✅ OK  |
+| /styleguide       | ✅ OK  |
+| /courses/mind-lab | ✅ OK  |
+| /lessons/ml2      | ✅ OK  |
 
 **Viewport checks:**
+
 - Desktop: ✅ Passed
 - 300×535 mobile (/, /about, /pricing): ✅ Passed
 

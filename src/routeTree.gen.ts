@@ -13,10 +13,13 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AccountabilityRouteImport } from './routes/accountability'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as ChecklistRouteImport } from './routes/checklist'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as MarketRouteImport } from './routes/market'
 import { Route as MindsetRouteImport } from './routes/mindset'
 import { Route as MoreRouteImport } from './routes/more'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -53,6 +56,11 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChecklistRoute = ChecklistRouteImport.update({
   id: '/checklist',
   path: '/checklist',
@@ -68,9 +76,19 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InboxRoute = InboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketRoute = MarketRouteImport.update({
+  id: '/market',
+  path: '/market',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MindsetRoute = MindsetRouteImport.update({
@@ -154,10 +172,13 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/accountability': typeof AccountabilityRoute
   '/admin': typeof AdminRoute
+  '/chat': typeof ChatRoute
   '/checklist': typeof ChecklistRoute
   '/community': typeof CommunityRoute
   '/dashboard': typeof DashboardRoute
+  '/inbox': typeof InboxRoute
   '/login': typeof LoginRoute
+  '/market': typeof MarketRoute
   '/mindset': typeof MindsetRoute
   '/more': typeof MoreRoute
   '/onboarding': typeof OnboardingRoute
@@ -179,10 +200,13 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/accountability': typeof AccountabilityRoute
   '/admin': typeof AdminRoute
+  '/chat': typeof ChatRoute
   '/checklist': typeof ChecklistRoute
   '/community': typeof CommunityRoute
   '/dashboard': typeof DashboardRoute
+  '/inbox': typeof InboxRoute
   '/login': typeof LoginRoute
+  '/market': typeof MarketRoute
   '/mindset': typeof MindsetRoute
   '/more': typeof MoreRoute
   '/onboarding': typeof OnboardingRoute
@@ -205,10 +229,13 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/accountability': typeof AccountabilityRoute
   '/admin': typeof AdminRoute
+  '/chat': typeof ChatRoute
   '/checklist': typeof ChecklistRoute
   '/community': typeof CommunityRoute
   '/dashboard': typeof DashboardRoute
+  '/inbox': typeof InboxRoute
   '/login': typeof LoginRoute
+  '/market': typeof MarketRoute
   '/mindset': typeof MindsetRoute
   '/more': typeof MoreRoute
   '/onboarding': typeof OnboardingRoute
@@ -232,10 +259,13 @@ export interface FileRouteTypes {
     | '/about'
     | '/accountability'
     | '/admin'
+    | '/chat'
     | '/checklist'
     | '/community'
     | '/dashboard'
+    | '/inbox'
     | '/login'
+    | '/market'
     | '/mindset'
     | '/more'
     | '/onboarding'
@@ -257,10 +287,13 @@ export interface FileRouteTypes {
     | '/about'
     | '/accountability'
     | '/admin'
+    | '/chat'
     | '/checklist'
     | '/community'
     | '/dashboard'
+    | '/inbox'
     | '/login'
+    | '/market'
     | '/mindset'
     | '/more'
     | '/onboarding'
@@ -282,10 +315,13 @@ export interface FileRouteTypes {
     | '/about'
     | '/accountability'
     | '/admin'
+    | '/chat'
     | '/checklist'
     | '/community'
     | '/dashboard'
+    | '/inbox'
     | '/login'
+    | '/market'
     | '/mindset'
     | '/more'
     | '/onboarding'
@@ -308,10 +344,13 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AccountabilityRoute: typeof AccountabilityRoute
   AdminRoute: typeof AdminRoute
+  ChatRoute: typeof ChatRoute
   ChecklistRoute: typeof ChecklistRoute
   CommunityRoute: typeof CommunityRoute
   DashboardRoute: typeof DashboardRoute
+  InboxRoute: typeof InboxRoute
   LoginRoute: typeof LoginRoute
+  MarketRoute: typeof MarketRoute
   MindsetRoute: typeof MindsetRoute
   MoreRoute: typeof MoreRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -359,6 +398,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checklist': {
       id: '/checklist'
       path: '/checklist'
@@ -380,11 +426,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inbox': {
+      id: '/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof InboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/market': {
+      id: '/market'
+      path: '/market'
+      fullPath: '/market'
+      preLoaderRoute: typeof MarketRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mindset': {
@@ -500,10 +560,13 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AccountabilityRoute: AccountabilityRoute,
   AdminRoute: AdminRoute,
+  ChatRoute: ChatRoute,
   ChecklistRoute: ChecklistRoute,
   CommunityRoute: CommunityRoute,
   DashboardRoute: DashboardRoute,
+  InboxRoute: InboxRoute,
   LoginRoute: LoginRoute,
+  MarketRoute: MarketRoute,
   MindsetRoute: MindsetRoute,
   MoreRoute: MoreRoute,
   OnboardingRoute: OnboardingRoute,

@@ -1,13 +1,13 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { BarChart2, BookOpen, Home, MoreHorizontal, Users } from "lucide-react";
+import { Brain, Briefcase, Inbox, MessageCircle, MoreVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const TABS = [
-  { label: "Den", to: "/dashboard", icon: Home },
-  { label: "Learning", to: "/courses", icon: BookOpen },
-  { label: "Pack", to: "/community", icon: Users },
-  { label: "Progress", to: "/progress", icon: BarChart2 },
-  { label: "More", to: "/more", icon: MoreHorizontal },
+  { label: "Chat", to: "/chat", icon: MessageCircle },
+  { label: "Courses", to: "/courses", icon: Brain },
+  { label: "Inbox", to: "/inbox", icon: Inbox },
+  { label: "Market", to: "/market", icon: Briefcase },
+  { label: "More", to: "/more", icon: MoreVertical },
 ] as const;
 
 /**
@@ -16,24 +16,21 @@ const TABS = [
  */
 export function isTabActive(tabTo: string, pathname: string): boolean {
   switch (tabTo) {
-    case "/dashboard":
-      return pathname === "/dashboard";
+    case "/chat":
+      return pathname.startsWith("/chat") || pathname.startsWith("/community");
     case "/courses":
       return pathname.startsWith("/courses") || pathname.startsWith("/lessons");
-    case "/community":
-      return pathname.startsWith("/community");
-    case "/progress":
-      return (
-        pathname.startsWith("/progress") ||
-        pathname.startsWith("/accountability") ||
-        pathname.startsWith("/sessions")
-      );
+    case "/inbox":
+      return pathname.startsWith("/inbox");
+    case "/market":
+      return pathname.startsWith("/market");
     case "/more":
       return (
         pathname.startsWith("/more") ||
         pathname.startsWith("/profile") ||
         pathname.startsWith("/settings") ||
-        pathname.startsWith("/checklist")
+        pathname.startsWith("/checklist") ||
+        pathname.startsWith("/dashboard")
       );
     default:
       return false;

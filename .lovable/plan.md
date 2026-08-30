@@ -31,7 +31,6 @@ Your plan is sound. I agree with all four of your challenge resolutions. Below i
 
 **10. Card titles stay Barlow.** Bebas is uppercase and tightly tracked; the reference's wrapping title-case course titles would become unreadable blocks. Bebas is reserved for section headers and stat numerals.
 
-
 ## Improvements over the reference (agreed)
 
 1. **Focus over hype** — emojis and mixed weights out, brand-tinted Lucide icons in.
@@ -39,37 +38,42 @@ Your plan is sound. I agree with all four of your challenge resolutions. Below i
 3. **Premium empty and loading states** — real skeletons per card shape, and empty states in brand voice ("All tasks completed. Take a breath."), reusing `states.tsx`.
 4. **Meaningful gamification** — Consistency Streak, Risk Adherence, Accountability Score instead of coins/power levels. Rewards process adherence, not app activity.
 
-
-
 ## Proposed changes
 
 ### 1. Shell and navigation
+
 - `member-shell.tsx` becomes the single layout owner: sticky header + content + bottom tab bar (mobile) / left rail (desktop, icon+label with gold active indicator).
 - Split `navigation.tsx` into `top-bar.tsx`, `bottom-nav.tsx`, `side-rail.tsx`.
 - New `more-sheet.tsx` for overflow destinations: Sessions, Accountability, Profile, Settings, Styleguide.
 - Bottom bar respects safe-area inset; every target ≥ 44px.
 
 ### 2. Primitives
+
 - `nested-list.tsx` — collapsible category groups with chevron, icon + label rows, optional notification dot/count.
 - `section-header.tsx` — sticky, Bebas title, optional context switcher, up to 3 icon actions.
 - `segmented-tabs.tsx` — scrollable, gold active label, underline transition on `--motion-base`.
 - `status-panel.tsx` — tinted crimson/gold/forest panel with icon, message, inline recovery CTA (missed check-in, broken streak, billing).
 
 ### 3. Learning centre
+
 - New `courses.index.tsx` route; `course-grid.tsx` rebuilt as reference-style cards: icon/artwork slot left, Barlow title + muted subtitle right, gold progress bar, "% complete", full-width CTA.
 - Tabs: All / In Progress / Completed / Favourites (count chip). Locked courses dim the artwork and show a lock at the right edge instead of a ghost button.
 
 ### 4. Course / module view
+
 - `courses/$courseId.tsx` gets a header with title and "N modules • N lessons", then a vertical lesson list with per-lesson state (complete = forest check, active = gold, locked = muted lock).
 
 ### 5. Profile, ranks, roster
+
 - `profile-sheet.tsx` — bottom sheet with Pack Rank, progress to next rank, earned Marks, active roles.
 - `leaderboard-list.tsx` — roster grouped by rank with count in the heading, avatar + rank mark, name tinted by tier, capped badge row; online count pill with forest dot in the channel header.
 
 ### 6. Checklist
+
 - `checklist-view.tsx` — grouped task blocks with per-group add affordance, forest "Daily" repeat badge, muted scheduled time, bottom-docked "Describe your task" composer with a gold send button, reset indicator per challenge 7.
 
 ### 7. Token discipline pass
+
 - Audit every component for hardcoded colour utilities; everything routes through `src/styles.css` tokens. Add only what's needed (tab indicator, safe-area utility).
 
 ## Technical notes

@@ -69,7 +69,10 @@ function LearningCenter() {
         </p>
 
         {/* Path cards — full-width stacked, TWR-style */}
-        <section className="mt-2 flex flex-col divide-y divide-border overflow-hidden rounded-xl border border-border bg-charcoal" aria-label="Learning paths">
+        <section
+          className="mt-2 flex flex-col divide-y divide-border overflow-hidden rounded-xl border border-border bg-charcoal"
+          aria-label="Learning paths"
+        >
           {/* Mind Lab */}
           <div className="flex flex-col">
             {/* Icon + meta row */}
@@ -118,7 +121,9 @@ function LearningCenter() {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="font-semibold text-foreground">{tradingRoom?.title ?? "Trading Room"}</p>
+                  <p className="font-semibold text-foreground">
+                    {tradingRoom?.title ?? "Trading Room"}
+                  </p>
                   <span className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground">
                     <Lock className="size-2.5" />
                     Member

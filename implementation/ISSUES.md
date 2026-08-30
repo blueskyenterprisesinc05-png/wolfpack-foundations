@@ -54,12 +54,14 @@ Vercel URL: https://wolfpack-foundations.vercel.app/
 All 19 routes verified via direct navigation and browser refresh. Desktop and 300×535 mobile layouts verified for /, /about, and /pricing. No 404s, no unexpected redirects, no console errors. Checkout is a placeholder. No profit guarantees present. Deployment is publicly accessible.
 
 ### Issue #3: Phase 6B - Supabase Database Setup & Migrations
+
 **Status:** In Progress
 **Scope:** Backend
 **Description:**
 Write version-controlled SQL migration files for `profiles`, `membership_plans`, and `memberships` tables. Define all RLS policies and the profile-creation trigger. Apply migrations using the Supabase CLI. No manual SQL in the dashboard without a corresponding migration file.
 
 **Acceptance Criteria:**
+
 - [x] Create `supabase/migrations/` directory and all Phase 6B migration files.
 - [x] `profiles` table uses `display_name`, `handle`, `avatar_path`, `bio`, `location`, `timezone`, `onboarding_completed_at`. No `role` column. No `initials` column.
 - [x] `memberships` table uses `user_id` referencing `auth.users.id` (not `profile_id`).
@@ -81,12 +83,14 @@ implementation/BACKEND_AUTH_PROFILE_PLAN.md
 Supabase CLI access restored. Remote migration history currently shows no applied versions, confirming migration-history drift after manual Dashboard SQL execution. Read-only schema reconciliation is pending.
 
 ### Issue #4: Phase 6B - Auth Service & SSR Session Handling
+
 **Status:** Closed
 **Scope:** Backend/Frontend
 **Description:**
 Install `@supabase/ssr`. Create per-request server and browser Supabase clients. Implement auth server functions. Wire up login and signup UIs. Implement email-confirmation branch. Add SSR session protection to all protected routes.
 
 **Acceptance Criteria:**
+
 - [ ] Install `@supabase/supabase-js` and `@supabase/ssr`.
 - [ ] Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` to Vercel dashboard and local `.env.local` (gitignored). No service-role key in Phase 6B.
 - [ ] `src/lib/supabase/server.ts` creates a new per-request `createServerClient`. No shared mutable client.
@@ -108,12 +112,14 @@ implementation/BACKEND_AUTH_PROFILE_PLAN.md
 Pending.
 
 ### Issue #5: Phase 6B - Profile & Onboarding Backend
+
 **Status:** Closed
 **Scope:** Backend/Frontend
 **Description:**
 Implement profile server functions. Wire the onboarding route to `completeOnboardingFn()`. Map database profile row to frontend `MemberProfile` interface. Gate mock fallback behind `import.meta.env.DEV`.
 
 **Acceptance Criteria:**
+
 - [x] `getCurrentProfileFn()` reads profile for `auth.uid()` only.
 - [x] `updateCurrentProfileFn()` accepts only safe fields: `display_name`, `handle`, `bio`, `location`, `timezone`. Role, id, and timestamps are excluded and rejected by Zod. (Replaced with one-step `completeOnboardingFn` per approval)
 - [x] `completeOnboardingFn()` sets `onboarding_completed_at` server-side. Never client-supplied.
@@ -129,6 +135,7 @@ implementation/BACKEND_AUTH_PROFILE_PLAN.md
 
 **Completion Notes:**
 Closed after manual verification confirming:
+
 - **Unauthenticated access:** Handled correctly (redirects to login).
 - **Successful onboarding:** `display_name`, `handle`, and `onboarding_completed_at` set successfully in one step.
 - **Invalid-input rejection:** Zod validation enforces format (lowercase, no spaces) and length.
@@ -139,12 +146,14 @@ Closed after manual verification confirming:
 - **Production mock protection:** `mockApi.ts` safely fails closed when not in DEV.
 
 ### Issue #6: Phase 6B - Membership Entitlement Logic
+
 **Status:** Closed
 **Scope:** Backend/Frontend
 **Description:**
 Implement `getCurrentEntitlementFn()` to resolve the authenticated user's membership tier. Return Explorer if no active membership row exists. Enforce tier-based access guards on the frontend using server-provided context only.
 
 **Acceptance Criteria:**
+
 - [x] `getCurrentEntitlementFn()` queries `memberships` for `auth.uid()`. No client-supplied `userId`.
 - [x] If no active membership exists, returns Explorer tier without inserting any default row.
 - [x] Membership status is never writable by the user.
@@ -162,19 +171,22 @@ implementation/BACKEND_AUTH_PROFILE_PLAN.md
 Backend function `getCurrentEntitlementFn()` is implemented to safely fetch tier and fallback to `"free"` deterministically. SSR context provides `profile.tier` for presentation only.
 
 Closed after manual verification using a real authenticated user session:
+
 - **Read Own Membership:** PASS (Allowed)
 - **Read Other Membership:** PASS (Filtered by RLS, returns 0 rows safely)
 - **Unauthorized Insert:** PASS (Blocked with 42501 unique violation/RLS policy)
 - **Unauthorized Update:** PASS (Blocked by RLS, returns 0 rows updated)
-Temporary test screen removed.
+  Temporary test screen removed.
 
 ### Issue #7: Phase 7 - Learning Data (Courses & Lessons)
+
 **Status:** In Progress
 **Scope:** Backend/Frontend
 **Description:**
 Migrate static mock learning data (Courses, Lessons, Instructors) into the database. Implement server functions to fetch the catalog and securely gate lesson content based on membership entitlement.
 
 **Acceptance Criteria:**
+
 - [x] Create `instructors`, `courses`, `course_objectives`, `lessons`, and `resources` tables (migration SQL files).
 - [x] Apply RLS policies: catalog is publicly readable, but `content` access is gated.
 - [x] Create seed SQL to insert the existing mock data.

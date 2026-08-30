@@ -46,7 +46,10 @@ function MindLabPage() {
     <AppShell>
       <div className="mx-auto flex max-w-2xl flex-col gap-0 px-4 py-6 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-xs text-muted-foreground" aria-label="Breadcrumb">
+        <nav
+          className="flex items-center gap-2 text-xs text-muted-foreground"
+          aria-label="Breadcrumb"
+        >
           <Link to="/courses" className="transition-colors hover:text-foreground">
             Learning
           </Link>
@@ -84,7 +87,9 @@ function MindLabPage() {
               <Clock3 className="size-3 text-gold" />
               {course?.durationMinutes ?? 81} min
             </span>
-            <span>{done} of {total} lessons complete</span>
+            <span>
+              {done} of {total} lessons complete
+            </span>
             <span className="capitalize">{course?.level ?? "Foundation"}</span>
           </div>
 
@@ -138,9 +143,7 @@ function MindLabPage() {
                   <div
                     className={cn(
                       "flex items-center gap-3 px-4 py-3 transition-colors",
-                      isLocked
-                        ? "cursor-default opacity-45"
-                        : "cursor-pointer hover:bg-white/5",
+                      isLocked ? "cursor-default opacity-45" : "cursor-pointer hover:bg-white/5",
                     )}
                   >
                     {/* Lesson number badge */}
@@ -198,11 +201,7 @@ function MindLabPage() {
                 return isLocked ? (
                   <div key={lesson.id}>{row}</div>
                 ) : (
-                  <Link
-                    key={lesson.id}
-                    to="/lessons/$lessonId"
-                    params={{ lessonId: lesson.id }}
-                  >
+                  <Link key={lesson.id} to="/lessons/$lessonId" params={{ lessonId: lesson.id }}>
                     {row}
                   </Link>
                 );
