@@ -10,6 +10,8 @@ import {
   ChevronRight,
   ShieldCheck,
   Bell,
+  Info,
+  Palette,
 } from "lucide-react";
 import { signOutFn } from "@/lib/auth";
 
@@ -49,7 +51,28 @@ function MorePage() {
       title: "Support",
       items: [{ icon: HelpCircle, label: "Help Center", href: "/about" }],
     },
+    {
+      title: "System",
+      items: [
+        { icon: Info, label: "About", href: "/about" },
+        { icon: Palette, label: "Style Guide", href: "/styleguide" },
+      ],
+    },
   ];
+
+  const tierLabel =
+    profile?.tier === "inner-circle"
+      ? "Inner Circle"
+      : profile?.tier === "member"
+        ? "Member"
+        : "Free";
+
+  const tierColor =
+    profile?.tier === "inner-circle"
+      ? "text-gold border-gold/40 bg-gold/10"
+      : profile?.tier === "member"
+        ? "text-forest border-forest/40 bg-forest/10"
+        : "text-muted-foreground border-border bg-secondary";
 
   return (
     <AppShell>
@@ -76,6 +99,11 @@ function MorePage() {
                   <p className="text-sm text-muted-foreground">
                     {profile?.handle ?? "Member account"}
                   </p>
+                  <span
+                    className={`mt-1.5 inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${tierColor}`}
+                  >
+                    {tierLabel}
+                  </span>
                 </div>
                 <Link
                   to="/profile"
