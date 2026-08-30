@@ -37,9 +37,16 @@ export interface LessonProgress {
   updatedAt?: string;
 }
 
+export interface LessonChecklistItem {
+  id: string;
+  label: string;
+}
+
 export interface Lesson {
   id: string;
   courseId: string;
+  moduleId: string;
+  moduleLabel: string;
   title: string;
   durationMinutes: number;
   order: number;
@@ -56,6 +63,7 @@ export interface LessonContent {
   exercise: string;
   takeaways: string[];
   reflection: string;
+  checklist?: LessonChecklistItem[];
 }
 
 export interface Course {

@@ -29,6 +29,8 @@ const mindLessons: Lesson[] = [
   {
     id: "ml1",
     courseId: "mind-lab",
+    moduleId: "ml-mod-1",
+    moduleLabel: "Module 1 — Foundations",
     title: "The Mind Is the First Market",
     description: "Notice the stories running underneath every decision.",
     durationMinutes: 12,
@@ -43,7 +45,7 @@ const mindLessons: Lesson[] = [
       ],
       example: {
         title: "A small pause",
-        body: "You feel the urge to abandon a routine. Rather than arguing with the urge, name it: ‘I am feeling resistance.’ That small act creates room for a different response.",
+        body: "You feel the urge to abandon a routine. Rather than arguing with the urge, name it: 'I am feeling resistance.' That small act creates room for a different response.",
       },
       exercise:
         "Set a two-minute timer. Write down three sensations, two emotions and one thought without trying to fix any of them.",
@@ -53,11 +55,18 @@ const mindLessons: Lesson[] = [
         "Small pauses compound.",
       ],
       reflection: "What did you notice today that you normally rush past?",
+      checklist: [
+        { id: "ml1-c1", label: "Completed the 2-minute timer exercise" },
+        { id: "ml1-c2", label: "Wrote down 3 sensations, 2 emotions, 1 thought" },
+        { id: "ml1-c3", label: "Read the reflection question and sat with it for 60 seconds" },
+      ],
     },
   },
   {
     id: "ml2",
     courseId: "mind-lab",
+    moduleId: "ml-mod-1",
+    moduleLabel: "Module 1 — Foundations",
     title: "Understanding Emotional Triggers",
     description: "Map the moments that pull you away from your intention.",
     durationMinutes: 18,
@@ -88,6 +97,8 @@ const mindLessons: Lesson[] = [
   {
     id: "ml3",
     courseId: "mind-lab",
+    moduleId: "ml-mod-2",
+    moduleLabel: "Module 2 — Building Consistency",
     title: "Discipline When Motivation Fades",
     description: "Make the next right action smaller than the resistance.",
     durationMinutes: 16,
@@ -98,6 +109,8 @@ const mindLessons: Lesson[] = [
   {
     id: "ml4",
     courseId: "mind-lab",
+    moduleId: "ml-mod-2",
+    moduleLabel: "Module 2 — Building Consistency",
     title: "Building a Consistent Routine",
     description: "Create a practice that can survive a busy week.",
     durationMinutes: 20,
@@ -108,6 +121,8 @@ const mindLessons: Lesson[] = [
   {
     id: "ml5",
     courseId: "mind-lab",
+    moduleId: "ml-mod-3",
+    moduleLabel: "Module 3 — Self-Review",
     title: "The Weekly Self-Review",
     description: "Review setbacks with honesty and without punishment.",
     durationMinutes: 15,
@@ -121,6 +136,8 @@ const tradingLessons: Lesson[] = [
   {
     id: "tr1",
     courseId: "trading-room",
+    moduleId: "tr-mod-1",
+    moduleLabel: "Module 1 — Psychology",
     title: "Your Emotions Are Part of the Trade",
     description: "Build awareness before you build a position.",
     durationMinutes: 14,
@@ -131,6 +148,8 @@ const tradingLessons: Lesson[] = [
   {
     id: "tr2",
     courseId: "trading-room",
+    moduleId: "tr-mod-1",
+    moduleLabel: "Module 1 — Psychology",
     title: "Risk Before Reward",
     description: "Define what you can lose before considering what you could make.",
     durationMinutes: 22,
@@ -156,11 +175,18 @@ const tradingLessons: Lesson[] = [
         "Paper practice builds clarity without capital at risk.",
       ],
       reflection: "Where are you most tempted to negotiate with your own risk limit?",
+      checklist: [
+        { id: "tr2-c1", label: "Defined an invalidation level for a paper trade" },
+        { id: "tr2-c2", label: "Calculated position size based on a 1% max loss" },
+        { id: "tr2-c3", label: "Wrote down the conditions that would make you walk away" },
+      ],
     },
   },
   {
     id: "tr3",
     courseId: "trading-room",
+    moduleId: "tr-mod-2",
+    moduleLabel: "Module 2 — Process",
     title: "Building a Trading Plan",
     description: "Turn vague confidence into observable rules.",
     durationMinutes: 24,
@@ -171,6 +197,8 @@ const tradingLessons: Lesson[] = [
   {
     id: "tr4",
     courseId: "trading-room",
+    moduleId: "tr-mod-2",
+    moduleLabel: "Module 2 — Process",
     title: "The Purpose of a Trading Journal",
     description: "Capture decisions, not just outcomes.",
     durationMinutes: 17,
@@ -181,6 +209,8 @@ const tradingLessons: Lesson[] = [
   {
     id: "tr5",
     courseId: "trading-room",
+    moduleId: "tr-mod-3",
+    moduleLabel: "Module 3 — Review",
     title: "Reviewing a Losing Trade",
     description: "Separate process quality from outcome noise.",
     durationMinutes: 19,
@@ -191,6 +221,8 @@ const tradingLessons: Lesson[] = [
   {
     id: "tr6",
     courseId: "trading-room",
+    moduleId: "tr-mod-3",
+    moduleLabel: "Module 3 — Review",
     title: "Practising Before Risking Capital",
     description: "Rehearse the process before adding pressure.",
     durationMinutes: 21,

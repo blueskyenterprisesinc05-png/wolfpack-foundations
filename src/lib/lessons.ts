@@ -44,6 +44,8 @@ export const getCourseLessonsFn = createServerFn({ method: "GET" })
     const lessons: Lesson[] = data.map((row: any) => ({
       id: row.id,
       courseId: row.course_id,
+      moduleId: row.module_id ?? "default",
+      moduleLabel: row.module_label ?? "Lessons",
       title: row.title,
       description: row.description,
       durationMinutes: row.duration_minutes,
@@ -85,6 +87,8 @@ export const getLessonByIdFn = createServerFn({ method: "GET" })
       const lesson: Lesson = {
         id: row.id,
         courseId: row.course_id,
+        moduleId: (row as any).module_id ?? "default",
+        moduleLabel: (row as any).module_label ?? "Lessons",
         title: row.title,
         description: row.description,
         durationMinutes: row.duration_minutes,

@@ -5,6 +5,12 @@ import { BookOpen, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   LessonRow,
   CourseHeader,
   CourseSafety,
@@ -12,6 +18,7 @@ import {
 } from "@/components/learning/learning-shell";
 import { getCourseByIdFn, getCoursesFn } from "@/lib/courses";
 import { getCourseLessonsFn } from "@/lib/lessons";
+import type { Lesson } from "@/types";
 
 export const Route = createFileRoute("/courses/$courseId")({
   component: function CourseDetailWrapper() {
@@ -115,24 +122,63 @@ function CourseDetail() {
           <div className="mb-4 flex items-end justify-between gap-4">
             <div>
               <p className="eyebrow">Curriculum</p>
-              <h2 className="display-lg mt-2 text-foreground">Course lessons</h2>
+              <h2 className="display-lg mt-2 text-foreground">Course modules</h2>
             </div>
             <span className="text-sm text-muted-foreground">
               {course.lessonsComplete}/{course.lessonCount} complete
             </span>
           </div>
           {lessons.length ? (
-            <Card className="overflow-hidden">
-              {lessons.map((lesson) => (
-                <LessonRow
-                  key={lesson.id}
-                  lesson={lesson}
-                  onOpen={() => {
-                    window.location.href = `/lessons/${lesson.id}`;
-                  }}
-                />
-              ))}
-            </Card>
+            (() => {
+              // Group lessons by moduleId preserving insertion order
+              const moduleMap = new Map<string, { label: string; lessons: Lesson[] }>();
+              lessons.forEach((l) => {
+                if (!moduleMap.has(l.moduleId)) {
+                  moduleMap.set(l.moduleId, { label: l.moduleLabel, lessons: [] });
+                }
+                moduleMap.get(l.moduleId)!.lessons.push(l);
+              });
+              const modules = Array.from(moduleMap.entries());
+              // Default open: the module containing the first in-progress lesson
+              const activeModuleId =
+                lessons.find((l) => l.state === "in-progress")?.moduleId ?? modules[0]?.[0];
+              return (
+                <Accordion type="single" collapsible defaultValue={activeModuleId ?? ""}>
+                  {modules.map(([modId, mod]) => {
+                    const done = mod.lessons.filter((l) => l.state === "complete").length;
+                    return (
+                      <AccordionItem
+                        key={modId}
+                        value={modId}
+                        className="border border-border rounded-xl mb-3 overflow-hidden bg-charcoal"
+                      >
+                        <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-secondary/40">
+                          <div className="flex flex-1 items-center justify-between pr-2 text-left">
+                            <span className="font-semibold text-foreground">{mod.label}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {done}/{mod.lessons.length} complete
+                            </span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="p-0">
+                          <div className="flex flex-col divide-y divide-border border-t border-border">
+                            {mod.lessons.map((lesson) => (
+                              <LessonRow
+                                key={lesson.id}
+                                lesson={lesson}
+                                onOpen={() => {
+                                  window.location.href = `/lessons/${lesson.id}`;
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })}
+                </Accordion>
+              );
+            })()
           ) : (
             <Card>
               <CardContent className="flex flex-col items-center gap-3 p-10 text-center">

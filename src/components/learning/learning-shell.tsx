@@ -11,9 +11,11 @@ import {
   Save,
   ShieldAlert,
 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { ProgressBar } from "@/components/brand/progress";
 import { RiskDisclaimer } from "@/components/brand/risk-disclaimer";
@@ -149,6 +151,46 @@ export function LessonRow({ lesson, onOpen }: { lesson: Lesson; onOpen: () => vo
   );
 }
 
+export function LessonChecklist({ items }: { items: { id: string; label: string }[] }) {
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const toggle = (id: string) => setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
+  const doneCount = items.filter((i) => checked[i.id]).length;
+
+  return (
+    <Card variant="bordered">
+      <CardHeader>
+        <CardTitle>Lesson checklist</CardTitle>
+        <CardDescription>
+          {doneCount}/{items.length} tasks complete — checked state is local to this session.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ul className="space-y-3">
+          {items.map((item) => (
+            <li key={item.id} className="flex items-start gap-3">
+              <Checkbox
+                id={item.id}
+                checked={!!checked[item.id]}
+                onCheckedChange={() => toggle(item.id)}
+                className="mt-0.5 shrink-0"
+              />
+              <label
+                htmlFor={item.id}
+                className={cn(
+                  "cursor-pointer text-sm leading-6 select-none",
+                  checked[item.id] ? "text-muted-foreground line-through" : "text-foreground",
+                )}
+              >
+                {item.label}
+              </label>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function LessonContent({
   lesson,
   progress,
@@ -226,6 +268,9 @@ export function LessonContent({
           <p className="eyebrow">Reflection question</p>
           <p className="mt-2 text-lg text-foreground">{content.reflection}</p>
         </section>
+        {content.checklist && content.checklist.length > 0 && (
+          <LessonChecklist items={content.checklist} />
+        )}
       </article>
       <Card variant="bordered">
         <CardHeader>
