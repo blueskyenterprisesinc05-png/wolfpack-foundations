@@ -6,6 +6,7 @@ import { getCourseLessonsFn } from "@/lib/lessons";
 import { ArrowRight, Brain, CandlestickChart, Clock3, BookOpen, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { SkeletonPathCard } from "@/components/brand/states";
 
 export const Route = createFileRoute("/courses/")({
   beforeLoad: ({ context }) => {
@@ -50,6 +51,26 @@ function LearningCenter() {
   const courses = coursesQuery.data?.courses ?? [];
   const mindLab = courses.find((c) => c.id === "mind-lab");
   const tradingRoom = courses.find((c) => c.id === "trading-room");
+
+  if (coursesQuery.isLoading) {
+    return (
+      <AppShell>
+        <div className="mx-auto flex max-w-2xl flex-col gap-0 px-4 py-6 sm:px-6 lg:px-8">
+          <header className="border-b border-border pb-5">
+            <p className="eyebrow text-gold">The 1% Club</p>
+            <h1 className="display-xl mt-2 text-foreground">Learning Center</h1>
+          </header>
+          <p className="mt-5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+            Your Paths
+          </p>
+          <div className="mt-2 flex flex-col gap-3">
+            <SkeletonPathCard />
+            <SkeletonPathCard />
+          </div>
+        </div>
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell>

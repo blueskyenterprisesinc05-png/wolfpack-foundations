@@ -1,9 +1,14 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppShell } from "@/components/brand/app-shell";
-import { Send } from "lucide-react";
+import { Send, ArrowLeft, Inbox } from "lucide-react";
 import { communityMembers, communityPosts } from "@/data/community";
 import { cn } from "@/lib/utils";
+import {
+  SkeletonConversationRow,
+  SkeletonChatMessage,
+  EmptyState,
+} from "@/components/brand/states";
 
 export const Route = createFileRoute("/inbox")({
   beforeLoad: ({ context }) => {
@@ -19,118 +24,173 @@ const conversations = communityMembers.map((member, idx) => ({
   timeLabel: communityPosts[idx % communityPosts.length]?.createdLabel ?? "Recently",
 }));
 
+type View = "list" | "thread";
+
 function InboxPage() {
   const [selectedId, setSelectedId] = useState<string>(conversations[0]?.member.id ?? "");
-  const selected = conversations.find((c) => c.member.id === selectedId);
+  const [view, setView] = useState<View>("list");
+  const [isLoadingThread, setIsLoadingThread] = useState(false);
 
-  // Use the matching post body as the single mock message in the thread
+  const selected = conversations.find((c) => c.member.id === selectedId);
   const threadPost = communityPosts.find((p) => p.memberId === selectedId);
+
+  // Simulate a one-render loading flash when switching conversations on mobile
+  const selectConversation = (id: string) => {
+    setSelectedId(id);
+    setView("thread");
+    setIsLoadingThread(true);
+  };
+
+  useEffect(() => {
+    const t = isLoadingThread ? setTimeout(() => setIsLoadingThread(false), 300) : null;
+    return () => {
+      if (t !== null) clearTimeout(t);
+    };
+  }, [isLoadingThread]);
+
+  const ConversationList = (
+    <aside className="flex w-full flex-col border-r border-border bg-charcoal sm:w-80 sm:shrink-0">
+      <div className="flex h-14 shrink-0 items-center border-b border-border px-5">
+        <h1 className="font-bold text-foreground">Inbox</h1>
+      </div>
+      <nav className="flex-1 overflow-y-auto" aria-label="Conversations">
+        {conversations.length === 0 ? (
+          <div className="p-6">
+            <EmptyState
+              icon={<Inbox className="size-5" />}
+              title="No conversations"
+              description="You have no messages yet."
+            />
+          </div>
+        ) : (
+          conversations.map(({ member, preview, timeLabel }) => (
+            <button
+              key={member.id}
+              onClick={() => selectConversation(member.id)}
+              className={cn(
+                "flex w-full items-start gap-3 border-b border-border px-4 py-3 text-left transition-colors hover:bg-secondary/40",
+                selectedId === member.id && "bg-accent",
+              )}
+            >
+              <div className="grid size-10 shrink-0 place-items-center rounded-full bg-secondary text-sm font-bold text-muted-foreground">
+                {member.initials}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline justify-between gap-2">
+                  <span
+                    className={cn(
+                      "truncate text-sm font-semibold",
+                      selectedId === member.id ? "text-gold" : "text-foreground",
+                    )}
+                  >
+                    {member.name}
+                  </span>
+                  <span className="shrink-0 text-xs text-muted-foreground">{timeLabel}</span>
+                </div>
+                <p className="mt-0.5 truncate text-xs text-muted-foreground">{preview}</p>
+              </div>
+            </button>
+          ))
+        )}
+      </nav>
+    </aside>
+  );
+
+  const ThreadDetail = selected ? (
+    <main className="flex flex-1 flex-col overflow-hidden">
+      {/* Thread header */}
+      <div className="flex h-14 shrink-0 items-center gap-3 border-b border-border px-4">
+        {/* Back button — mobile only */}
+        <button
+          onClick={() => setView("list")}
+          className="sm:hidden -ml-1 p-1 text-muted-foreground hover:text-foreground"
+          aria-label="Back to inbox"
+        >
+          <ArrowLeft className="size-5" />
+        </button>
+        <div className="grid size-8 shrink-0 place-items-center rounded-full bg-secondary text-xs font-bold text-muted-foreground">
+          {selected.member.initials}
+        </div>
+        <span className="font-semibold text-foreground">{selected.member.name}</span>
+      </div>
+
+      {/* Message thread */}
+      <div className="flex-1 overflow-y-auto px-5 py-6">
+        {isLoadingThread ? (
+          <div className="flex flex-col gap-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <SkeletonChatMessage key={i} />
+            ))}
+          </div>
+        ) : threadPost ? (
+          <div className="flex gap-3">
+            <div className="grid size-8 shrink-0 place-items-center rounded-full bg-secondary text-xs font-bold text-muted-foreground">
+              {selected.member.initials}
+            </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-baseline gap-2">
+                <span className="text-sm font-semibold text-foreground">
+                  {selected.member.name}
+                </span>
+                <span className="text-xs text-muted-foreground">{threadPost.createdLabel}</span>
+              </div>
+              <p className="text-sm text-foreground/90 leading-6">{threadPost.body}</p>
+            </div>
+          </div>
+        ) : (
+          <EmptyState
+            icon={<Inbox className="size-5" />}
+            title="No messages yet"
+            description="This conversation has no messages."
+          />
+        )}
+      </div>
+
+      {/* Disabled compose area */}
+      <div className="shrink-0 border-t border-border bg-charcoal p-4">
+        <div className="flex items-center gap-2 opacity-50">
+          <input
+            type="text"
+            disabled
+            placeholder="Private messaging unavailable — coming soon."
+            className="flex-1 rounded-xl border border-border bg-background px-4 py-2.5 text-sm"
+          />
+          <button
+            disabled
+            className="flex items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2.5 text-sm text-muted-foreground cursor-not-allowed"
+            aria-label="Send (unavailable)"
+          >
+            <Send className="size-4" />
+            Send
+          </button>
+        </div>
+        <p className="mt-2 text-center text-xs text-muted-foreground">
+          Sending messages requires a future backend integration.
+        </p>
+      </div>
+    </main>
+  ) : (
+    <div className="hidden flex-1 items-center justify-center sm:flex">
+      <p className="text-sm text-muted-foreground">Select a conversation to view it.</p>
+    </div>
+  );
 
   return (
     <AppShell>
       <div className="flex h-[calc(100dvh-3.5rem-4rem)] lg:h-dvh w-full overflow-hidden bg-background">
-        {/* ── Conversation List (Left pane) ────────────────────── */}
-        <aside className="flex w-full flex-col border-r border-border bg-charcoal sm:w-80 sm:shrink-0">
-          <div className="flex h-14 shrink-0 items-center border-b border-border px-5">
-            <h1 className="font-bold text-foreground">Inbox</h1>
-          </div>
-          <nav className="flex-1 overflow-y-auto" aria-label="Conversations">
-            {conversations.map(({ member, preview, timeLabel }) => (
-              <button
-                key={member.id}
-                onClick={() => setSelectedId(member.id)}
-                className={cn(
-                  "flex w-full items-start gap-3 border-b border-border px-4 py-3 text-left transition-colors hover:bg-secondary/40",
-                  selectedId === member.id && "bg-accent",
-                )}
-              >
-                <div className="grid size-10 shrink-0 place-items-center rounded-full bg-secondary text-sm font-bold text-muted-foreground">
-                  {member.initials}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span
-                      className={cn(
-                        "truncate text-sm font-semibold",
-                        selectedId === member.id ? "text-gold" : "text-foreground",
-                      )}
-                    >
-                      {member.name}
-                    </span>
-                    <span className="shrink-0 text-xs text-muted-foreground">{timeLabel}</span>
-                  </div>
-                  <p className="mt-0.5 truncate text-xs text-muted-foreground">{preview}</p>
-                </div>
-              </button>
-            ))}
-          </nav>
-        </aside>
+        {/* Mobile: show either list or thread, never both */}
+        <div className={cn("flex w-full sm:hidden", view === "list" ? "flex" : "hidden")}>
+          {ConversationList}
+        </div>
+        <div className={cn("flex w-full sm:hidden", view === "thread" ? "flex" : "hidden")}>
+          {ThreadDetail}
+        </div>
 
-        {/* ── Thread Detail (Right pane) ────────────────────────── */}
-        <main className={cn("hidden flex-1 flex-col overflow-hidden sm:flex")}>
-          {selected ? (
-            <>
-              {/* Thread header */}
-              <div className="flex h-14 shrink-0 items-center border-b border-border px-5 gap-3">
-                <div className="grid size-8 shrink-0 place-items-center rounded-full bg-secondary text-xs font-bold text-muted-foreground">
-                  {selected.member.initials}
-                </div>
-                <span className="font-semibold text-foreground">{selected.member.name}</span>
-              </div>
-
-              {/* Message thread */}
-              <div className="flex-1 overflow-y-auto px-5 py-6">
-                {threadPost ? (
-                  <div className="flex gap-3">
-                    <div className="grid size-8 shrink-0 place-items-center rounded-full bg-secondary text-xs font-bold text-muted-foreground">
-                      {selected.member.initials}
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-sm font-semibold text-foreground">
-                          {selected.member.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {threadPost.createdLabel}
-                        </span>
-                      </div>
-                      <p className="text-sm text-foreground/90 leading-6">{threadPost.body}</p>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No messages yet.</p>
-                )}
-              </div>
-
-              {/* Disabled compose area */}
-              <div className="shrink-0 border-t border-border bg-charcoal p-4">
-                <div className="flex items-center gap-2 opacity-50">
-                  <input
-                    type="text"
-                    disabled
-                    placeholder="Private messaging unavailable — coming soon."
-                    className="flex-1 rounded-xl border border-border bg-background px-4 py-2.5 text-sm"
-                  />
-                  <button
-                    disabled
-                    className="flex items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2.5 text-sm text-muted-foreground cursor-not-allowed"
-                    aria-label="Send (unavailable)"
-                  >
-                    <Send className="size-4" />
-                    Send
-                  </button>
-                </div>
-                <p className="mt-2 text-center text-xs text-muted-foreground">
-                  Sending messages requires a future backend integration.
-                </p>
-              </div>
-            </>
-          ) : (
-            <div className="grid flex-1 place-items-center">
-              <p className="text-sm text-muted-foreground">Select a conversation to view it.</p>
-            </div>
-          )}
-        </main>
+        {/* Desktop: show both side by side */}
+        <div className="hidden sm:flex w-full">
+          {ConversationList}
+          {ThreadDetail}
+        </div>
       </div>
     </AppShell>
   );
