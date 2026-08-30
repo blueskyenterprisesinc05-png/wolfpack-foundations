@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import { Link } from "@tanstack/react-router";
-import { updateProfileFn } from "@/lib/profile";
-import { getBrowserClient } from "@/lib/supabase/browser";
+import { updateProfileFn, uploadAvatarFn } from "@/lib/profile";
 import {
   ChevronRight,
   MessageCircleQuestion,
@@ -147,42 +146,29 @@ export function SettingsAccountPage({ user, profile }: { user: any; profile: any
 
     setIsUploading(true);
     try {
-      const supabase = getBrowserClient();
+      // Convert file to base64 to send to the server function
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-      // Verify the browser client has an active session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !session) {
-        console.error('No active session:', sessionError);
-        alert('Session expired. Please refresh the page and try again.');
+      const fileExt = file.name.split('.').pop() ?? 'jpg';
+
+      const result = await uploadAvatarFn({
+        data: { base64, contentType: file.type, fileExt },
+      });
+
+      if (!result.success) {
+        alert(`Upload failed: ${result.error}`);
         return;
       }
 
-      console.log('Session user:', session.user.id);
-
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${session.user.id}-${Date.now()}.${fileExt}`;
-
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file, { upsert: true });
-
-      if (uploadError) {
-        console.error('Supabase upload error:', uploadError);
-        alert(`Upload failed: ${uploadError.message}`);
-        return;
-      }
-
-      console.log('Upload success:', uploadData);
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
-
-      await updateProfileFn({ data: { avatar_url: publicUrl } });
-      setLocalAvatarUrl(publicUrl);
+      setLocalAvatarUrl(result.publicUrl);
     } catch (error: any) {
       console.error('Error uploading avatar:', error);
-      alert(`Error: ${error?.message ?? 'Unknown error. Check the browser console.'}`);
+      alert(`Error: ${error?.message ?? 'Unknown error.'}`);
     } finally {
       setIsUploading(false);
       e.target.value = '';
