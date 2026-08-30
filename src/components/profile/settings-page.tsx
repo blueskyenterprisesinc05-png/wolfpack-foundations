@@ -105,7 +105,7 @@ export function SettingsPage() {
             <span className="font-medium text-crimson">Logout</span>
           </button>
 
-          <button className="flex items-center gap-3 w-full p-4 rounded-xl border border-border/50 bg-charcoal/30 hover:bg-secondary/50 transition-colors">
+          <button className="flex items-center gap-3 w-full p-4 rounded-xl hover:bg-secondary/50 transition-colors">
             <Lock className="size-5 text-muted-foreground" strokeWidth={2} />
             <span className="font-medium text-muted-foreground">Logout All Devices</span>
           </button>
