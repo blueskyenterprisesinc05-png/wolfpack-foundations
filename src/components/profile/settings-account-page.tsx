@@ -148,8 +148,19 @@ export function SettingsAccountPage({ user, profile }: { user: any; profile: any
     setIsUploading(true);
     try {
       const supabase = getBrowserClient();
+
+      // Verify the browser client has an active session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        console.error('No active session:', sessionError);
+        alert('Session expired. Please refresh the page and try again.');
+        return;
+      }
+
+      console.log('Session user:', session.user.id);
+
       const fileExt = file.name.split('.').pop();
-      const fileName = `${userId}-${Date.now()}.${fileExt}`;
+      const fileName = `${session.user.id}-${Date.now()}.${fileExt}`;
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
@@ -167,8 +178,7 @@ export function SettingsAccountPage({ user, profile }: { user: any; profile: any
         .from('avatars')
         .getPublicUrl(fileName);
 
-      const result = await updateProfileFn({ data: { avatar_url: publicUrl } });
-      console.log('Profile update result:', result);
+      await updateProfileFn({ data: { avatar_url: publicUrl } });
       setLocalAvatarUrl(publicUrl);
     } catch (error: any) {
       console.error('Error uploading avatar:', error);
