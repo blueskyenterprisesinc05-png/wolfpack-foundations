@@ -62,6 +62,8 @@ export const getCurrentProfileFn = createServerFn({ method: "GET" }).handler(
       initials: deriveInitials(row.display_name),
       bio: row.bio ?? undefined,
       location: row.location ?? undefined,
+      avatar_url: row.avatar_url ?? undefined,
+      phone: row.phone ?? undefined,
       // joinedLabel: could be derived from row.created_at here if needed
     };
 
@@ -102,6 +104,43 @@ export const completeOnboardingFn = createServerFn({ method: "POST" })
       if (error.code === "23505" && error.message.includes("handle")) {
         return { success: false as const, error: "This handle is already taken." };
       }
+      return { success: false as const, error: "Failed to update profile. Please try again." };
+    }
+
+    return { success: true as const };
+  });
+
+const updateProfileSchema = z.object({
+  display_name: z.string().min(1, "Display name is required.").optional(),
+  phone: z.string().optional(),
+  avatar_url: z.string().url().optional().or(z.literal("")),
+});
+
+/**
+ * Updates the user's profile details.
+ */
+export const updateProfileFn = createServerFn({ method: "POST" })
+  .validator((data: unknown) => updateProfileSchema.parse(data))
+  .handler(async ({ data }) => {
+    const supabase = createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false as const, error: "Unauthorized. Please sign in." };
+    }
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        ...(data.display_name !== undefined && { display_name: data.display_name }),
+        ...(data.phone !== undefined && { phone: data.phone }),
+        ...(data.avatar_url !== undefined && { avatar_url: data.avatar_url }),
+      })
+      .eq("id", user.id);
+
+    if (error) {
       return { success: false as const, error: "Failed to update profile. Please try again." };
     }
 

@@ -272,6 +272,8 @@ export interface MemberProfile {
   name: string;
   handle: string;
   initials: string;
+  avatar_url?: string;
+  phone?: string;
   bio?: string;
   location?: string;
   joinedLabel?: string;
