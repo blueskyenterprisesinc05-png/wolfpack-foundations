@@ -216,9 +216,8 @@ export function SettingsAccountPage({ user, profile }: { user: any; profile: any
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-foreground">@{userData.username}</span>
-                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <span className="size-3 rounded-full border border-muted-foreground flex items-center justify-center text-[8px]">i</span>
-                  {userId.substring(0, 26)}
+                <span className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                  Member ID: WP-{userId.slice(-8, -4).toUpperCase()}
                 </span>
               </div>
             </div>
