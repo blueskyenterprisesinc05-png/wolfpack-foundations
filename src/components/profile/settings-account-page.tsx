@@ -3,7 +3,6 @@ import { Link } from "@tanstack/react-router";
 import { updateProfileFn } from "@/lib/profile";
 import { getBrowserClient } from "@/lib/supabase/browser";
 import {
-  Crown,
   ChevronRight,
   MessageCircleQuestion,
   ArrowLeft,
@@ -15,7 +14,9 @@ import {
   List,
   Lock,
   Check,
-  X
+  X,
+  Copy,
+  ClipboardCheck
 } from "lucide-react";
 
 // Inline Editable Field Component
@@ -103,6 +104,27 @@ export function SettingsAccountPage({ user, profile }: { user: any; profile: any
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const memberId = `WP-${userId.slice(-8, -4).toUpperCase()}`;
+
+  const handleCopyMemberId = async () => {
+    try {
+      await navigator.clipboard.writeText(memberId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const el = document.createElement('textarea');
+      el.value = memberId;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const handleUpdate = async (field: string, val: string) => {
     setUserData(prev => ({ ...prev, [field]: val }));
@@ -216,9 +238,20 @@ export function SettingsAccountPage({ user, profile }: { user: any; profile: any
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-foreground">@{userData.username}</span>
-                <span className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                  Member ID: WP-{userId.slice(-8, -4).toUpperCase()}
-                </span>
+                <button
+                  onClick={handleCopyMemberId}
+                  className="flex items-center gap-1.5 mt-0.5 text-xs text-muted-foreground hover:text-gold transition-colors group w-fit"
+                  title="Click to copy Member ID"
+                >
+                  {copied ? (
+                    <ClipboardCheck className="size-3 text-[#34d399]" />
+                  ) : (
+                    <Copy className="size-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  )}
+                  <span className={copied ? 'text-[#34d399]' : ''}>
+                    {copied ? 'Copied!' : `Member ID: ${memberId}`}
+                  </span>
+                </button>
               </div>
             </div>
           </div>
