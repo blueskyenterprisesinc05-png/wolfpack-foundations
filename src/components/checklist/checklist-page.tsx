@@ -379,9 +379,9 @@ export function ChecklistPage() {
         />
       )}
 
-      <div className="flex min-h-screen flex-col bg-[#08090d] text-white pb-24 font-sans">
+      <div className="flex min-h-screen flex-col bg-[#0a0a0f] text-white pb-24 font-sans">
         {/* Tabs */}
-        <div className="flex border-b border-white/5 bg-[#08090d]">
+        <div className="flex border-b border-[#1f2d3d] bg-[#0a0a0f]">
           <button
             className={"flex-1 py-4 text-center text-sm font-bold flex items-center justify-center gap-2 transition-colors " + (activeTab === "Checklist" ? "border-b-2 border-gold text-white" : "text-gray-500 hover:text-gray-300")}
             onClick={() => setActiveTab("Checklist")}
@@ -412,10 +412,10 @@ export function ChecklistPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button className="flex items-center gap-2 rounded-lg bg-[#111827] px-4 py-2 text-sm font-bold text-gold hover:bg-[#1a2233] transition-colors">
+                  <button className="flex items-center gap-2 rounded-lg bg-[#141b26] px-4 py-2 text-sm font-bold text-gold hover:bg-[#1c2335] transition-colors">
                     <Share2 className="size-4" /> Share
                   </button>
-                  <button className="flex items-center gap-2 rounded-lg bg-[#111827] px-4 py-2 text-sm font-bold text-gold hover:bg-[#1a2233] transition-colors">
+                  <button className="flex items-center gap-2 rounded-lg bg-[#141b26] px-4 py-2 text-sm font-bold text-gold hover:bg-[#1c2335] transition-colors">
                     <FileUp className="size-4" /> Import
                   </button>
                 </div>
@@ -423,7 +423,7 @@ export function ChecklistPage() {
 
               {/* Streak Banner */}
               {showStreakBanner && (
-                <div className="relative flex items-center gap-2 rounded-xl border border-[#1f2937] bg-[#08090d] px-4 py-3">
+                <div className="relative flex items-center gap-2 rounded-xl border border-[#1f2937] bg-[#0a0a0f] px-4 py-3">
                   <Trophy className="size-4 text-gold shrink-0" fill="currentColor" />
                   <span className="text-sm font-bold text-white">
                     <span className="text-gold">+{profile?.power_progress || 0} Power Level</span> - You have maintained your login streak!
@@ -434,8 +434,8 @@ export function ChecklistPage() {
 
               {/* Groups */}
               {checklist.map((group) => (
-                <div key={group.id} className="rounded-xl border border-[#1f2937] bg-[#08090d] overflow-visible">
-                  <div className="flex items-center justify-between bg-[#111827] px-4 py-4 rounded-t-xl">
+                <div key={group.id} className="rounded-xl border border-[#1f2937] bg-[#0a0a0f] overflow-visible">
+                  <div className="flex items-center justify-between bg-[#141b26] px-4 py-4 rounded-t-2xl">
                     <h3 className="font-bold text-white text-base">{group.name}</h3>
                     <div className="relative group/tooltip">
                       <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
@@ -448,7 +448,7 @@ export function ChecklistPage() {
                     </div>
                   </div>
 
-                  <div className="divide-y divide-[#1e2530] border-t border-[#1e2530]">
+                  <div className="divide-y divide-[#252d3d] border-t border-[#252d3d]">
                     {group.tasks.map((task) => (
                       <div key={task.id} className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/[0.04] transition-colors group">
                         <button
@@ -476,7 +476,7 @@ export function ChecklistPage() {
                     ))}
                     {group.tasks.length === 0 && (
                       <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="flex w-full items-center gap-3 px-4 py-4 text-left hover:bg-white/[0.04] transition-colors">
-                        <span className="text-[15px] font-bold text-white">Add a task</span>
+                        <span className="text-[15px] font-medium text-gray-500">Add a task</span>
                       </button>
                     )}
                   </div>
@@ -485,10 +485,10 @@ export function ChecklistPage() {
 
               {/* Actions */}
               <div className="space-y-3 pt-2 pb-6">
-                <button onClick={handleCreateGroup} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#111827] border border-[#1e2530] py-4 text-sm font-bold text-white hover:bg-[#1a2233] transition-colors">
+                <button onClick={handleCreateGroup} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#141b26] border border-[#1f2d3d] py-4 text-sm font-bold text-white hover:bg-[#1c2335] transition-colors">
                   <Plus className="size-5" /> Create Group
                 </button>
-                <button onClick={handleAddCampusTasks} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#111827] border border-[#1e2530] py-4 text-sm font-bold text-white hover:bg-[#1a2233] transition-colors">
+                <button onClick={handleAddCampusTasks} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#141b26] border border-[#1f2d3d] py-4 text-sm font-bold text-white hover:bg-[#1c2335] transition-colors">
                   <Building2 className="size-5" /> Add Campus Tasks
                 </button>
               </div>
@@ -503,15 +503,15 @@ export function ChecklistPage() {
                   <button className="p-2 text-gray-500 hover:text-white transition-colors"><CalendarIcon className="size-5" /></button>
                 </div>
               </div>
-              <div className="rounded-xl border border-[#1f2937] bg-[#08090d] px-4 py-3">
+              <div className="rounded-xl border border-[#1f2937] bg-[#0a0a0f] px-4 py-3">
                 <select className="w-full bg-transparent text-sm font-medium text-gray-400 outline-none appearance-none" value={profile?.timezone || "UTC"} disabled>
                   <option value={profile?.timezone || "UTC"}>Local - {profile?.timezone || "UTC"}</option>
                 </select>
               </div>
-              <div className="rounded-xl border border-[#1f2937] bg-[#08090d] overflow-hidden">
+              <div className="rounded-xl border border-[#1f2937] bg-[#0a0a0f] overflow-hidden">
                 {[...Array(24)].map((_, i) => (
-                  <div key={i} className="flex border-b border-[#1e2530] last:border-b-0 h-16">
-                    <div className="w-16 border-r border-[#1e2530] flex justify-center py-2 text-xs font-medium text-gray-600">{i.toString().padStart(2, "0")}</div>
+                  <div key={i} className="flex border-b border-[#1f2d3d] last:border-b-0 h-16">
+                    <div className="w-16 border-r border-[#1f2d3d] flex justify-center py-2 text-xs font-medium text-gray-600">{i.toString().padStart(2, "0")}</div>
                     <div className="flex-1 relative" />
                   </div>
                 ))}
@@ -522,8 +522,8 @@ export function ChecklistPage() {
 
         {/* Bottom Input */}
         {activeTab === "Checklist" && (
-          <div className="fixed bottom-0 left-0 right-0 border-t border-[#1e2530] bg-[#08090d] p-4 md:static md:pb-4 flex gap-3 z-40">
-            <div className="flex-1 flex items-center rounded-lg border border-gold/40 focus-within:border-gold bg-[#08090d] px-4 transition-colors">
+          <div className="fixed bottom-0 left-0 right-0 border-t border-[#1f2d3d] bg-[#0a0a0f] p-4 md:static md:pb-4 flex gap-3 z-40">
+            <div className="flex-1 flex items-center rounded-lg border border-gold/40 focus-within:border-gold bg-[#0a0a0f] px-4 transition-colors">
               <input
                 type="text"
                 placeholder="Describe your task"
