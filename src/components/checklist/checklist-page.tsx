@@ -4,6 +4,8 @@ import {
   Trophy, Plus, CheckSquare, Trash2, Calendar as CalendarIcon,
   Coins, Building2, ArrowUp, Share2, FileUp, Clock, Pin, X
 } from "lucide-react";
+import html2canvas from "html2canvas";
+import { Target, Flame, Zap } from "lucide-react";
 import { getChecklistFn, toggleTaskFn, deleteTaskFn, createGroupFn, createTaskFn } from "@/lib/checklist";
 import { getCurrentProfileFn } from "@/lib/profile";
 
@@ -279,7 +281,224 @@ function DetailedTaskModal({
   );
 }
 
+
+// ─── Mission Report Modal ───────────────────────────────────────────────────
+function MissionReportModal({
+  onClose,
+  profile,
+  checklist,
+}: {
+  onClose: () => void;
+  profile: any;
+  checklist: any[];
+}) {
+  const [isSharing, setIsSharing] = useState(false);
+
+  const handleShare = async () => {
+    setIsSharing(true);
+    try {
+      const cardEl = document.getElementById("wolf-billion-card");
+      if (!cardEl) return;
+      
+      // Briefly show it off-screen to render correctly
+      cardEl.style.display = "block";
+      
+      const canvas = await html2canvas(cardEl, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#080a0f"
+      });
+      
+      cardEl.style.display = "none";
+
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
+      if (!blob) return;
+
+      const file = new File([blob], "mission-report.png", { type: "image/png" });
+      
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: "Wolf Billion Mission Report",
+          text: "Check out my daily progress!",
+          files: [file]
+        });
+      } else {
+        // Fallback download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "mission-report.png";
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={onClose}>
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+        
+        <div 
+          className="relative z-10 w-full max-w-md h-[90vh] flex flex-col rounded-t-2xl bg-[#0f141e] border-t border-[#1e2530] shadow-2xl overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center gap-4 p-5 border-b border-[#1e2530]">
+            <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#1e1a0e]">
+              <Share2 className="size-5 text-gold" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-white">Mission Report</h2>
+              <p className="text-sm font-medium text-gray-400">Ready for broadcast. Share your daily performance snapshot.</p>
+            </div>
+            <button onClick={onClose} className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#1c2335] text-white hover:bg-[#252d3d] transition-colors">
+              <X className="size-4" />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-5 space-y-4 pb-24">
+            {/* Share Preview Card */}
+            <div className="rounded-2xl border border-[#1e2530] bg-[#141b26] p-5">
+              <div className="text-xs font-bold tracking-widest text-gray-500 mb-4 uppercase">Share Preview</div>
+              <div className="flex items-center gap-5">
+                <div className="w-24 h-36 rounded-lg bg-[#080a0f] border border-[#1e2530] flex flex-col items-center justify-center p-2">
+                  {/* Fake thumbnail */}
+                  <div className="size-5 rounded-full bg-gold flex items-center justify-center text-[8px] font-bold text-black mb-2">W</div>
+                  <div className="text-[10px] font-bold text-white mb-1">WOLF BILLION</div>
+                  <div className="w-full h-px bg-[#1e2530] my-1" />
+                  <div className="flex w-full justify-between px-1">
+                    <div className="text-[8px] text-gold font-bold">100%</div>
+                    <div className="text-[8px] text-white font-bold">{profile?.power_progress || 0}</div>
+                  </div>
+                </div>
+                <p className="flex-1 text-[15px] font-medium text-gray-400 leading-snug">
+                  Your mission report is ready.<br />Tap Share to send it.
+                </p>
+              </div>
+            </div>
+
+            {/* Metric Definitions Card */}
+            <div className="rounded-2xl border border-[#1e2530] bg-[#141b26] p-5">
+              <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-gray-500 mb-5 uppercase">
+                <div className="flex size-4 items-center justify-center rounded-full border border-gray-500 text-[10px]">i</div>
+                Metric Definitions
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#1e1a0e]">
+                    <Target className="size-5 text-gold" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-white mb-1 tracking-wide">DISCIPLINE</div>
+                    <div className="text-[13px] font-medium text-gray-400 leading-snug">Mission completion rate. 100% = Flawless execution.</div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#1e110e]">
+                    <Flame className="size-5 text-orange-500" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-white mb-1 tracking-wide">STREAK</div>
+                    <div className="text-[13px] font-medium text-gray-400 leading-snug">Consecutive days completing missions.</div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#0e1622]">
+                    <Zap className="size-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-white mb-1 tracking-wide">POWER LEVEL</div>
+                    <div className="text-[13px] font-medium text-gray-400 leading-snug">Daily contribution. <span className="text-blue-400">+1</span> per completed mission.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Fixed CTA */}
+          <div className="absolute bottom-0 left-0 right-0 border-t border-[#1e2530] bg-[#0f141e] p-5">
+            <button
+              onClick={handleShare}
+              disabled={isSharing}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#e2b96e] py-4 text-base font-bold text-[#080b11] hover:bg-[#d4a843] transition-colors disabled:opacity-50"
+            >
+              <Share2 className="size-5" />
+              {isSharing ? "Generating..." : "Share"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Hidden element for html2canvas generation */}
+      <div id="wolf-billion-card" className="absolute left-[-9999px] top-0 w-[400px] h-[700px] bg-[#080a0f] p-8 flex flex-col text-white hidden" style={{ fontFamily: "sans-serif" }}>
+        <div className="flex flex-col items-center mt-4">
+          <div className="size-16 rounded-full bg-gold flex items-center justify-center text-3xl font-black text-black mb-4">W</div>
+          <div className="text-3xl font-black tracking-widest text-white mb-2">WOLF BILLION</div>
+          <div className="rounded border border-gold/30 bg-gold/10 px-3 py-1 text-[11px] font-bold text-gold uppercase tracking-wider mb-8">
+            <CalendarIcon className="inline size-3 mr-1 -mt-0.5" />
+            {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+          </div>
+        </div>
+
+        {/* Stats row */}
+        <div className="flex w-full border border-[#1e2530] bg-[#141b26] rounded-xl overflow-hidden mb-6">
+          <div className="flex-1 flex flex-col items-center justify-center p-4 border-r border-[#1e2530]">
+            <div className="text-xl font-black text-gold">100%</div>
+            <div className="text-[9px] font-bold text-gray-400 tracking-wider">DISCIPLINE</div>
+          </div>
+          <div className="flex-1 flex flex-col items-center justify-center p-4 border-r border-[#1e2530]">
+            <div className="text-xl font-black text-white">{profile?.power_progress || 0}</div>
+            <div className="text-[9px] font-bold text-gray-400 tracking-wider">STREAK</div>
+          </div>
+          <div className="flex-1 flex flex-col items-center justify-center p-4">
+            <div className="text-xl font-black text-blue-400">+{profile?.power_progress || 0}</div>
+            <div className="text-[9px] font-bold text-gray-400 tracking-wider">POWER LEVEL</div>
+          </div>
+        </div>
+
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="size-2 rounded-full bg-gold" />
+            <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">MISSIONS LOG</div>
+          </div>
+          
+          <div className="space-y-3">
+            {checklist.map((group: any) => 
+              group.tasks.slice(0, 3).map((task: any) => (
+                <div key={task.id} className="flex items-center gap-3 bg-[#111827] rounded-lg p-3 border border-[#1e2530]">
+                  <div className={"flex size-5 shrink-0 items-center justify-center rounded-[4px] border-[1.5px] " + (task.completed ? "border-gold bg-gold text-[#080b11]" : "border-gold/50")}>
+                    {task.completed && <CheckSquare className="size-3" strokeWidth={3} />}
+                  </div>
+                  <div className="text-sm font-bold text-white truncate">{task.title}</div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="mt-auto text-center text-xs font-medium text-gray-500 mb-6 italic leading-relaxed">
+          "You're going to have to work when you don't feel like working.<br/>That's how it's going to have to be, or you're never going to be<br/>important."
+        </div>
+
+        <div className="flex items-center justify-center gap-2 pb-4">
+          <span className="text-sm">🪐</span>
+          <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">THE REAL WORLD</span>
+        </div>
+      </div>
+    </>
+  );
+}
+
 // ─── Main Component ──────────────────────────────────────────────────────────
+
 export function ChecklistPage() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<"Checklist" | "Schedule">("Checklist");
@@ -289,6 +508,7 @@ export function ChecklistPage() {
   const [showDetailedModal, setShowDetailedModal] = useState(false);
   const [detailedGroupId, setDetailedGroupId] = useState<string | undefined>();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showMissionReport, setShowMissionReport] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -360,6 +580,14 @@ export function ChecklistPage() {
 
   return (
     <>
+      {showMissionReport && (
+        <MissionReportModal
+          onClose={() => setShowMissionReport(false)}
+          profile={profile}
+          checklist={checklist}
+        />
+      )}
+
       {quickAddGroup && (
         <QuickAddModal
           groupName={quickAddGroup.name}
