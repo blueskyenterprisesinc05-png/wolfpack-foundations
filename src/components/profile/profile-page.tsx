@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ArrowLeft, Check, Edit, Image as ImageIcon, MessageCircleQuestion } from "lucide-react";
+import { ArrowLeft, Check, Edit, Image as ImageIcon, MessageCircleQuestion, Globe, Clock } from "lucide-react";
 import { TopBar } from "@/components/brand/navigation";
 import { Button } from "@/components/ui/button";
 import { updateProfileFn, getCurrentProfileFn, uploadAvatarFn, uploadBackgroundFn } from "@/lib/profile";
@@ -322,7 +322,7 @@ export function ProfilePage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-3 text-gray-400">
-                <span className="text-lg">🌐</span>
+                <Globe className="size-5" />
                 <span>Timezone</span>
               </div>
               {!isEditingSettings ? (
@@ -350,7 +350,7 @@ export function ProfilePage() {
             
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-3 text-gray-400">
-                <span className="text-lg">🕒</span>
+                <Clock className="size-5" />
                 <span>Daily Reset Time</span>
               </div>
               {!isEditingSettings ? (
