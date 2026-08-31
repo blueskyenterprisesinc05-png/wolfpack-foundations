@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ArrowLeft, Check, Edit, Image as ImageIcon, MessageCircleQuestion, Globe, Clock } from "lucide-react";
+import { ArrowLeft, Check, Edit, Image as ImageIcon, MessageCircleQuestion, Globe, Clock, Crown, Coins } from "lucide-react";
 import { TopBar } from "@/components/brand/navigation";
 import { Button } from "@/components/ui/button";
 import { updateProfileFn, getCurrentProfileFn, uploadAvatarFn, uploadBackgroundFn } from "@/lib/profile";
@@ -456,11 +456,11 @@ export function ProfilePage() {
 
               <div className="mt-6 flex items-center justify-between border-b-2 border-[#f2b96d] pb-2">
                  <div className="flex items-center gap-2 text-gray-300">
-                    <span>♔</span>
+                    <Crown className="size-4 text-[#f2b96d]" />
                     <span className="font-semibold">{rankLabel}</span>
                  </div>
                  <div className="flex items-center gap-1 rounded bg-[#332a1e] px-2 py-1 text-[#f2b96d] font-bold">
-                    <span className="text-xs">🪙</span>
+                    <Coins className="size-4 text-[#f2b96d]" />
                     <span>{powerPoints.toLocaleString()}</span>
                  </div>
               </div>
@@ -477,7 +477,7 @@ export function ProfilePage() {
             <div className="p-5 space-y-6">
                <div className="flex items-center justify-between">
                   <span className="font-bold text-gray-300">Power Level: <span className="text-white">{powerLevel}</span></span>
-                  <span className="text-gray-400">+{powerProgress}% ♔</span>
+                  <span className="text-gray-400">+{powerProgress}% <Crown className="size-3 inline-block" /></span>
                </div>
                <div className="flex items-center justify-between">
                   <span className="font-bold text-gray-300">Power Points: <span className="text-[#f2b96d]">{powerPoints.toLocaleString()}</span></span>

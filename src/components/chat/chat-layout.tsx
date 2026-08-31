@@ -3,7 +3,7 @@ import { CampusSidebar } from "./campus-sidebar";
 import { MemberSidebar } from "./member-sidebar";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Users } from "lucide-react";
+import { Menu, Users, Hash } from "lucide-react";
 
 export function ChatLayout({ children }: { children: ReactNode }) {
   return (
@@ -30,7 +30,7 @@ export function ChatLayout({ children }: { children: ReactNode }) {
               <CampusSidebar />
             </SheetContent>
           </Sheet>
-          <span className="font-semibold text-foreground text-sm">💬 General Chat</span>
+          <span className="flex items-center gap-2 font-semibold text-foreground text-sm"><Hash className="size-4" /> General Chat</span>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-muted-foreground">

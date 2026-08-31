@@ -1,5 +1,5 @@
 import { communityPosts } from "@/data/community";
-import { Send, MessageSquare } from "lucide-react";
+import { Send, MessageSquare, Hash } from "lucide-react";
 import { SkeletonChatMessage } from "@/components/brand/states";
 import { EmptyState } from "@/components/brand/states";
 
@@ -7,7 +7,7 @@ export function ChatFeed({ isLoading = false }: { isLoading?: boolean }) {
   return (
     <div className="flex flex-1 flex-col overflow-hidden relative bg-background">
       <div className="hidden h-14 shrink-0 items-center border-b border-border px-6 md:flex">
-        <span className="text-sm font-semibold text-foreground">💬 General Chat</span>
+        <span className="flex items-center gap-2 text-sm font-semibold text-foreground"><Hash className="size-4" /> General Chat</span>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-6 md:px-6">

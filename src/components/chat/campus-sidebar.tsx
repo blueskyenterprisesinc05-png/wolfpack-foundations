@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Hash, Trophy, Brain, Megaphone, BookOpen } from "lucide-react";
 
 export function CampusSidebar() {
   return (
@@ -14,15 +14,15 @@ export function CampusSidebar() {
           </h3>
           <div className="flex flex-col gap-0.5">
             <button className="flex items-center gap-2 rounded-md bg-accent px-2 py-1.5 text-sm font-medium text-gold">
-              <span>💬</span>
+              <Hash className="size-4 shrink-0" />
               <span>General Chat</span>
             </button>
             <button className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground hover:bg-secondary/50 hover:text-foreground">
-              <span>🔥</span>
+              <Trophy className="size-4 shrink-0" />
               <span>Wins</span>
             </button>
             <button className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground hover:bg-secondary/50 hover:text-foreground">
-              <span>🧠</span>
+              <Brain className="size-4 shrink-0" />
               <span>Mindset</span>
             </button>
           </div>
@@ -33,11 +33,11 @@ export function CampusSidebar() {
           </h3>
           <div className="flex flex-col gap-0.5">
             <button className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground hover:bg-secondary/50 hover:text-foreground">
-              <span>📢</span>
+              <Megaphone className="size-4 shrink-0" />
               <span>Announcements</span>
             </button>
             <button className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground hover:bg-secondary/50 hover:text-foreground">
-              <span>📚</span>
+              <BookOpen className="size-4 shrink-0" />
               <span>Rules & Guidelines</span>
             </button>
           </div>

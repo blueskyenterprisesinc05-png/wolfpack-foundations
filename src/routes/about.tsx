@@ -1,3 +1,4 @@
+import { Shield, BookOpen, CheckCircle, Star, Users, Heart } from "lucide-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TopBar } from "@/components/brand/navigation";
 import { Logo } from "@/components/brand/logo";
@@ -41,22 +42,22 @@ function AboutPage() {
             <h2 className="font-display text-2xl text-foreground mb-4">Core Values</h2>
             <ul className="space-y-3 text-muted-foreground">
               <li className="flex items-center gap-2">
-                <span className="text-primary">✦</span> Discipline
+                <Shield className="size-4 text-primary shrink-0 mt-0.5" /> Discipline
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-primary">✦</span> Emotional Mastery
+                <Heart className="size-4 text-primary shrink-0 mt-0.5" /> Emotional Mastery
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-primary">✦</span> Accountability
+                <CheckCircle className="size-4 text-primary shrink-0 mt-0.5" /> Accountability
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-primary">✦</span> Consistent Learning
+                <BookOpen className="size-4 text-primary shrink-0 mt-0.5" /> Consistent Learning
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-primary">✦</span> Integrity
+                <Star className="size-4 text-primary shrink-0 mt-0.5" /> Integrity
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-primary">✦</span> Contribution
+                <Users className="size-4 text-primary shrink-0 mt-0.5" /> Contribution
               </li>
             </ul>
           </div>

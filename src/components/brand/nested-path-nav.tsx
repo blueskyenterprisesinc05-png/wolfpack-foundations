@@ -50,7 +50,7 @@ export function NestedPathNav({ pathname, onClose }: NestedPathNavProps) {
                 onClick={onClose}
                 className="flex items-center gap-2 text-xs text-gold hover:opacity-90 py-1 motion-base"
               >
-                <span className="text-gold">📖</span> The Mind Is the First Market
+                <Brain className="size-4 text-gold shrink-0" /> The Mind Is the First Market
               </Link>
               <Link
                 to="/lessons/$lessonId"
@@ -58,10 +58,10 @@ export function NestedPathNav({ pathname, onClose }: NestedPathNavProps) {
                 onClick={onClose}
                 className="flex items-center gap-2 text-xs text-gold hover:opacity-90 py-1 motion-base"
               >
-                <span className="text-gold">📖</span> Emotional Triggers
+                <Flame className="size-4 text-gold shrink-0" /> Emotional Triggers
               </Link>
               <div className="flex items-center gap-2 text-xs text-muted-foreground/50 py-1 cursor-not-allowed select-none">
-                <span>🔒</span> Motivation Fades
+                <Flame className="size-4 shrink-0" /> Motivation Fades
               </div>
 
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mt-3 mb-1">
@@ -72,14 +72,14 @@ export function NestedPathNav({ pathname, onClose }: NestedPathNavProps) {
                 onClick={onClose}
                 className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground py-1 motion-base"
               >
-                <span>☀️</span> Daily Check-in
+                <CheckSquare className="size-4 shrink-0" /> Daily Check-in
               </Link>
               <Link
                 to="/community"
                 onClick={onClose}
                 className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground py-1 motion-base"
               >
-                <span>🏆</span> Pack Wins
+                <Users className="size-4 shrink-0" /> Pack Wins
               </Link>
             </div>
           )}
@@ -119,7 +119,7 @@ export function NestedPathNav({ pathname, onClose }: NestedPathNavProps) {
                 onClick={onClose}
                 className="flex items-center gap-2 text-xs text-gold hover:opacity-90 py-1 motion-base"
               >
-                <span className="text-gold">📖</span> Emotions Are Part of the Trade
+                <Brain className="size-4 text-gold shrink-0" /> Emotions Are Part of the Trade
               </Link>
               <Link
                 to="/lessons/$lessonId"
@@ -127,7 +127,7 @@ export function NestedPathNav({ pathname, onClose }: NestedPathNavProps) {
                 onClick={onClose}
                 className="flex items-center gap-2 text-xs text-gold hover:opacity-90 py-1 motion-base"
               >
-                <span className="text-gold">📖</span> Risk Before Reward
+                <CandlestickChart className="size-4 text-gold shrink-0" /> Risk Before Reward
               </Link>
               <Link
                 to="/lessons/$lessonId"
@@ -135,7 +135,7 @@ export function NestedPathNav({ pathname, onClose }: NestedPathNavProps) {
                 onClick={onClose}
                 className="flex items-center gap-2 text-xs text-gold hover:opacity-90 py-1 motion-base"
               >
-                <span className="text-gold">📖</span> Building a Plan
+                <CalendarCheck className="size-4 text-gold shrink-0" /> Building a Plan
               </Link>
 
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mt-3 mb-1">
@@ -146,14 +146,14 @@ export function NestedPathNav({ pathname, onClose }: NestedPathNavProps) {
                 onClick={onClose}
                 className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground py-1 motion-base"
               >
-                <span>📊</span> Accountability Log
+                <ClipboardList className="size-4 shrink-0" /> Accountability Log
               </Link>
               <Link
                 to="/sessions"
                 onClick={onClose}
                 className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground py-1 motion-base"
               >
-                <span>📈</span> Sessions Room
+                <Video className="size-4 shrink-0" /> Sessions Room
               </Link>
             </div>
           )}
