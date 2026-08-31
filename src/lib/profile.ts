@@ -3,12 +3,10 @@ import { z } from "zod";
 import { createSupabaseServerClient } from "./supabase/server";
 import type { MemberProfile } from "../types";
 
-/** Normalises the handle to lowercase, stripping any leading @ */
 export function normalizeHandle(handle: string): string {
   return handle.trim().toLowerCase().replace(/^@/, "");
 }
 
-/** Generates initials from the display name */
 export function deriveInitials(displayName: string | null | undefined): string {
   if (!displayName) return "M";
   const parts = displayName.trim().split(/\s+/);
@@ -18,7 +16,6 @@ export function deriveInitials(displayName: string | null | undefined): string {
   return (firstPart.charAt(0) + lastPart.charAt(0)).toUpperCase();
 }
 
-/** Regex for handle validation (only a-z, 0-9, and underscores allowed, max 30 chars) */
 const handleRegex = /^[a-z0-9_]{3,30}$/;
 
 const onboardingSchema = z.object({
@@ -33,11 +30,6 @@ const onboardingSchema = z.object({
     }),
 });
 
-/**
- * Returns the profile for the currently authenticated user.
- * Derived initials are calculated here.
- * Entitlement and progress fields are intentionally left undefined (to be implemented).
- */
 export const getCurrentProfileFn = createServerFn({ method: "GET" }).handler(
   async (): Promise<{ profile: MemberProfile | null }> => {
     const supabase = createSupabaseServerClient();
@@ -65,17 +57,19 @@ export const getCurrentProfileFn = createServerFn({ method: "GET" }).handler(
       location: row.location ?? undefined,
       avatar_url: row.avatar_url ?? undefined,
       phone: row.phone ?? undefined,
-      // joinedLabel: could be derived from row.created_at here if needed
+      custom_status: row.custom_status ?? undefined,
+      custom_background_url: row.custom_background_url ?? undefined,
+      timezone: row.timezone ?? undefined,
+      daily_reset_time: row.daily_reset_time ?? undefined,
+      personal_info: row.personal_info ?? undefined,
+      power_level: row.power_level ?? 1,
+      power_points: row.power_points ?? 0,
     };
 
     return { profile };
   },
 );
 
-/**
- * Completes onboarding by setting display_name, handle, and onboarding_completed_at.
- * Handles database unique constraint violations for the handle.
- */
 export const completeOnboardingFn = createServerFn({ method: "POST" })
   .validator((data: unknown) => onboardingSchema.parse(data))
   .handler(async ({ data }) => {
@@ -88,7 +82,6 @@ export const completeOnboardingFn = createServerFn({ method: "POST" })
       return { success: false as const, error: "Unauthorized. Please sign in." };
     }
 
-    // Use a server-generated ISO timestamp since DDL changes are deferred.
     const nowISO = new Date().toISOString();
 
     const { error } = await supabase
@@ -101,7 +94,6 @@ export const completeOnboardingFn = createServerFn({ method: "POST" })
       .eq("id", user.id);
 
     if (error) {
-      // 23505 is the PostgreSQL error code for unique_violation
       if (error.code === "23505" && error.message.includes("handle")) {
         return { success: false as const, error: "This handle is already taken." };
       }
@@ -116,11 +108,14 @@ const updateProfileSchema = z.object({
   username: z.string().min(1, "Username is required.").max(50).optional(),
   phone: z.string().optional(),
   avatar_url: z.string().url().optional().or(z.literal("")),
+  bio: z.string().max(200, "Bio max 200 characters.").optional(),
+  custom_status: z.string().optional().or(z.literal("")),
+  timezone: z.string().optional(),
+  daily_reset_time: z.string().optional(),
+  personal_info: z.record(z.string(), z.string()).optional(),
+  custom_background_url: z.string().url().optional().or(z.literal("")),
 });
 
-/**
- * Updates the user's profile details.
- */
 export const updateProfileFn = createServerFn({ method: "POST" })
   .validator((data: unknown) => updateProfileSchema.parse(data))
   .handler(async ({ data }) => {
@@ -140,6 +135,12 @@ export const updateProfileFn = createServerFn({ method: "POST" })
         ...(data.username !== undefined && { username: data.username }),
         ...(data.phone !== undefined && { phone: data.phone }),
         ...(data.avatar_url !== undefined && { avatar_url: data.avatar_url }),
+        ...(data.bio !== undefined && { bio: data.bio }),
+        ...(data.custom_status !== undefined && { custom_status: data.custom_status }),
+        ...(data.timezone !== undefined && { timezone: data.timezone }),
+        ...(data.daily_reset_time !== undefined && { daily_reset_time: data.daily_reset_time }),
+        ...(data.personal_info !== undefined && { personal_info: data.personal_info }),
+        ...(data.custom_background_url !== undefined && { custom_background_url: data.custom_background_url }),
       })
       .eq("id", user.id);
 
@@ -194,6 +195,49 @@ export const uploadAvatarFn = createServerFn({ method: 'POST' })
     await supabase
       .from('profiles')
       .update({ avatar_url: publicUrl })
+      .eq('id', user.id);
+
+    return { success: true, publicUrl };
+  });
+
+export const uploadBackgroundFn = createServerFn({ method: 'POST' })
+  .validator((data) => uploadAvatarSchema.parse(data))
+  .handler(async ({ data }) => {
+    const supabase = createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return { success: false, error: 'Unauthorized. Please sign in.' };
+    }
+
+    const binaryString = atob(data.base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    const fileBuffer = bytes.buffer;
+    const fileName = user.id + '-' + Date.now() + '.' + data.fileExt;
+
+    const { error: uploadError } = await supabase.storage
+      .from('backgrounds')
+      .upload(fileName, fileBuffer, {
+        contentType: data.contentType,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      return { success: false, error: uploadError.message };
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('backgrounds')
+      .getPublicUrl(fileName);
+
+    await supabase
+      .from('profiles')
+      .update({ custom_background_url: publicUrl })
       .eq('id', user.id);
 
     return { success: true, publicUrl };
