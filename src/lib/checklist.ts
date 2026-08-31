@@ -55,8 +55,7 @@ export const getChecklistFn = createServerFn({ method: "GET" }).handler(async ()
     const { data: defaultGroups } = await supabase
       .from("checklist_groups")
       .insert([
-        { user_id: user.id, name: "General Tasks", position: 0 },
-        { user_id: user.id, name: "Hustler's Campus", position: 1 }
+        { user_id: user.id, name: "General Tasks", position: 0 }
       ])
       .select();
       
