@@ -668,11 +668,11 @@ export function ChecklistPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button className="flex items-center gap-2 rounded-lg bg-[#141b26] px-4 py-2 text-sm font-bold text-gold hover:bg-[#1c2335] transition-colors">
-                    <Share2 className="size-4" /> Share
+                  <button onClick={() => setShowMissionReport(true)} className="flex items-center gap-2 rounded-xl bg-[#1e1a0e] px-4 py-2.5 text-sm font-bold text-gold hover:bg-[#252010] transition-colors">
+                    <Share2 className="size-5" /> Share
                   </button>
-                  <button className="flex items-center gap-2 rounded-lg bg-[#141b26] px-4 py-2 text-sm font-bold text-gold hover:bg-[#1c2335] transition-colors">
-                    <FileUp className="size-4" /> Import
+                  <button className="flex items-center gap-2 rounded-xl bg-[#1e1a0e] px-4 py-2.5 text-sm font-bold text-gold hover:bg-[#252010] transition-colors">
+                    <FileUp className="size-5" /> Import
                   </button>
                 </div>
               </div>
