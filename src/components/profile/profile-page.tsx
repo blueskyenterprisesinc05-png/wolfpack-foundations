@@ -7,6 +7,61 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { MemberProfile } from "@/types";
 import { Link } from "@tanstack/react-router";
 
+// Utility to calculate next reset time
+function getNextReset(timezone: string, timeString: string) {
+  try {
+    const now = new Date();
+    // Default to UTC if Intl fails or timeString is invalid
+    const tz = timezone || "UTC";
+    const [hours, minutes] = (timeString || "00:00").split(":").map(Number);
+    
+    // Create a formatter for the target timezone
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz,
+      year: 'numeric', month: 'numeric', day: 'numeric',
+      hour: 'numeric', minute: 'numeric', second: 'numeric',
+      hour12: false
+    });
+
+    // Parse the current time in the target timezone
+    const parts = formatter.formatToParts(now);
+    const dateMap = Object.fromEntries(parts.map(p => [p.type, p.value]));
+    
+    // Construct a Date object representing the time in that timezone
+    const tzDate = new Date(
+      Number(dateMap.year),
+      Number(dateMap.month) - 1,
+      Number(dateMap.day),
+      Number(dateMap.hour),
+      Number(dateMap.minute),
+      Number(dateMap.second)
+    );
+
+    // Create target time for today
+    const targetDate = new Date(tzDate);
+    targetDate.setHours(hours, minutes, 0, 0);
+
+    // If target time has passed today, next reset is tomorrow
+    if (tzDate.getTime() >= targetDate.getTime()) {
+      targetDate.setDate(targetDate.getDate() + 1);
+    }
+
+    return targetDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + 
+           " at " + 
+           targetDate.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+  } catch (e) {
+    return "Invalid date/time";
+  }
+}
+
+const PERSONAL_INFO_FIELDS = [
+  { label: "Employment Status", key: "employment", options: ["Employed", "Self-employed", "Unemployed", "Student"] },
+  { label: "Traditional education status", key: "education", options: ["High School", "Bachelor's", "Master's", "Ph.D", "None"] },
+  { label: "Business Focus", key: "business", options: ["E-commerce", "SaaS", "Agency", "Freelance", "Other"] },
+  { label: "Gym Membership", key: "gym", options: ["Yes", "No"] },
+  { label: "Exercise Frequency", key: "exercise", options: ["Daily", "3-4 times a week", "1-2 times a week", "Rarely", "Never"] },
+];
+
 export function ProfilePage() {
   const queryClient = useQueryClient();
   const { data, isLoading } = useQuery({
@@ -23,6 +78,10 @@ export function ProfilePage() {
   const [dailyResetTime, setDailyResetTime] = useState("00:00");
   const [personalInfo, setPersonalInfo] = useState<Record<string, string>>({});
   
+  // Edit Modes
+  const [isEditingSettings, setIsEditingSettings] = useState(false);
+  const [isEditingPersonalInfo, setIsEditingPersonalInfo] = useState(false);
+
   // Local UI State for Preview
   const [localAvatarUrl, setLocalAvatarUrl] = useState<string>("");
   const [localBackgroundUrl, setLocalBackgroundUrl] = useState<string>("");
@@ -47,6 +106,8 @@ export function ProfilePage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["currentProfile"] });
       alert("Profile saved successfully!");
+      setIsEditingSettings(false);
+      setIsEditingPersonalInfo(false);
     },
     onError: (error: any) => {
       alert(`Error saving profile: ${error.message}`);
@@ -112,6 +173,16 @@ export function ProfilePage() {
   if (isLoading) {
     return <div className="flex min-h-screen items-center justify-center text-white">Loading profile...</div>;
   }
+
+  // Dynamic values derived from the profile
+  const powerLevel = profile?.power_level || 1;
+  const powerPoints = profile?.power_points || 0;
+  const powerProgress = profile?.power_progress || 0;
+  const streak = profile?.streak || 0;
+  const tier = profile?.tier || "member";
+  
+  const rankLabel = `${tier.charAt(0).toUpperCase() + tier.slice(1)} in ${streak} days`;
+  const roles = profile?.roles || [];
 
   return (
     <div className="min-h-screen bg-[#080b11] text-white pb-24 font-sans">
@@ -231,9 +302,21 @@ export function ProfilePage() {
         <section className="rounded-xl border border-white/10 bg-[#111827] p-5 shadow-lg">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-sm font-bold tracking-widest text-gray-300">CHECKLIST RESET SETTINGS</h2>
-            <button className="flex items-center gap-2 rounded border border-white/20 bg-white/5 px-3 py-1.5 text-sm font-medium hover:bg-white/10 transition-colors">
-              <Edit className="size-4" /> Edit
-            </button>
+            {!isEditingSettings ? (
+              <button 
+                onClick={() => setIsEditingSettings(true)}
+                className="flex items-center gap-2 rounded border border-white/20 bg-white/5 px-3 py-1.5 text-sm font-medium hover:bg-white/10 transition-colors"
+              >
+                <Edit className="size-4" /> Edit
+              </button>
+            ) : (
+               <button 
+                onClick={handleSave}
+                className="flex items-center gap-2 rounded border border-[#f2b96d] bg-[#332a1e] px-3 py-1.5 text-sm font-bold text-[#f2b96d] hover:bg-[#4a3d2c] transition-colors"
+              >
+                Save
+              </button>
+            )}
           </div>
           
           <div className="space-y-4">
@@ -242,7 +325,27 @@ export function ProfilePage() {
                 <span className="text-lg">🌐</span>
                 <span>Timezone</span>
               </div>
-              <span className="font-bold">{timezone}</span>
+              {!isEditingSettings ? (
+                 <span className="font-bold">{timezone}</span>
+              ) : (
+                <select 
+                  value={timezone} 
+                  onChange={(e) => setTimezone(e.target.value)}
+                  className="rounded-md border border-white/20 bg-[#1f2937] px-3 py-1 text-white focus:outline-none focus:ring-1 focus:ring-[#f2b96d]"
+                >
+                  <option value="UTC">UTC</option>
+                  <option value="America/New_York">Eastern Time</option>
+                  <option value="America/Chicago">Central Time</option>
+                  <option value="America/Denver">Mountain Time</option>
+                  <option value="America/Los_Angeles">Pacific Time</option>
+                  <option value="Europe/London">London (GMT/BST)</option>
+                  <option value="Europe/Paris">Central Europe (CET)</option>
+                  <option value="Asia/Dubai">Dubai (GST)</option>
+                  <option value="Asia/Tokyo">Tokyo (JST)</option>
+                  <option value="Australia/Sydney">Sydney (AEST)</option>
+                  <option value="Africa/Lagos">Lagos (WAT)</option>
+                </select>
+              )}
             </div>
             
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
@@ -250,11 +353,20 @@ export function ProfilePage() {
                 <span className="text-lg">🕒</span>
                 <span>Daily Reset Time</span>
               </div>
-              <span className="font-bold">{dailyResetTime}</span>
+              {!isEditingSettings ? (
+                <span className="font-bold">{dailyResetTime}</span>
+              ) : (
+                <input 
+                  type="time" 
+                  value={dailyResetTime}
+                  onChange={(e) => setDailyResetTime(e.target.value)}
+                  className="rounded-md border border-white/20 bg-[#1f2937] px-3 py-1 text-white focus:outline-none focus:ring-1 focus:ring-[#f2b96d]"
+                />
+              )}
             </div>
             
             <div className="pt-2 text-sm text-gray-400">
-              Next reset: Aug 31, 2026 at 12:00 AM
+              Next reset: {getNextReset(timezone, dailyResetTime)}
             </div>
           </div>
         </section>
@@ -265,22 +377,41 @@ export function ProfilePage() {
         <section className="rounded-xl border border-white/10 bg-[#111827] p-5 shadow-lg relative">
           <div className="mb-6 flex items-start justify-between">
             <h2 className="text-sm font-bold tracking-widest text-gray-300 w-32 leading-relaxed">PERSONAL INFORMATION</h2>
-            <button className="flex items-center gap-2 rounded border border-white/20 bg-white/5 px-4 py-1.5 text-sm font-medium hover:bg-white/10 transition-colors">
-              <Edit className="size-4" /> Create
-            </button>
+            {!isEditingPersonalInfo ? (
+               <button 
+                  onClick={() => setIsEditingPersonalInfo(true)}
+                  className="flex items-center gap-2 rounded border border-white/20 bg-white/5 px-4 py-1.5 text-sm font-medium hover:bg-white/10 transition-colors"
+                >
+                  <Edit className="size-4" /> Edit
+                </button>
+            ) : (
+                <button 
+                  onClick={handleSave}
+                  className="flex items-center gap-2 rounded border border-[#f2b96d] bg-[#332a1e] px-4 py-1.5 text-sm font-bold text-[#f2b96d] hover:bg-[#4a3d2c] transition-colors"
+                >
+                  Save
+                </button>
+            )}
           </div>
 
           <div className="space-y-5">
-            {[
-              { label: "Employment Status", key: "employment" },
-              { label: "Traditional education status", key: "education" },
-              { label: "Business Focus", key: "business" },
-              { label: "Gym Membership", key: "gym" },
-              { label: "Exercise Frequency", key: "exercise" },
-            ].map((field) => (
-              <div key={field.key} className="flex items-center justify-between border-b border-white/10 pb-4">
+            {PERSONAL_INFO_FIELDS.map((field) => (
+              <div key={field.key} className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 gap-2 sm:gap-0">
                 <span className="text-gray-300">{field.label}</span>
-                <span className="font-semibold text-gray-400">{personalInfo[field.key] || "Not answered"}</span>
+                {!isEditingPersonalInfo ? (
+                   <span className="font-semibold text-gray-400">{personalInfo[field.key] || "Not answered"}</span>
+                ) : (
+                   <select
+                     value={personalInfo[field.key] || ""}
+                     onChange={(e) => setPersonalInfo({ ...personalInfo, [field.key]: e.target.value })}
+                     className="rounded-md border border-white/20 bg-[#1f2937] px-3 py-1.5 text-white focus:outline-none focus:ring-1 focus:ring-[#f2b96d]"
+                   >
+                     <option value="" disabled>Select an option</option>
+                     {field.options.map(opt => (
+                       <option key={opt} value={opt}>{opt}</option>
+                     ))}
+                   </select>
+                )}
               </div>
             ))}
           </div>
@@ -326,11 +457,11 @@ export function ProfilePage() {
               <div className="mt-6 flex items-center justify-between border-b-2 border-[#f2b96d] pb-2">
                  <div className="flex items-center gap-2 text-gray-300">
                     <span>♔</span>
-                    <span className="font-semibold">Silver King in 13 days</span>
+                    <span className="font-semibold">{rankLabel}</span>
                  </div>
                  <div className="flex items-center gap-1 rounded bg-[#332a1e] px-2 py-1 text-[#f2b96d] font-bold">
                     <span className="text-xs">🪙</span>
-                    <span>{profile?.power_points || 462}</span>
+                    <span>{powerPoints.toLocaleString()}</span>
                  </div>
               </div>
             </div>
@@ -345,24 +476,24 @@ export function ProfilePage() {
             {/* Tab Content */}
             <div className="p-5 space-y-6">
                <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-300">Power Level: <span className="text-white">{profile?.power_level || 4}</span></span>
-                  <span className="text-gray-400">+17% ♔</span>
+                  <span className="font-bold text-gray-300">Power Level: <span className="text-white">{powerLevel}</span></span>
+                  <span className="text-gray-400">+{powerProgress}% ♔</span>
                </div>
                <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-300">Power Points: <span className="text-[#f2b96d]">{profile?.power_points || "1,449"}</span></span>
+                  <span className="font-bold text-gray-300">Power Points: <span className="text-[#f2b96d]">{powerPoints.toLocaleString()}</span></span>
                </div>
                
                <div className="space-y-3">
                   <h4 className="font-bold text-gray-300">Roles</h4>
                   <div className="flex flex-wrap gap-2">
-                     <span className="flex items-center gap-2 rounded-full bg-[#1f2937] px-4 py-1.5 text-sm font-semibold">
-                        <span className="size-2 rounded-full bg-white"></span>
-                        Advanced Builders
-                     </span>
-                     <span className="flex items-center gap-2 rounded-full bg-[#1f2937] px-4 py-1.5 text-sm font-semibold">
-                        <span className="size-2 rounded-full bg-white"></span>
-                        AI Sellers
-                     </span>
+                    {roles.length > 0 ? roles.map((role, idx) => (
+                      <span key={idx} className="flex items-center gap-2 rounded-full bg-[#1f2937] px-4 py-1.5 text-sm font-semibold">
+                         <span className="size-2 rounded-full bg-white"></span>
+                         {role}
+                      </span>
+                    )) : (
+                      <span className="text-gray-500 italic text-sm">No roles assigned</span>
+                    )}
                   </div>
                </div>
             </div>

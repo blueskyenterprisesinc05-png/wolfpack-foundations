@@ -22,4 +22,7 @@ export interface MemberProfile {
   personal_info?: Record<string, string>;
   power_level?: number;
   power_points?: number;
+  power_progress?: number;
+  roles?: string[];
+  streak?: number;
 }

@@ -64,6 +64,9 @@ export const getCurrentProfileFn = createServerFn({ method: "GET" }).handler(
       personal_info: row.personal_info ?? undefined,
       power_level: row.power_level ?? 1,
       power_points: row.power_points ?? 0,
+      power_progress: row.power_progress ?? 0,
+      roles: row.roles ?? [],
+      streak: row.streak ?? 0,
     };
 
     return { profile };
