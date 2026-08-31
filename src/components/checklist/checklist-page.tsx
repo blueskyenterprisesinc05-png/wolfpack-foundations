@@ -402,13 +402,13 @@ export function ChecklistPage() {
             <div className="space-y-4">
               {/* Header */}
               <div className="flex items-center justify-between pb-2">
-                <div className="flex items-center gap-2">
-                  <Clock className="size-5 text-gray-500" />
+                <div className="flex items-center gap-3 rounded-xl bg-[#141b26] border border-[#1f2d3d] px-3 py-2">
+                  <Clock className="size-4 text-gray-500 shrink-0" />
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold text-gray-300">
+                    <span className="text-sm font-bold tracking-wide text-gray-200">
                       {currentTime.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" })}
                     </span>
-                    <span className="text-xs font-semibold text-gray-600">{profile?.daily_reset_time || "12:00 AM"}</span>
+                    <span className="text-xs font-medium text-gray-500 text-right">{profile?.daily_reset_time || "12:00 AM"}</span>
                   </div>
                 </div>
                 <div className="flex gap-2">
