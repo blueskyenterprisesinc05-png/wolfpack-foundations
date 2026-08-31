@@ -145,7 +145,7 @@ export function ChecklistPage() {
                   <h3 className="font-bold text-white">{group.name}</h3>
                   <button
                     onClick={() => {
-                      const title = window.prompt(\`Add task to \${group.name}:\`);
+                      const title = window.prompt(`Add task to ${group.name}:`);
                       if (title) createTaskMutation.mutate({ group_id: group.id, title });
                     }}
                     className="text-gray-400 hover:text-white"

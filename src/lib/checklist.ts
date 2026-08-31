@@ -1,7 +1,6 @@
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getSessionFn } from "./auth";
-import { createServerClient } from "./supabase/server";
+import { createSupabaseServerClient } from "./supabase/server";
 
 export type ChecklistTask = {
   id: string;
@@ -25,23 +24,22 @@ export type ChecklistGroup = {
   tasks: ChecklistTask[];
 };
 
-export const getChecklistFn = createServerFn("GET", async () => {
-  const { session } = await getSessionFn();
-  if (!session) throw new Error("Unauthorized");
-
-  const supabase = createServerClient();
+export const getChecklistFn = createServerFn({ method: "GET" }).handler(async () => {
+  const supabase = createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
 
   const [groupsRes, tasksRes] = await Promise.all([
     supabase
       .from("checklist_groups")
       .select("*")
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .order("position", { ascending: true })
       .order("created_at", { ascending: true }),
     supabase
       .from("checklist_tasks")
       .select("*")
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .order("position", { ascending: true })
       .order("created_at", { ascending: true }),
   ]);
@@ -57,12 +55,12 @@ export const getChecklistFn = createServerFn("GET", async () => {
     tasks: tasks.filter((task) => task.group_id === group.id),
   }));
 
-  // Handle tasks without a group by creating a virtual "Uncategorized" group if they exist
+  // Handle tasks without a group
   const ungroupedTasks = tasks.filter((task) => !task.group_id);
   if (ungroupedTasks.length > 0) {
     checklist.push({
       id: "ungrouped",
-      user_id: session.user.id,
+      user_id: user.id,
       name: "Uncategorized",
       position: 9999,
       created_at: new Date().toISOString(),
@@ -73,22 +71,24 @@ export const getChecklistFn = createServerFn("GET", async () => {
   return { checklist };
 });
 
-export const createGroupFn = createServerFn("POST", async (name: string) => {
-  const { session } = await getSessionFn();
-  if (!session) throw new Error("Unauthorized");
+export const createGroupFn = createServerFn({ method: "POST" })
+  .validator((name: string) => name)
+  .handler(async ({ data }) => {
+    const supabase = createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
 
-  const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from("checklist_groups")
-    .insert({
-      user_id: session.user.id,
-      name,
-    })
-    .select()
-    .single();
+    const { data: newGroup, error } = await supabase
+      .from("checklist_groups")
+      .insert({
+        user_id: user.id,
+        name: data,
+      })
+      .select()
+      .single();
 
-  if (error) throw error;
-  return { group: data };
+    if (error) throw error;
+    return { group: newGroup };
 });
 
 const createTaskSchema = z.object({
@@ -99,58 +99,64 @@ const createTaskSchema = z.object({
   icon: z.string().optional(),
 });
 
-export const createTaskFn = createServerFn("POST", async (input: z.infer<typeof createTaskSchema>) => {
-  const { session } = await getSessionFn();
-  if (!session) throw new Error("Unauthorized");
+export const createTaskFn = createServerFn({ method: "POST" })
+  .validator((input: z.infer<typeof createTaskSchema>) => createTaskSchema.parse(input))
+  .handler(async ({ data: input }) => {
+    const supabase = createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
 
-  const { group_id, title, scheduled_time, recurrence, icon } = createTaskSchema.parse(input);
+    const { group_id, title, scheduled_time, recurrence, icon } = input;
 
-  const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from("checklist_tasks")
-    .insert({
-      user_id: session.user.id,
-      group_id,
-      title,
-      scheduled_time,
-      recurrence,
-      icon,
-    })
-    .select()
-    .single();
+    const { data: newTask, error } = await supabase
+      .from("checklist_tasks")
+      .insert({
+        user_id: user.id,
+        group_id,
+        title,
+        scheduled_time,
+        recurrence,
+        icon,
+      })
+      .select()
+      .single();
 
-  if (error) throw error;
-  return { task: data };
+    if (error) throw error;
+    return { task: newTask };
 });
 
-export const toggleTaskFn = createServerFn("POST", async ({ id, completed }: { id: string; completed: boolean }) => {
-  const { session } = await getSessionFn();
-  if (!session) throw new Error("Unauthorized");
+export const toggleTaskFn = createServerFn({ method: "POST" })
+  .validator((input: { id: string; completed: boolean }) => input)
+  .handler(async ({ data }) => {
+    const supabase = createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
 
-  const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from("checklist_tasks")
-    .update({ completed })
-    .eq("id", id)
-    .eq("user_id", session.user.id) // Security check
-    .select()
-    .single();
+    const { data: updatedTask, error } = await supabase
+      .from("checklist_tasks")
+      .update({ completed: data.completed })
+      .eq("id", data.id)
+      .eq("user_id", user.id)
+      .select()
+      .single();
 
-  if (error) throw error;
-  return { task: data };
+    if (error) throw error;
+    return { task: updatedTask };
 });
 
-export const deleteTaskFn = createServerFn("POST", async (id: string) => {
-  const { session } = await getSessionFn();
-  if (!session) throw new Error("Unauthorized");
+export const deleteTaskFn = createServerFn({ method: "POST" })
+  .validator((id: string) => id)
+  .handler(async ({ data: id }) => {
+    const supabase = createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
 
-  const supabase = createServerClient();
-  const { error } = await supabase
-    .from("checklist_tasks")
-    .delete()
-    .eq("id", id)
-    .eq("user_id", session.user.id);
+    const { error } = await supabase
+      .from("checklist_tasks")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id);
 
-  if (error) throw error;
-  return { success: true };
+    if (error) throw error;
+    return { success: true };
 });
