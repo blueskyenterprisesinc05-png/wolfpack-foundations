@@ -52,17 +52,17 @@ export function ChecklistPage() {
   });
 
   const handleToggle = (id: string, completed: boolean) => {
-    toggleMutation.mutate({ id, completed: !completed });
+    toggleMutation.mutate({ data: { id, completed: !completed } });
   };
 
   const handleDelete = (id: string) => {
-    deleteMutation.mutate(id);
+    deleteMutation.mutate({ data: id });
   };
 
   const handleCreateGroup = () => {
     const name = window.prompt("Enter new group name:");
     if (name) {
-      createGroupMutation.mutate(name);
+      createGroupMutation.mutate({ data: name });
     }
   };
 
@@ -82,10 +82,7 @@ export function ChecklistPage() {
   const handleQuickAdd = () => {
     if (!newTaskTitle.trim()) return;
     const firstGroup = checklistData?.checklist[0];
-    createTaskMutation.mutate({
-      group_id: firstGroup?.id,
-      title: newTaskTitle,
-    });
+    createTaskMutation.mutate({ data: { group_id: firstGroup?.id, title: newTaskTitle } });
   };
 
   if (isLoadingChecklist || isLoadingProfile) {
@@ -157,7 +154,7 @@ export function ChecklistPage() {
                     <button
                       onClick={() => {
                         const title = window.prompt("Add task to " + group.name + ":");
-                        if (title) createTaskMutation.mutate({ group_id: group.id, title });
+                        if (title) createTaskMutation.mutate({ data: { group_id: group.id, title } });
                       }}
                       className="text-gray-500 hover:text-white p-1"
                     >
