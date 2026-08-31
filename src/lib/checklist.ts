@@ -47,8 +47,23 @@ export const getChecklistFn = createServerFn({ method: "GET" }).handler(async ()
   if (groupsRes.error) throw groupsRes.error;
   if (tasksRes.error) throw tasksRes.error;
 
-  const groups = groupsRes.data as Omit<ChecklistGroup, "tasks">[];
-  const tasks = tasksRes.data as ChecklistTask[];
+  let groups = groupsRes.data as Omit<ChecklistGroup, "tasks">[];
+  let tasks = tasksRes.data as ChecklistTask[];
+  
+  // Seed default groups if none exist
+  if (groups.length === 0) {
+    const { data: defaultGroups } = await supabase
+      .from("checklist_groups")
+      .insert([
+        { user_id: user.id, name: "General Tasks", position: 0 },
+        { user_id: user.id, name: "Hustler's Campus", position: 1 }
+      ])
+      .select();
+      
+    if (defaultGroups) {
+      groups = defaultGroups as Omit<ChecklistGroup, "tasks">[];
+    }
+  }
 
   const checklist: ChecklistGroup[] = groups.map((group) => ({
     ...group,
