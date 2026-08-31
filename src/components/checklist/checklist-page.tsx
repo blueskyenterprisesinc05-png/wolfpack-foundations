@@ -294,6 +294,23 @@ function MissionReportModal({
 }) {
   const [isSharing, setIsSharing] = useState(false);
 
+  // Compute real stats
+  const totalTasks = checklist.reduce((sum, group) => sum + group.tasks.length, 0);
+  const completedTasks = checklist.reduce((sum, group) => sum + group.tasks.filter((t: any) => t.completed).length, 0);
+  const disciplinePercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  
+  const streak = profile?.streak || 0;
+  const powerLevel = profile?.power_level || 0;
+  const displayName = profile?.name || profile?.display_name || "WOLF BILLION";
+  const initials = profile?.initials || "W";
+
+  // Get up to 3 most recently completed tasks, or just top 3 tasks if none completed
+  const allTasks = checklist.flatMap(g => g.tasks);
+  const completedTasksList = allTasks.filter(t => t.completed);
+  const displayTasks = completedTasksList.length >= 3 
+    ? completedTasksList.slice(0, 3) 
+    : allTasks.slice(0, 3);
+
   const handleShare = async () => {
     setIsSharing(true);
     try {
@@ -366,14 +383,24 @@ function MissionReportModal({
             <div className="rounded-2xl border border-[#1e2530] bg-[#141b26] p-5">
               <div className="text-xs font-bold tracking-widest text-gray-500 mb-4 uppercase">Share Preview</div>
               <div className="flex items-center gap-5">
-                <div className="w-24 h-36 rounded-lg bg-[#080a0f] border border-[#1e2530] flex flex-col items-center justify-center p-2">
-                  {/* Fake thumbnail */}
-                  <div className="size-5 rounded-full bg-gold flex items-center justify-center text-[8px] font-bold text-black mb-2">W</div>
-                  <div className="text-[10px] font-bold text-white mb-1">WOLF BILLION</div>
-                  <div className="w-full h-px bg-[#1e2530] my-1" />
-                  <div className="flex w-full justify-between px-1">
-                    <div className="text-[8px] text-gold font-bold">100%</div>
-                    <div className="text-[8px] text-white font-bold">{profile?.power_progress || 0}</div>
+                <div className="w-24 h-36 rounded-lg bg-[#080a0f] border border-[#1e2530] flex flex-col items-center justify-center p-2 relative overflow-hidden">
+                  {/* Fake thumbnail reflecting real data */}
+                  <div className="size-5 rounded-full bg-gold flex items-center justify-center text-[8px] font-bold text-black mb-2 z-10">{initials}</div>
+                  <div className="text-[8px] font-bold text-white mb-1 uppercase truncate w-full text-center z-10">{displayName}</div>
+                  <div className="w-full h-px bg-[#1e2530] my-1 z-10" />
+                  <div className="flex w-full justify-between px-1 z-10">
+                    <div className="text-[6px] text-gold font-bold">{disciplinePercent}%</div>
+                    <div className="text-[6px] text-white font-bold">{streak}</div>
+                    <div className="text-[6px] text-blue-400 font-bold">+{completedTasks}</div>
+                  </div>
+                  {/* Faux task lines */}
+                  <div className="w-full mt-2 space-y-1 z-10">
+                    {displayTasks.slice(0,2).map((t, i) => (
+                      <div key={i} className="flex items-center gap-1">
+                         <div className={"size-1.5 rounded-[1px] " + (t.completed ? "bg-gold" : "border border-gold/50")} />
+                         <div className="h-1 bg-white/20 rounded-full w-full" />
+                      </div>
+                    ))}
                   </div>
                 </div>
                 <p className="flex-1 text-[15px] font-medium text-gray-400 leading-snug">
@@ -416,7 +443,7 @@ function MissionReportModal({
                   </div>
                   <div>
                     <div className="text-sm font-bold text-white mb-1 tracking-wide">POWER LEVEL</div>
-                    <div className="text-[13px] font-medium text-gray-400 leading-snug">Daily contribution. <span className="text-blue-400">+1</span> per completed mission.</div>
+                    <div className="text-[13px] font-medium text-gray-400 leading-snug">Daily contribution. <span className="text-blue-400">+{completedTasks}</span> per completed mission.</div>
                   </div>
                 </div>
               </div>
@@ -440,10 +467,10 @@ function MissionReportModal({
       {/* Hidden element for html2canvas generation */}
       <div id="wolf-billion-card" className="absolute left-[-9999px] top-0 w-[400px] h-[700px] bg-[#080a0f] p-8 flex flex-col text-white hidden" style={{ fontFamily: "sans-serif" }}>
         <div className="flex flex-col items-center mt-4">
-          <div className="size-16 rounded-full bg-gold flex items-center justify-center text-3xl font-black text-black mb-4">W</div>
-          <div className="text-3xl font-black tracking-widest text-white mb-2">WOLF BILLION</div>
-          <div className="rounded border border-gold/30 bg-gold/10 px-3 py-1 text-[11px] font-bold text-gold uppercase tracking-wider mb-8">
-            <CalendarIcon className="inline size-3 mr-1 -mt-0.5" />
+          <div className="size-16 rounded-full bg-gold flex items-center justify-center text-3xl font-black text-black mb-4 uppercase">{initials}</div>
+          <div className="text-3xl font-black tracking-widest text-white mb-2 uppercase text-center max-w-full truncate">{displayName}</div>
+          <div className="rounded border border-gold/30 bg-gold/10 px-3 py-1 text-[11px] font-bold text-gold uppercase tracking-wider mb-8 flex items-center">
+            <CalendarIcon className="size-3 mr-1" />
             {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
           </div>
         </div>
@@ -451,16 +478,16 @@ function MissionReportModal({
         {/* Stats row */}
         <div className="flex w-full border border-[#1e2530] bg-[#141b26] rounded-xl overflow-hidden mb-6">
           <div className="flex-1 flex flex-col items-center justify-center p-4 border-r border-[#1e2530]">
-            <div className="text-xl font-black text-gold">100%</div>
-            <div className="text-[9px] font-bold text-gray-400 tracking-wider">DISCIPLINE</div>
+            <div className="text-xl font-black text-gold">{disciplinePercent}%</div>
+            <div className="text-[9px] font-bold text-gray-400 tracking-wider mt-1">DISCIPLINE</div>
           </div>
           <div className="flex-1 flex flex-col items-center justify-center p-4 border-r border-[#1e2530]">
-            <div className="text-xl font-black text-white">{profile?.power_progress || 0}</div>
-            <div className="text-[9px] font-bold text-gray-400 tracking-wider">STREAK</div>
+            <div className="text-xl font-black text-white">{streak}</div>
+            <div className="text-[9px] font-bold text-gray-400 tracking-wider mt-1">STREAK</div>
           </div>
           <div className="flex-1 flex flex-col items-center justify-center p-4">
-            <div className="text-xl font-black text-blue-400">+{profile?.power_progress || 0}</div>
-            <div className="text-[9px] font-bold text-gray-400 tracking-wider">POWER LEVEL</div>
+            <div className="text-xl font-black text-blue-400">+{completedTasks}</div>
+            <div className="text-[9px] font-bold text-gray-400 tracking-wider mt-1">POWER LEVEL</div>
           </div>
         </div>
 
@@ -471,15 +498,16 @@ function MissionReportModal({
           </div>
           
           <div className="space-y-3">
-            {checklist.map((group: any) => 
-              group.tasks.slice(0, 3).map((task: any) => (
-                <div key={task.id} className="flex items-center gap-3 bg-[#111827] rounded-lg p-3 border border-[#1e2530]">
-                  <div className={"flex size-5 shrink-0 items-center justify-center rounded-[4px] border-[1.5px] " + (task.completed ? "border-gold bg-gold text-[#080b11]" : "border-gold/50")}>
-                    {task.completed && <CheckSquare className="size-3" strokeWidth={3} />}
-                  </div>
-                  <div className="text-sm font-bold text-white truncate">{task.title}</div>
+            {displayTasks.map((task: any) => (
+              <div key={task.id} className="flex items-center gap-3 bg-[#111827] rounded-lg p-3 border border-[#1e2530]">
+                <div className={"flex size-5 shrink-0 items-center justify-center rounded-[4px] border-[1.5px] " + (task.completed ? "border-gold bg-gold text-[#080b11]" : "border-gold/50")}>
+                  {task.completed && <CheckSquare className="size-3" strokeWidth={3} />}
                 </div>
-              ))
+                <div className="text-sm font-bold text-white truncate flex-1">{task.title}</div>
+              </div>
+            ))}
+            {displayTasks.length === 0 && (
+              <div className="text-sm text-gray-500 italic p-3 text-center">No missions logged today.</div>
             )}
           </div>
         </div>
