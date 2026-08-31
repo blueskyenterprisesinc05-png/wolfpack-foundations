@@ -402,8 +402,8 @@ export function ChecklistPage() {
             <div className="space-y-4">
               {/* Header */}
               <div className="flex items-center justify-between pb-2">
-                <div className="flex items-center gap-3 rounded-xl bg-[#141b26] border border-[#1f2d3d] px-3 py-2">
-                  <Clock className="size-4 text-gray-500 shrink-0" />
+                <div className="flex items-start gap-3 rounded-xl bg-[#141b26] border border-[#1f2d3d] px-3 py-2">
+                  <Clock className="size-4 text-gray-500 shrink-0 mt-[2px]" />
                   <div className="flex flex-col">
                     <span className="text-sm font-bold tracking-wide text-gray-200">
                       {currentTime.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" })}
