@@ -22,7 +22,7 @@ function MorePage() {
   const menuItems = [
     { icon: Settings, label: "Settings", href: "/settings" },
     { icon: User, label: "Profile", href: "/profile" },
-    { icon: ListTodo, label: "Checklist", href: "#" },
+    { icon: ListTodo, label: "Checklist", href: "/checklist" },
     { icon: Wallet, label: "Wallet", href: "#" },
     { icon: Crown, label: "Queen", href: "#" },
     { icon: Users, label: "Friends", href: "#" },
