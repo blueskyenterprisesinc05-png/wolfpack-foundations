@@ -1,16 +1,293 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Trophy, Plus, CheckSquare, Trash2, Calendar as CalendarIcon, Coins, Building2, ArrowUp, Share2, FileUp, Clock, Pin } from "lucide-react";
+import {
+  Trophy, Plus, CheckSquare, Trash2, Calendar as CalendarIcon,
+  Coins, Building2, ArrowUp, Share2, FileUp, Clock, Pin, X
+} from "lucide-react";
 import { getChecklistFn, toggleTaskFn, deleteTaskFn, createGroupFn, createTaskFn } from "@/lib/checklist";
 import { getCurrentProfileFn } from "@/lib/profile";
 
+// ─── Quick Add Modal ────────────────────────────────────────────────────────
+function QuickAddModal({
+  groupName,
+  onAdd,
+  onCancel,
+  isPending,
+}: {
+  groupName: string;
+  onAdd: (title: string) => void;
+  onCancel: () => void;
+  isPending: boolean;
+}) {
+  const [title, setTitle] = useState("");
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" onClick={onCancel}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div
+        className="relative z-10 w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-[#0f141e] border border-[#1f2937] p-6 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="mb-5 text-lg font-bold text-white">New Task</h2>
+        <label className="mb-2 block text-sm font-bold text-gray-300">Task Title</label>
+        <input
+          autoFocus
+          type="text"
+          placeholder="Enter task description"
+          className="w-full rounded-lg border border-[#374151] bg-[#141923] px-4 py-3 text-sm font-medium text-white placeholder-gray-500 outline-none focus:border-gold/60 transition-colors"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && title.trim()) onAdd(title.trim());
+            if (e.key === "Escape") onCancel();
+          }}
+        />
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            onClick={onCancel}
+            className="px-6 py-3 rounded-lg text-sm font-bold text-white bg-[#1f2937] hover:bg-[#374151] transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => title.trim() && onAdd(title.trim())}
+            disabled={!title.trim() || isPending}
+            className="px-6 py-3 rounded-lg text-sm font-bold bg-gold text-[#080b11] hover:bg-[#d4a843] transition-colors disabled:opacity-50"
+          >
+            Add Task
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Toggle Switch ──────────────────────────────────────────────────────────
+function Toggle({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      onClick={() => onChange(!enabled)}
+      className={"relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors " + (enabled ? "bg-gold" : "bg-[#374151]")}
+    >
+      <span className={"inline-block size-5 rounded-full bg-white shadow transition-transform " + (enabled ? "translate-x-6" : "translate-x-1")} />
+    </button>
+  );
+}
+
+// ─── Detailed New Task Modal ─────────────────────────────────────────────────
+function DetailedTaskModal({
+  groupId,
+  onAdd,
+  onClose,
+  isPending,
+  timezone,
+}: {
+  groupId?: string;
+  onAdd: (data: Record<string, unknown>) => void;
+  onClose: () => void;
+  isPending: boolean;
+  timezone?: string;
+}) {
+  const todayInput = new Date().toISOString().slice(0, 10);
+  const tzShort = (timezone || "UTC").split("/").pop() || "UTC";
+
+  const [taskName, setTaskName] = useState("");
+  const [description, setDescription] = useState("");
+  const [scheduledDate, setScheduledDate] = useState(todayInput);
+  const [scheduledTime, setScheduledTime] = useState("10:00");
+  const [durationMinutes, setDurationMinutes] = useState(360);
+  const [customEndTime, setCustomEndTime] = useState(false);
+  const [customEndDate, setCustomEndDate] = useState(todayInput);
+  const [customEndTimeVal, setCustomEndTimeVal] = useState("12:00");
+  const [reminder, setReminder] = useState(false);
+  const [reminderValue, setReminderValue] = useState("No reminder");
+  const [repeat, setRepeat] = useState(false);
+  const [repeatDays, setRepeatDays] = useState<string[]>([]);
+
+  const durationLabel = () => {
+    const h = Math.floor(durationMinutes / 60);
+    const m = durationMinutes % 60;
+    if (h === 0) return m + "m";
+    if (m === 0) return h + "h";
+    return h + "h " + m + "m";
+  };
+
+  const toggleDay = (day: string) => {
+    setRepeatDays((prev) => prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]);
+  };
+
+  const days = [
+    { key: "pin", label: "📌" },
+    { key: "Su", label: "Su" },
+    { key: "Mo", label: "Mo" },
+    { key: "Tu", label: "Tu" },
+    { key: "We", label: "We" },
+    { key: "Th", label: "Th" },
+    { key: "Fr", label: "Fr" },
+    { key: "Sa", label: "Sa" },
+  ];
+
+  const handleSubmit = () => {
+    if (!taskName.trim()) return;
+    onAdd({
+      group_id: groupId,
+      title: taskName.trim(),
+      description,
+      scheduled_date: scheduledDate,
+      scheduled_time: scheduledTime,
+      duration_minutes: durationMinutes,
+      custom_end_date: customEndTime ? customEndDate : undefined,
+      custom_end_time: customEndTime ? customEndTimeVal : undefined,
+      reminder: reminder ? reminderValue : undefined,
+      repeat_days: repeat ? repeatDays : [],
+    });
+  };
+
+  const pct = (durationMinutes / 720) * 100;
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-[#080b11]">
+      <div className="flex-1 overflow-y-auto pb-28">
+        <div className="flex items-center justify-between px-5 pt-6 pb-4">
+          <h2 className="text-xl font-bold text-white">New Task</h2>
+          <button onClick={onClose} className="flex size-8 items-center justify-center rounded-full bg-[#1f2937] text-gray-400 hover:text-white transition-colors">
+            <X className="size-4" />
+          </button>
+        </div>
+
+        <div className="space-y-5 px-5">
+          <input
+            autoFocus
+            type="text"
+            placeholder="Task Name"
+            className="w-full rounded-xl border border-[#374151] bg-[#0f141e] px-4 py-4 text-base font-bold text-white placeholder-gray-600 outline-none focus:border-gold/50 transition-colors"
+            value={taskName}
+            onChange={(e) => setTaskName(e.target.value)}
+          />
+
+          <textarea
+            placeholder="Describe your task..."
+            rows={3}
+            className="w-full rounded-xl border border-[#374151] bg-[#0f141e] px-4 py-3.5 text-sm font-medium text-white placeholder-gray-600 outline-none focus:border-gold/50 resize-none transition-colors"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+
+          {/* Schedule */}
+          <div>
+            <div className="mb-2 flex items-center text-sm font-bold text-white">
+              <span className="mr-2">📅</span>
+              <span>Show on Daily Schedule</span>
+              <span className="ml-auto text-xs font-semibold text-gray-500">Time &nbsp; Local - {tzShort}</span>
+            </div>
+            <div className="flex gap-3">
+              <input type="date" className="flex-1 rounded-lg border border-[#374151] bg-[#0f141e] px-3 py-3 text-sm font-medium text-white outline-none focus:border-gold/50 transition-colors [color-scheme:dark]" value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)} />
+              <input type="time" className="w-28 rounded-lg border border-[#374151] bg-[#0f141e] px-3 py-3 text-sm font-medium text-white outline-none focus:border-gold/50 transition-colors [color-scheme:dark]" value={scheduledTime} onChange={(e) => setScheduledTime(e.target.value)} />
+            </div>
+          </div>
+
+          {/* Duration */}
+          <div>
+            <div className="mb-3 text-sm font-bold text-white">Duration {durationLabel()}</div>
+            <input
+              type="range" min={0} max={720} step={15} value={durationMinutes}
+              onChange={(e) => setDurationMinutes(Number(e.target.value))}
+              className="w-full h-2 rounded-full appearance-none cursor-pointer"
+              style={{ background: "linear-gradient(to right, #e2b96e " + pct + "%, #1f2937 " + pct + "%)" }}
+            />
+          </div>
+
+          {/* Custom End Time */}
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold text-white">Custom End Time</span>
+              <Toggle enabled={customEndTime} onChange={setCustomEndTime} />
+            </div>
+            {customEndTime && (
+              <div className="mt-3">
+                <div className="mb-2 flex justify-end text-xs font-semibold text-gray-500">Time &nbsp; Local - {tzShort}</div>
+                <div className="flex gap-3">
+                  <input type="date" className="flex-1 rounded-lg border border-[#374151] bg-[#0f141e] px-3 py-3 text-sm font-medium text-white outline-none focus:border-gold/50 transition-colors [color-scheme:dark]" value={customEndDate} onChange={(e) => setCustomEndDate(e.target.value)} />
+                  <input type="time" className="w-28 rounded-lg border border-[#374151] bg-[#0f141e] px-3 py-3 text-sm font-medium text-white outline-none focus:border-gold/50 transition-colors [color-scheme:dark]" value={customEndTimeVal} onChange={(e) => setCustomEndTimeVal(e.target.value)} />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Set Reminder */}
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold text-white">Set Reminder</span>
+              <Toggle enabled={reminder} onChange={setReminder} />
+            </div>
+            {reminder && (
+              <select className="mt-3 w-full rounded-lg border border-[#374151] bg-[#0f141e] px-4 py-3 text-sm font-medium text-white outline-none focus:border-gold/50 transition-colors appearance-none" value={reminderValue} onChange={(e) => setReminderValue(e.target.value)}>
+                <option value="No reminder">No reminder</option>
+                <option value="At time of task">At time of task</option>
+                <option value="5 minutes before">5 minutes before</option>
+                <option value="30 minutes before">30 minutes before</option>
+                <option value="1 hour before">1 hour before</option>
+                <option value="2 hours before">2 hours before</option>
+                <option value="1 day before">1 day before</option>
+                <option value="2 days before">2 days before</option>
+                <option value="1 week before">1 week before</option>
+              </select>
+            )}
+          </div>
+
+          {/* Repeat */}
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold text-white">Repeat</span>
+              <Toggle enabled={repeat} onChange={setRepeat} />
+            </div>
+            {repeat && (
+              <div className="mt-3">
+                <p className="mb-3 text-xs font-semibold text-gray-500">Repeat on</p>
+                <div className="flex flex-wrap gap-2">
+                  {days.map(({ key, label }) => (
+                    <button
+                      key={key}
+                      onClick={() => toggleDay(key)}
+                      className={"flex size-11 items-center justify-center rounded-full text-sm font-bold transition-colors " + (repeatDays.includes(key) ? "bg-gold text-[#080b11]" : "bg-[#1f2937] text-gray-300 hover:bg-[#374151]")}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-3 text-xs font-medium text-gray-500">
+                  💡 Repeated tasks always reset daily at midnight in your timezone
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Fixed CTA */}
+      <div className="fixed bottom-0 left-0 right-0 border-t border-[#1f2937] bg-[#080b11] px-5 py-4">
+        <button
+          onClick={handleSubmit}
+          disabled={!taskName.trim() || isPending}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gold py-4 text-base font-bold text-[#080b11] hover:bg-[#d4a843] transition-colors disabled:opacity-50"
+        >
+          <Plus className="size-5" strokeWidth={3} />
+          Add Task
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 export function ChecklistPage() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<"Checklist" | "Schedule">("Checklist");
   const [showStreakBanner, setShowStreakBanner] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
-  
-  // Current time state for the top left clock
+  const [quickAddGroup, setQuickAddGroup] = useState<{ id: string; name: string } | null>(null);
+  const [showDetailedModal, setShowDetailedModal] = useState(false);
+  const [detailedGroupId, setDetailedGroupId] = useState<string | undefined>();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -30,23 +307,17 @@ export function ChecklistPage() {
 
   const toggleMutation = useMutation({
     mutationFn: toggleTaskFn,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["checklist"] });
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["checklist"] }),
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteTaskFn,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["checklist"] });
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["checklist"] }),
   });
 
   const createGroupMutation = useMutation({
     mutationFn: createGroupFn,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["checklist"] });
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["checklist"] }),
   });
 
   const createTaskMutation = useMutation({
@@ -54,36 +325,23 @@ export function ChecklistPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklist"] });
       setNewTaskTitle("");
+      setQuickAddGroup(null);
+      setShowDetailedModal(false);
     },
   });
 
-  const handleToggle = (id: string, completed: boolean) => {
-    toggleMutation.mutate({ data: { id, completed: !completed } });
-  };
-
-  const handleDelete = (id: string) => {
-    deleteMutation.mutate({ data: id });
-  };
+  const handleToggle = (id: string, completed: boolean) => toggleMutation.mutate({ data: { id, completed: !completed } });
+  const handleDelete = (id: string) => deleteMutation.mutate({ data: id });
 
   const handleCreateGroup = () => {
     const name = window.prompt("Enter new group name:");
-    if (name) {
-      createGroupMutation.mutate({ data: name });
-    }
+    if (name) createGroupMutation.mutate({ data: name });
   };
 
   const handleAddCampusTasks = () => {
     const campusGroup = checklistData?.checklist.find((g) => g.name === "Hustler's Campus");
-    const groupId = campusGroup?.id;
-    
     createTaskMutation.mutate({
-      data: {
-        group_id: groupId,
-        title: "Log in to Hustler's Campus",
-        scheduled_time: "2:57 AM",
-        recurrence: "Daily",
-        icon: "Coins",
-      }
+      data: { group_id: campusGroup?.id, title: "Log in to Hustler's Campus", scheduled_time: "2:57 AM", recurrence: "Daily", icon: "Coins" },
     });
   };
 
@@ -101,241 +359,196 @@ export function ChecklistPage() {
   const checklist = checklistData?.checklist || [];
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0b0e14] text-white pb-24 font-sans">
-      {/* Tabs */}
-      <div className="flex border-b border-white/5 bg-[#0b0e14]">
-        <button
-          className={`flex-1 py-4 text-center text-sm font-bold flex items-center justify-center gap-2 transition-colors ${
-            activeTab === "Checklist" ? "border-b-2 border-gold text-white" : "text-gray-500 hover:text-gray-300"
-          }`}
-          onClick={() => setActiveTab("Checklist")}
-        >
-          {activeTab === "Checklist" && <Pin className="size-4" fill="currentColor" />}
-          Checklist
-        </button>
-        <button
-          className={`flex-1 py-4 text-center text-sm font-bold transition-colors ${
-            activeTab === "Schedule" ? "border-b-2 border-gold text-white" : "text-gray-500 hover:text-gray-300"
-          }`}
-          onClick={() => setActiveTab("Schedule")}
-        >
-          Schedule
-        </button>
-      </div>
+    <>
+      {quickAddGroup && (
+        <QuickAddModal
+          groupName={quickAddGroup.name}
+          isPending={createTaskMutation.isPending}
+          onCancel={() => setQuickAddGroup(null)}
+          onAdd={(title) => createTaskMutation.mutate({ data: { group_id: quickAddGroup.id, title } })}
+        />
+      )}
 
-      <main className="flex-1 overflow-y-auto p-4 max-w-3xl mx-auto w-full">
-        {activeTab === "Checklist" ? (
-          <div className="space-y-4">
-            
-            {/* Header: Time & Actions */}
-            <div className="flex items-center justify-between pb-2">
-               <div className="flex items-center gap-2">
-                  <Clock className="size-5 text-gray-500" />
-                  <div className="flex flex-col">
-                     <span className="text-sm font-bold text-gray-300">
-                       {currentTime.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                     </span>
-                     <span className="text-xs font-semibold text-gray-600">
-                       {profile?.daily_reset_time || "12:00 AM"}
-                     </span>
-                  </div>
-               </div>
-               <div className="flex gap-2">
-                  <button className="flex items-center gap-2 rounded-lg bg-[#141923] px-4 py-2 text-sm font-bold text-gold transition-colors hover:bg-[#1a202c]">
-                     <Share2 className="size-4" /> Share
-                  </button>
-                  <button className="flex items-center gap-2 rounded-lg bg-[#141923] px-4 py-2 text-sm font-bold text-gold transition-colors hover:bg-[#1a202c]">
-                     <FileUp className="size-4" /> Import
-                  </button>
-               </div>
-            </div>
+      {showDetailedModal && (
+        <DetailedTaskModal
+          groupId={detailedGroupId}
+          timezone={profile?.timezone}
+          isPending={createTaskMutation.isPending}
+          onClose={() => setShowDetailedModal(false)}
+          onAdd={(data) => createTaskMutation.mutate({ data } as any)}
+        />
+      )}
 
-            {/* Streak Banner */}
-            {showStreakBanner && (
-              <div className="relative flex items-center gap-2 rounded-xl border border-[#1f2937] bg-[#0b0e14] px-4 py-3 shadow-sm">
-                <Trophy className="size-4.5 text-gold shrink-0" fill="currentColor" />
-                <span className="text-sm font-bold text-white">
-                  <span className="text-gold">+{profile?.power_progress || 0} Power Level</span> - You have maintained your login streak!
-                </span>
-                <button
-                  onClick={() => setShowStreakBanner(false)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-white transition-colors"
-                >
-                  &times;
-                </button>
-              </div>
-            )}
-
-            {/* Groups */}
-            {checklist.map((group) => (
-              <div key={group.id} className="rounded-xl border border-[#1f2937] bg-[#0b0e14] overflow-visible">
-                {/* Group Header (Darker) */}
-                <div className="flex items-center justify-between bg-[#080b11] px-4 py-4 rounded-t-xl">
-                  <h3 className="font-bold text-white text-base">{group.name}</h3>
-                  <div className="relative group/tooltip">
-                    {/* Tooltip */}
-                    <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
-                      Add task to this group
-                      {/* Tooltip arrow */}
-                      <div className="absolute left-1/2 top-full -mt-[1px] h-0 w-0 -translate-x-1/2 border-l-[5px] border-r-[5px] border-t-[5px] border-transparent border-t-black"></div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        const title = window.prompt("Add task to " + group.name + ":");
-                        if (title) createTaskMutation.mutate({ data: { group_id: group.id, title } });
-                      }}
-                      className="text-gray-400 hover:text-white p-1"
-                    >
-                      <Plus className="size-5" strokeWidth={2.5} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Tasks Container (Lighter/Base) */}
-                <div className="divide-y divide-[#1f2937] border-t border-[#1f2937]">
-                  {group.tasks.map((task) => (
-                    <div key={task.id} className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 transition-colors group">
-                      <button
-                        onClick={() => handleToggle(task.id, task.completed)}
-                        className={`flex size-6 shrink-0 items-center justify-center rounded-[6px] border-[1.5px] transition-colors ${
-                          task.completed
-                            ? "border-gold bg-gold text-[#080b11]"
-                            : "border-gold/80 hover:border-gold bg-transparent"
-                        }`}
-                      >
-                        {task.completed && <CheckSquare className="size-4" strokeWidth={3} />}
-                      </button>
-
-                      <div className="flex flex-1 flex-col">
-                        <div className="flex items-center gap-2">
-                          {task.icon === "Coins" ? (
-                            <span className="text-lg">💰</span>
-                          ) : null}
-                          <span className={`text-[15px] font-bold ${task.completed ? "text-gray-500 line-through" : "text-gray-100"}`}>
-                            {task.title}
-                          </span>
-                        </div>
-                        {(task.scheduled_time || task.recurrence) && (
-                          <div className="mt-1 flex items-center gap-2 text-[13px] font-semibold text-gray-400">
-                            {task.scheduled_time && (
-                              <span className="flex items-center gap-1.5">
-                                <CalendarIcon className="size-3.5" /> Scheduled for {task.scheduled_time}
-                              </span>
-                            )}
-                            {task.recurrence && (
-                              <span className="flex items-center gap-1.5 text-emerald-400">
-                                <span className="text-[12px]">&#10227;</span> {task.recurrence}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      <button
-                        onClick={() => handleDelete(task.id)}
-                        className="flex size-9 items-center justify-center rounded-lg bg-[#141923] text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100"
-                      >
-                        <Trash2 className="size-4.5" />
-                      </button>
-                    </div>
-                  ))}
-                  {group.tasks.length === 0 && (
-                    <div className="flex items-center gap-3 px-4 py-4">
-                       <span className="text-[15px] font-bold text-white">Add a task</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {/* Actions */}
-            <div className="space-y-3 pt-2 pb-6">
-              <button
-                onClick={handleCreateGroup}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#080b11] border border-[#1f2937] py-4 text-sm font-bold text-white transition-colors hover:bg-[#141923]"
-              >
-                <Plus className="size-5" />
-                Create Group
-              </button>
-              <button
-                onClick={handleAddCampusTasks}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#080b11] border border-[#1f2937] py-4 text-sm font-bold text-white transition-colors hover:bg-[#141923]"
-              >
-                <Building2 className="size-5" />
-                Add Campus Tasks
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Schedule View */}
-            <div className="flex items-center justify-between px-2">
-              <button className="p-2 text-gray-500 hover:text-white transition-colors">&lt;</button>
-              <h2 className="text-lg font-bold text-white">
-                 Today, {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
-              </h2>
-              <div className="flex items-center gap-1">
-                 <button className="p-2 text-gray-500 hover:text-white transition-colors">&gt;</button>
-                 <button className="p-2 text-gray-500 hover:text-white transition-colors">
-                    <CalendarIcon className="size-5" />
-                 </button>
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-[#1f2937] bg-[#0b0e14] px-4 py-3">
-              <select 
-                className="w-full bg-transparent text-sm font-medium text-gray-400 outline-none appearance-none"
-                value={profile?.timezone || "UTC"}
-                disabled
-              >
-                <option value={profile?.timezone || "UTC"}>
-                  Local - {profile?.timezone || "UTC"}
-                </option>
-              </select>
-            </div>
-
-            {/* Time Grid */}
-            <div className="rounded-xl border border-[#1f2937] bg-[#0b0e14] overflow-hidden">
-               {[...Array(24)].map((_, i) => (
-                  <div key={i} className="flex border-b border-[#1f2937] last:border-b-0 h-16 group">
-                     <div className="w-16 border-r border-[#1f2937] flex justify-center py-2 text-xs font-medium text-gray-600">
-                        {i.toString().padStart(2, '0')}
-                     </div>
-                     <div className="flex-1 relative">
-                        {/* Task blocks */}
-                     </div>
-                  </div>
-               ))}
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* Bottom Input */}
-      {activeTab === "Checklist" && (
-        <div className="fixed bottom-0 left-0 right-0 border-t border-[#1f2937] bg-[#080b11] p-4 pb-safe md:static md:pb-4 flex gap-3 z-50">
-          <div className="flex-1 flex items-center rounded-lg border border-gold/40 focus-within:border-gold bg-[#0b0e14] px-4 transition-colors">
-            <input
-              type="text"
-              placeholder="Describe your task"
-              className="w-full bg-transparent py-4 text-[15px] font-medium text-white placeholder-gray-500 outline-none"
-              value={newTaskTitle}
-              onChange={(e) => setNewTaskTitle(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleQuickAdd()}
-            />
-            <button className="ml-2 text-gray-400 hover:text-white transition-colors">
-              <CalendarIcon className="size-5" />
-            </button>
-          </div>
+      <div className="flex min-h-screen flex-col bg-[#0b0e14] text-white pb-24 font-sans">
+        {/* Tabs */}
+        <div className="flex border-b border-white/5 bg-[#0b0e14]">
           <button
-            onClick={handleQuickAdd}
-            disabled={!newTaskTitle.trim() || createTaskMutation.isPending}
-            className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-[#e2b96e] text-[#080b11] transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+            className={"flex-1 py-4 text-center text-sm font-bold flex items-center justify-center gap-2 transition-colors " + (activeTab === "Checklist" ? "border-b-2 border-gold text-white" : "text-gray-500 hover:text-gray-300")}
+            onClick={() => setActiveTab("Checklist")}
           >
-            <ArrowUp className="size-6" strokeWidth={2.5} />
+            {activeTab === "Checklist" && <Pin className="size-4" fill="currentColor" />}
+            Checklist
+          </button>
+          <button
+            className={"flex-1 py-4 text-center text-sm font-bold transition-colors " + (activeTab === "Schedule" ? "border-b-2 border-gold text-white" : "text-gray-500 hover:text-gray-300")}
+            onClick={() => setActiveTab("Schedule")}
+          >
+            Schedule
           </button>
         </div>
-      )}
-    </div>
+
+        <main className="flex-1 overflow-y-auto p-4 max-w-3xl mx-auto w-full">
+          {activeTab === "Checklist" ? (
+            <div className="space-y-4">
+              {/* Header */}
+              <div className="flex items-center justify-between pb-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="size-5 text-gray-500" />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-gray-300">
+                      {currentTime.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                    </span>
+                    <span className="text-xs font-semibold text-gray-600">{profile?.daily_reset_time || "12:00 AM"}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button className="flex items-center gap-2 rounded-lg bg-[#141923] px-4 py-2 text-sm font-bold text-gold hover:bg-[#1a202c] transition-colors">
+                    <Share2 className="size-4" /> Share
+                  </button>
+                  <button className="flex items-center gap-2 rounded-lg bg-[#141923] px-4 py-2 text-sm font-bold text-gold hover:bg-[#1a202c] transition-colors">
+                    <FileUp className="size-4" /> Import
+                  </button>
+                </div>
+              </div>
+
+              {/* Streak Banner */}
+              {showStreakBanner && (
+                <div className="relative flex items-center gap-2 rounded-xl border border-[#1f2937] bg-[#0b0e14] px-4 py-3">
+                  <Trophy className="size-4 text-gold shrink-0" fill="currentColor" />
+                  <span className="text-sm font-bold text-white">
+                    <span className="text-gold">+{profile?.power_progress || 0} Power Level</span> - You have maintained your login streak!
+                  </span>
+                  <button onClick={() => setShowStreakBanner(false)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-white transition-colors">&times;</button>
+                </div>
+              )}
+
+              {/* Groups */}
+              {checklist.map((group) => (
+                <div key={group.id} className="rounded-xl border border-[#1f2937] bg-[#0b0e14] overflow-visible">
+                  <div className="flex items-center justify-between bg-[#080b11] px-4 py-4 rounded-t-xl">
+                    <h3 className="font-bold text-white text-base">{group.name}</h3>
+                    <div className="relative group/tooltip">
+                      <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
+                        Add task to this group
+                        <div className="absolute left-1/2 top-full -mt-[1px] h-0 w-0 -translate-x-1/2 border-l-[5px] border-r-[5px] border-t-[5px] border-transparent border-t-black" />
+                      </div>
+                      <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="text-gray-400 hover:text-white p-1">
+                        <Plus className="size-5" strokeWidth={2.5} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="divide-y divide-[#1f2937] border-t border-[#1f2937]">
+                    {group.tasks.map((task) => (
+                      <div key={task.id} className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 transition-colors group">
+                        <button
+                          onClick={() => handleToggle(task.id, task.completed)}
+                          className={"flex size-6 shrink-0 items-center justify-center rounded-[6px] border-[1.5px] transition-colors " + (task.completed ? "border-gold bg-gold text-[#080b11]" : "border-gold/80 hover:border-gold bg-transparent")}
+                        >
+                          {task.completed && <CheckSquare className="size-4" strokeWidth={3} />}
+                        </button>
+                        <div className="flex flex-1 flex-col">
+                          <div className="flex items-center gap-2">
+                            {task.icon === "Coins" && <span className="text-lg">💰</span>}
+                            <span className={"text-[15px] font-bold " + (task.completed ? "text-gray-500 line-through" : "text-gray-100")}>{task.title}</span>
+                          </div>
+                          {(task.scheduled_time || task.recurrence) && (
+                            <div className="mt-1 flex items-center gap-2 text-[13px] font-semibold text-gray-400">
+                              {task.scheduled_time && <span className="flex items-center gap-1.5"><CalendarIcon className="size-3.5" /> Scheduled for {task.scheduled_time}</span>}
+                              {task.recurrence && <span className="flex items-center gap-1.5 text-emerald-400"><span>&#10227;</span> {task.recurrence}</span>}
+                            </div>
+                          )}
+                        </div>
+                        <button onClick={() => handleDelete(task.id)} className="flex size-9 items-center justify-center rounded-lg bg-[#141923] text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100">
+                          <Trash2 className="size-4" />
+                        </button>
+                      </div>
+                    ))}
+                    {group.tasks.length === 0 && (
+                      <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="flex w-full items-center gap-3 px-4 py-4 text-left hover:bg-white/5 transition-colors">
+                        <span className="text-[15px] font-bold text-white">Add a task</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {/* Actions */}
+              <div className="space-y-3 pt-2 pb-6">
+                <button onClick={handleCreateGroup} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#080b11] border border-[#1f2937] py-4 text-sm font-bold text-white hover:bg-[#141923] transition-colors">
+                  <Plus className="size-5" /> Create Group
+                </button>
+                <button onClick={handleAddCampusTasks} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#080b11] border border-[#1f2937] py-4 text-sm font-bold text-white hover:bg-[#141923] transition-colors">
+                  <Building2 className="size-5" /> Add Campus Tasks
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between px-2">
+                <button className="p-2 text-gray-500 hover:text-white transition-colors">&lt;</button>
+                <h2 className="text-lg font-bold text-white">Today, {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric" })}</h2>
+                <div className="flex items-center gap-1">
+                  <button className="p-2 text-gray-500 hover:text-white transition-colors">&gt;</button>
+                  <button className="p-2 text-gray-500 hover:text-white transition-colors"><CalendarIcon className="size-5" /></button>
+                </div>
+              </div>
+              <div className="rounded-xl border border-[#1f2937] bg-[#0b0e14] px-4 py-3">
+                <select className="w-full bg-transparent text-sm font-medium text-gray-400 outline-none appearance-none" value={profile?.timezone || "UTC"} disabled>
+                  <option value={profile?.timezone || "UTC"}>Local - {profile?.timezone || "UTC"}</option>
+                </select>
+              </div>
+              <div className="rounded-xl border border-[#1f2937] bg-[#0b0e14] overflow-hidden">
+                {[...Array(24)].map((_, i) => (
+                  <div key={i} className="flex border-b border-[#1f2937] last:border-b-0 h-16">
+                    <div className="w-16 border-r border-[#1f2937] flex justify-center py-2 text-xs font-medium text-gray-600">{i.toString().padStart(2, "0")}</div>
+                    <div className="flex-1 relative" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </main>
+
+        {/* Bottom Input */}
+        {activeTab === "Checklist" && (
+          <div className="fixed bottom-0 left-0 right-0 border-t border-[#1f2937] bg-[#080b11] p-4 md:static md:pb-4 flex gap-3 z-40">
+            <div className="flex-1 flex items-center rounded-lg border border-gold/40 focus-within:border-gold bg-[#0b0e14] px-4 transition-colors">
+              <input
+                type="text"
+                placeholder="Describe your task"
+                className="w-full bg-transparent py-4 text-[15px] font-medium text-white placeholder-gray-500 outline-none"
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleQuickAdd()}
+              />
+              <button
+                className="ml-2 text-gray-400 hover:text-white transition-colors"
+                onClick={() => { setDetailedGroupId(checklist[0]?.id); setShowDetailedModal(true); }}
+              >
+                <CalendarIcon className="size-5" />
+              </button>
+            </div>
+            <button
+              onClick={handleQuickAdd}
+              disabled={!newTaskTitle.trim() || createTaskMutation.isPending}
+              className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-[#e2b96e] text-[#080b11] transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
+            >
+              <ArrowUp className="size-6" strokeWidth={2.5} />
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
