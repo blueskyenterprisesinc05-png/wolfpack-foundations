@@ -202,3 +202,26 @@ implementation_plan.md
 
 **Completion Notes:**
 Completed. The migration SQL files have been created in `supabase/migrations/` ready to be manually executed in the Supabase Dashboard. The frontend routes now use server functions which deterministically protect lesson content behind membership tier rules.
+
+
+### Issue #8: Profile Preview - Journey & Stats Tabs
+
+**Status:** Open
+**Scope:** Frontend
+**Description:**
+On the `/profile` page Preview card, the `Journey` and `Stats` tabs are currently decorative UI only.
+Clicking them does not switch content — only the `Info` tab is functional.
+
+**Acceptance Criteria:**
+
+- [ ] Clicking `Journey` tab shows journey-specific content (e.g. streak history, milestones reached, days active).
+- [ ] Clicking `Stats` tab shows stats-specific content (e.g. lessons completed, check-ins, accountability score).
+- [ ] Active tab is highlighted with the gold underline border.
+- [ ] Tab state is local (no persistence needed).
+- [ ] Data is pulled from real user profile fields or a future dedicated server function.
+
+**Dependencies:**
+Gamification system (daily login points, power points, streak tracking) — tracked separately.
+
+**Related File:**
+`src/components/profile/profile-page.tsx`

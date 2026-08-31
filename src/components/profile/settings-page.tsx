@@ -37,7 +37,7 @@ export function SettingsPage({ user, profile }: { user: any; profile: any }) {
     { label: "My Membership", icon: Crown, href: "/pricing" },
     { label: "Affiliate Dashboard", icon: BarChart2, href: "#" },
     { label: "Refer a Friend", icon: Share2, href: "#" },
-    { label: "Advanced", icon: Sliders, href: "#" },
+    { label: "Advanced", icon: Sliders, href: "/settings/advanced" },
     { label: "Provide Feedback", icon: MessageSquare, href: "/about" },
     { label: "What's New", icon: Sparkles, href: "#" },
   ];

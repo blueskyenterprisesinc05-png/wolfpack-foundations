@@ -37,6 +37,7 @@ import { Route as CoursesCourseIdRouteImport } from './routes/courses/$courseId'
 import { Route as LessonsLessonIdRouteImport } from './routes/lessons/$lessonId'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsAccountRouteImport } from './routes/settings.account'
+import { Route as SettingsAdvancedRouteImport } from './routes/settings.advanced'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings.notifications'
 
 const IndexRoute = IndexRouteImport.update({
@@ -179,6 +180,11 @@ const SettingsAccountRoute = SettingsAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => SettingsRoute,
 } as any)
+const SettingsAdvancedRoute = SettingsAdvancedRouteImport.update({
+  id: '/advanced',
+  path: '/advanced',
+  getParentRoute: () => SettingsRoute,
+} as any)
 const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
@@ -212,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
   '/settings/account': typeof SettingsAccountRoute
+  '/settings/advanced': typeof SettingsAdvancedRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/courses/': typeof CoursesIndexRoute
   '/settings/': typeof SettingsIndexRoute
@@ -242,6 +249,7 @@ export interface FileRoutesByTo {
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
   '/settings/account': typeof SettingsAccountRoute
+  '/settings/advanced': typeof SettingsAdvancedRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/courses': typeof CoursesIndexRoute
   '/settings': typeof SettingsIndexRoute
@@ -274,6 +282,7 @@ export interface FileRoutesById {
   '/courses/$courseId': typeof CoursesCourseIdRoute
   '/lessons/$lessonId': typeof LessonsLessonIdRoute
   '/settings/account': typeof SettingsAccountRoute
+  '/settings/advanced': typeof SettingsAdvancedRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/courses/': typeof CoursesIndexRoute
   '/settings/': typeof SettingsIndexRoute
@@ -307,6 +316,7 @@ export interface FileRouteTypes {
     | '/courses/$courseId'
     | '/lessons/$lessonId'
     | '/settings/account'
+    | '/settings/advanced'
     | '/settings/notifications'
     | '/courses/'
     | '/settings/'
@@ -337,6 +347,7 @@ export interface FileRouteTypes {
     | '/courses/$courseId'
     | '/lessons/$lessonId'
     | '/settings/account'
+    | '/settings/advanced'
     | '/settings/notifications'
     | '/courses'
     | '/settings'
@@ -368,6 +379,7 @@ export interface FileRouteTypes {
     | '/courses/$courseId'
     | '/lessons/$lessonId'
     | '/settings/account'
+    | '/settings/advanced'
     | '/settings/notifications'
     | '/courses/'
     | '/settings/'
@@ -600,6 +612,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsAccountRouteImport
       parentRoute: typeof SettingsRoute
     }
+    '/settings/advanced': {
+      id: '/settings/advanced'
+      path: '/advanced'
+      fullPath: '/settings/advanced'
+      preLoaderRoute: typeof SettingsAdvancedRouteImport
+      parentRoute: typeof SettingsRoute
+    }
     '/settings/notifications': {
       id: '/settings/notifications'
       path: '/notifications'
@@ -612,12 +631,14 @@ declare module '@tanstack/react-router' {
 
 interface SettingsRouteChildren {
   SettingsAccountRoute: typeof SettingsAccountRoute
+  SettingsAdvancedRoute: typeof SettingsAdvancedRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
 const SettingsRouteChildren: SettingsRouteChildren = {
   SettingsAccountRoute: SettingsAccountRoute,
+  SettingsAdvancedRoute: SettingsAdvancedRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   SettingsIndexRoute: SettingsIndexRoute,
 }
