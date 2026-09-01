@@ -809,7 +809,7 @@ export function ChecklistPage() {
                 {checklist.map((group) => (
                   <div key={group.id} className="rounded-2xl border border-[#1f2d3d] bg-[#141b26] overflow-visible p-[6px]">
                     <div className="flex items-center justify-between bg-[#0a0a0f] px-4 py-4 rounded-xl">
-                      <h3 className="text-[15px] font-bold text-white tracking-tight">{group.name}</h3>
+                      <h3 className="text-base font-bold text-white tracking-tight">{group.name}</h3>
                       <div className="relative group/tooltip">
                         <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
                           Add task to this group
@@ -848,10 +848,10 @@ export function ChecklistPage() {
                                   <div className="flex flex-1 flex-col">
                                     <div className="flex items-center gap-2">
                                       {task.icon === "Coins" && <Coins className="size-4 text-gold" />}
-                                      <span className={"text-[15px] font-semibold " + (task.completed ? "text-gray-500 line-through" : "text-white")}>{task.title}</span>
+                                      <span className={"text-[15px] font-bold tracking-tight " + (task.completed ? "text-gray-500 line-through" : "text-white")}>{task.title}</span>
                                     </div>
                                     {(task.scheduled_time || task.recurrence) && (
-                                      <div className="mt-1 flex items-center gap-2 text-[13px] font-semibold text-gray-400">
+                                      <div className="mt-1 flex items-center gap-2 text-xs font-bold text-gray-400">
                                         {task.scheduled_time && <span className="flex items-center gap-1.5"><CalendarIcon className="size-3.5" /> Scheduled for {task.scheduled_time}</span>}
                                         {task.recurrence && <span className="flex items-center gap-1 text-emerald-400"><RefreshCw className="size-3" strokeWidth={2.5} /><span className="font-bold">{task.recurrence}</span></span>}
                                       </div>
@@ -873,7 +873,7 @@ export function ChecklistPage() {
                               }}
                               className="flex w-full items-center gap-3 px-5 py-4 text-left hover:bg-white/[0.04] transition-colors"
                             >
-                              <span className="text-[14px] font-medium text-gray-500">Add a task</span>
+                              <span className="text-sm font-bold text-gray-400">Add a task</span>
                             </button>
                           )}
                         </div>
@@ -885,7 +885,7 @@ export function ChecklistPage() {
 
                 {/* Actions */}
               <div className="space-y-3 pt-2 pb-6">
-                <button onClick={handleCreateGroup} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#141b26] border border-[#1f2d3d] py-4 text-sm font-bold text-white hover:bg-[#1c2335] transition-colors">
+                <button onClick={handleCreateGroup} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#141b26] border border-[#1f2d3d] py-3.5 text-sm font-bold tracking-wide text-white hover:bg-[#1c2335] transition-colors">
                   <Plus className="size-5" /> Create Group
                 </button>
                 
