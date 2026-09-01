@@ -25,40 +25,48 @@ function QuickAddModal({
   const [title, setTitle] = useState("");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" onClick={onCancel}>
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+    <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={onCancel}>
+      <div className="absolute inset-0 bg-black/60" />
       <div
-        className="relative z-10 w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-[#0f141e] border border-[#1f2937] p-6 shadow-2xl"
+        className="relative z-10 w-full max-w-lg overflow-hidden rounded-t-2xl bg-[#141b26] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-5 text-lg font-bold text-white">New Task</h2>
-        <label className="mb-2 block text-sm font-bold text-gray-300">Task Title</label>
-        <input
-          autoFocus
-          type="text"
-          placeholder="Enter task description"
-          className="w-full rounded-lg border border-[#374151] bg-[#141923] px-4 py-3 text-sm font-medium text-white placeholder-gray-500 outline-none focus:border-gold/60 transition-colors"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && title.trim()) onAdd(title.trim());
-            if (e.key === "Escape") onCancel();
-          }}
-        />
-        <div className="mt-6 flex justify-end gap-3">
-          <button
-            onClick={onCancel}
-            className="px-6 py-3 rounded-lg text-sm font-bold text-white bg-[#1f2937] hover:bg-[#374151] transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => title.trim() && onAdd(title.trim())}
-            disabled={!title.trim() || isPending}
-            className="px-6 py-3 rounded-lg text-sm font-bold bg-gold text-[#080b11] hover:bg-[#d4a843] transition-colors disabled:opacity-50"
-          >
-            Add Task
-          </button>
+        {/* Header pill — dark box matching TRW */}
+        <div className="bg-[#0a0a0f] px-5 py-4">
+          <h2 className="text-base font-bold text-white">New Task</h2>
+        </div>
+
+        {/* Body */}
+        <div className="px-5 pt-5 pb-6">
+          <label className="mb-2 block text-sm font-semibold text-gray-300">Task Title</label>
+          <input
+            autoFocus
+            type="text"
+            placeholder="Enter task description"
+            className="w-full rounded-xl border border-[#1f2d3d] bg-[#0a0a0f] px-4 py-3.5 text-sm font-medium text-white placeholder-gray-500 outline-none focus:border-gold/60 transition-colors"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && title.trim()) onAdd(title.trim());
+              if (e.key === "Escape") onCancel();
+            }}
+          />
+
+          <div className="mt-5 flex items-center justify-end gap-5">
+            <button
+              onClick={onCancel}
+              className="text-sm font-bold text-white hover:text-gray-300 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => title.trim() && onAdd(title.trim())}
+              disabled={!title.trim() || isPending}
+              className="rounded-xl bg-[#e2b96e] px-8 py-3 text-sm font-bold text-[#080b11] hover:bg-[#d4a843] transition-colors disabled:opacity-50"
+            >
+              Add Task
+            </button>
+          </div>
         </div>
       </div>
     </div>
