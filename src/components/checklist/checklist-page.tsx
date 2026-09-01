@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Trophy, Plus, CheckSquare, Trash2, Calendar as CalendarIcon,
-  Coins, Building2, ArrowUp, Share2, FileUp, Clock, Pin, X,
+  Coins, Building2, ArrowUp, ArrowDown, Share2, FileUp, Clock, Pin, X,
   MoreHorizontal, Pencil, Repeat2, FolderInput, ChevronRight, ChevronLeft, Info, RefreshCw
 } from "lucide-react";
 import html2canvas from "html2canvas";
@@ -751,7 +751,7 @@ export function ChecklistPage() {
         />
       )}
 
-      <div className="flex min-h-screen flex-col bg-[#0a0a0f] text-white pb-24 font-sans">
+      <div className="flex h-[100dvh] flex-col bg-[#0a0a0f] text-white pb-[70px] font-sans overflow-hidden">
         {/* Tabs */}
         <div className="flex border-b border-[#1f2d3d] bg-[#0a0a0f]">
           <button
@@ -769,9 +769,9 @@ export function ChecklistPage() {
           </button>
         </div>
 
-        <main className="flex-1 overflow-y-auto p-4 max-w-3xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto px-3 py-2 max-w-3xl mx-auto w-full">
           {activeTab === "Checklist" ? (
-            <div className="space-y-4">
+            <div className="space-y-2.5">
               {/* Header */}
               <div className="flex items-center justify-between pb-2">
                 <div className="flex items-start gap-3 rounded-xl bg-[#141b26] border border-[#1f2d3d] px-3 py-2">
@@ -885,7 +885,7 @@ export function ChecklistPage() {
 
                 {/* Actions */}
               <div className="space-y-3 pt-2 pb-6">
-                <button onClick={handleCreateGroup} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#141b26] border border-[#1f2d3d] py-3.5 text-sm font-bold tracking-wide text-white hover:bg-[#1c2335] transition-colors">
+                <button onClick={handleCreateGroup} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#141b26] border border-[#1f2d3d] py-3 text-sm font-bold tracking-wide text-white hover:bg-[#1c2335] transition-colors">
                   <Plus className="size-5" /> Create Group
                 </button>
                 
@@ -920,8 +920,8 @@ export function ChecklistPage() {
 
         {/* Bottom Input */}
         {activeTab === "Checklist" && (
-          <div className="fixed bottom-0 left-0 right-0 border-t border-[#1f2d3d] bg-[#0a0a0f] p-4 md:static md:pb-4 flex gap-3 z-40">
-            <div className="flex-1 flex items-center rounded-lg border border-gold/40 focus-within:border-gold bg-[#0a0a0f] px-4 transition-colors">
+          <div className="border-t border-[#1f2d3d] bg-[#0a0a0f] px-4 py-3 flex gap-3 z-40 shrink-0 w-full">
+            <div className="flex-1 flex items-center rounded-xl border border-[#2d3748] focus-within:border-gold bg-[#141b26] px-4 transition-colors">
               <input
                 type="text"
                 placeholder="Describe your task"
@@ -938,9 +938,9 @@ export function ChecklistPage() {
               </button>
             </div>
             <button
-              onClick={handleQuickAdd}
-              disabled={!newTaskTitle.trim() || createTaskMutation.isPending}
-              className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-[#e2b96e] text-[#080b11] transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
+                onClick={handleQuickAdd}
+                disabled={!newTaskTitle.trim() || createTaskMutation.isPending}
+                className="flex size-[52px] shrink-0 items-center justify-center rounded-lg bg-[#e2b96e] text-[#080b11] transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
             >
               <ArrowUp className="size-6" strokeWidth={2.5} />
             </button>
