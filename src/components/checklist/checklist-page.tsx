@@ -730,8 +730,8 @@ export function ChecklistPage() {
               {/* Groups */}
               <DragDropContext onDragEnd={onDragEnd}>
                 {checklist.map((group) => (
-                  <div key={group.id} className="rounded-xl border border-[#1f2d3d] bg-[#141b26] overflow-visible">
-                    <div className="flex items-center justify-between bg-[#0a0a0f] px-4 py-4 rounded-t-xl">
+                  <div key={group.id} className="rounded-2xl border border-[#1f2d3d] bg-[#141b26] overflow-visible p-[6px]">
+                    <div className="flex items-center justify-between bg-[#0a0a0f] px-4 py-4 rounded-xl">
                       <h3 className="font-bold text-white text-base">{group.name}</h3>
                       <div className="relative group/tooltip">
                         <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
