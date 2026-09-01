@@ -773,25 +773,25 @@ export function ChecklistPage() {
           {activeTab === "Checklist" ? (
             <div className="space-y-2.5">
               {/* Header */}
-              <div className="flex items-center justify-between pb-2">
-                <div className="flex items-start gap-3 rounded-xl bg-[#141b26] border border-[#1f2d3d] px-3 py-2">
-                  <Clock className="size-4 text-gray-500 shrink-0 mt-[2px]" />
-                  <div className="flex flex-col">
-                    <span className="text-sm font-bold tracking-wide text-gray-200">
-                      {currentTime.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-                    </span>
-                    <span className="text-xs font-medium text-gray-500 text-right">{profile?.daily_reset_time || "12:00 AM"}</span>
+              <div className="flex items-center justify-between pb-1">
+                  <div className="flex items-start gap-2 rounded bg-transparent px-1 py-1">
+                    <Clock className="size-3.5 text-gray-500 shrink-0 mt-[3px]" />
+                    <div className="flex flex-col">
+                      <span className="text-[13px] font-bold tracking-wide text-gray-300 leading-tight">
+                        {currentTime.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                      </span>
+                      <span className="text-[10px] font-semibold text-gray-500">{profile?.daily_reset_time || "12:00 AM"}</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => setShowMissionReport(true)} className="flex items-center gap-1.5 rounded bg-gold/10 px-3 py-1.5 text-xs font-bold text-gold border border-gold/20 hover:bg-gold/20 transition-colors">
+                      <Share2 className="size-3.5" /> Share
+                    </button>
+                    <button className="flex items-center gap-1.5 rounded bg-gold/10 px-3 py-1.5 text-xs font-bold text-gold border border-gold/20 hover:bg-gold/20 transition-colors">
+                      <FileUp className="size-3.5" /> Import
+                    </button>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={() => setShowMissionReport(true)} className="flex items-center gap-2 rounded-xl bg-[#1e1a0e] px-4 py-2.5 text-sm font-bold text-gold hover:bg-[#252010] transition-colors">
-                    <Share2 className="size-5" /> Share
-                  </button>
-                  <button className="flex items-center gap-2 rounded-xl bg-[#1e1a0e] px-4 py-2.5 text-sm font-bold text-gold hover:bg-[#252010] transition-colors">
-                    <FileUp className="size-5" /> Import
-                  </button>
-                </div>
-              </div>
 
               {/* Streak Banner */}
               {showStreakBanner && (
@@ -808,18 +808,28 @@ export function ChecklistPage() {
               <DragDropContext onDragEnd={onDragEnd}>
                 {checklist.map((group) => (
                   <div key={group.id} className="rounded-2xl border border-[#1f2d3d] bg-[#141b26] overflow-visible p-[6px]">
-                    <div className="flex items-center justify-between bg-[#0a0a0f] px-4 py-4 rounded-xl">
-                      <h3 className="text-base font-bold text-white tracking-tight">{group.name}</h3>
-                      <div className="relative group/tooltip">
-                        <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
-                          Add task to this group
-                          <div className="absolute left-1/2 top-full -mt-[1px] h-0 w-0 -translate-x-1/2 border-l-[5px] border-r-[5px] border-t-[5px] border-transparent border-t-black" />
+                    <div className="flex items-center justify-between bg-[#0a0a0f] px-4 py-3.5 rounded-xl">
+                        <h3 className="text-[15px] font-bold text-white tracking-tight">{group.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <div className="relative group/tooltip">
+                            <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-[11px] font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
+                              Add task to this group
+                              <div className="absolute left-1/2 top-full -mt-[1px] h-0 w-0 -translate-x-1/2 border-l-[4px] border-r-[4px] border-t-[4px] border-transparent border-t-black" />
+                            </div>
+                            <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="text-gray-400 hover:text-white p-0.5">
+                              <Plus className="size-4" strokeWidth={2.5} />
+                            </button>
+                          </div>
+                          {group.id !== "general" && group.id !== "campus" && (
+                            <>
+                              <button className="text-gray-400 hover:text-white p-0.5"><Pencil className="size-4" /></button>
+                              <button className="text-gray-400 hover:text-white p-0.5"><ArrowUp className="size-4" /></button>
+                              <button className="text-gray-400 hover:text-white p-0.5"><ArrowDown className="size-4" /></button>
+                              <button className="text-gray-400 hover:text-white p-0.5"><Trash2 className="size-4" /></button>
+                            </>
+                          )}
                         </div>
-                        <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="text-gray-400 hover:text-white p-1">
-                          <Plus className="size-5" strokeWidth={2.5} />
-                        </button>
                       </div>
-                    </div>
 
                     <Droppable droppableId={group.id}>
                       {(provided) => (
@@ -857,8 +867,8 @@ export function ChecklistPage() {
                                       </div>
                                     )}
                                   </div>
-                                  <button onClick={() => handleDelete(task.id)} className="flex size-[34px] shrink-0 items-center justify-center rounded-md bg-[#1c2335] text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors">
-                                    <Trash2 className="size-4" />
+                                  <button onClick={() => setTaskMenu({ id: task.id, title: task.title })} className="flex size-8 shrink-0 items-center justify-center rounded-md text-gray-500 hover:bg-white/[0.06] transition-colors">
+                                    <MoreHorizontal className="size-4" />
                                   </button>
                                 </div>
                               )}
