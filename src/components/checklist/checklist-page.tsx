@@ -22,10 +22,10 @@ function TaskContextMenu({
   onDelete: (id: string) => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60" />
       <div
-        className="relative z-10 w-full max-w-lg overflow-hidden rounded-t-2xl bg-[#141b26] shadow-2xl"
+        className="relative z-10 w-full max-w-lg overflow-hidden rounded-2xl bg-[#141b26] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Task name header */}
@@ -79,10 +79,10 @@ function QuickAddModal({
   const [title, setTitle] = useState("");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={onCancel}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onCancel}>
       <div className="absolute inset-0 bg-black/60" />
       <div
-        className="relative z-10 w-full max-w-lg overflow-hidden rounded-t-2xl bg-[#141b26] shadow-2xl"
+        className="relative z-10 w-full max-w-lg overflow-hidden rounded-2xl bg-[#141b26] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header pill — dark box matching TRW */}
@@ -420,7 +420,7 @@ function MissionReportModal({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={onClose}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
         
         <div 
