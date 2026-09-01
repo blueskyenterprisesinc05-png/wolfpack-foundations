@@ -730,8 +730,8 @@ export function ChecklistPage() {
               {/* Groups */}
               <DragDropContext onDragEnd={onDragEnd}>
                 {checklist.map((group) => (
-                  <div key={group.id} className="rounded-xl border border-[#1f2937] bg-[#0a0a0f] overflow-visible">
-                    <div className="flex items-center justify-between bg-[#141b26] px-4 py-4 rounded-t-2xl">
+                  <div key={group.id} className="rounded-xl border border-[#1f2d3d] bg-[#141b26] overflow-visible">
+                    <div className="flex items-center justify-between bg-[#0a0a0f] px-4 py-4 rounded-t-xl">
                       <h3 className="font-bold text-white text-base">{group.name}</h3>
                       <div className="relative group/tooltip">
                         <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
@@ -749,7 +749,7 @@ export function ChecklistPage() {
                         <div
                           ref={provided.innerRef}
                           {...provided.droppableProps}
-                          className="divide-y divide-[#252d3d] border-t border-[#252d3d]"
+                          className="flex flex-col pt-1 pb-1"
                         >
                           {group.tasks.map((task: any, index: number) => (
                             <Draggable key={task.id} draggableId={task.id} index={index}>
@@ -780,7 +780,7 @@ export function ChecklistPage() {
                                       </div>
                                     )}
                                   </div>
-                                  <button onClick={() => handleDelete(task.id)} className="flex size-9 items-center justify-center rounded-lg bg-white/5 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100">
+                                  <button onClick={() => handleDelete(task.id)} className="flex size-[34px] shrink-0 items-center justify-center rounded-md bg-[#1c2335] text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors">
                                     <Trash2 className="size-4" />
                                   </button>
                                 </div>
