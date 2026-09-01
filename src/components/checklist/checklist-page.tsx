@@ -11,7 +11,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea
 import { getChecklistFn, toggleTaskFn, deleteTaskFn, createGroupFn, createTaskFn, moveTaskFn } from "@/lib/checklist";
 import { getCurrentProfileFn } from "@/lib/profile";
 
-// ─── Task Context Menu ───────────────────────────────────────────────────────
+// ─── Task Context Menu (Bottom Sheet) ────────────────────────────────────────
 function TaskContextMenu({
   task,
   onClose,
@@ -22,28 +22,40 @@ function TaskContextMenu({
   onDelete: (id: string) => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/60" />
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center"
+      onClick={onClose}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]" />
+
+      {/* Bottom sheet */}
       <div
-        className="relative z-10 w-full max-w-lg overflow-hidden rounded-2xl bg-[#141b26] shadow-2xl"
+        className="relative z-10 w-full max-w-lg overflow-hidden rounded-t-2xl bg-[#111827] shadow-2xl"
+        style={{ animation: "slideUp 0.22s cubic-bezier(0.32, 0.72, 0, 1)" }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Drag handle */}
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="h-1 w-10 rounded-full bg-white/20" />
+        </div>
+
         {/* Task name header */}
-        <div className="bg-[#0a0a0f] px-5 py-4">
-          <h2 className="text-base font-bold text-white">"{task.title}"</h2>
+        <div className="px-5 py-3 border-b border-[#1f2d3d]">
+          <h2 className="text-sm font-semibold text-gray-400 truncate">"{task.title}"</h2>
         </div>
 
         {/* Menu items */}
-        <div className="py-2 pb-6">
-          <button className="flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-white/[0.04] transition-colors">
+        <div className="py-1 pb-8">
+          <button className="flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-white/[0.05] active:bg-white/[0.08] transition-colors">
             <Pencil className="size-5 text-gray-400" />
             <span className="text-[15px] font-medium text-white">Edit Task</span>
           </button>
-          <button className="flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-white/[0.04] transition-colors">
-            <Pin className="size-5 text-gray-400" />
+          <button className="flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-white/[0.05] active:bg-white/[0.08] transition-colors">
+            <RefreshCw className="size-5 text-gray-400" />
             <span className="text-[15px] font-medium text-white">Repeat Daily</span>
           </button>
-          <button className="flex w-full items-center justify-between px-5 py-4 text-left hover:bg-white/[0.04] transition-colors">
+          <button className="flex w-full items-center justify-between px-5 py-4 text-left hover:bg-white/[0.05] active:bg-white/[0.08] transition-colors">
             <div className="flex items-center gap-4">
               <FolderInput className="size-5 text-gray-400" />
               <span className="text-[15px] font-medium text-white">Add to Group</span>
@@ -53,13 +65,20 @@ function TaskContextMenu({
           <div className="mx-5 my-1 border-t border-[#1f2d3d]" />
           <button
             onClick={() => { onDelete(task.id); onClose(); }}
-            className="flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-white/[0.04] transition-colors"
+            className="flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-red-500/[0.08] active:bg-red-500/[0.12] transition-colors"
           >
             <Trash2 className="size-5 text-red-500" />
             <span className="text-[15px] font-medium text-red-500">Delete Task</span>
           </button>
         </div>
       </div>
+
+      <style>{`
+        @keyframes slideUp {
+          from { transform: translateY(100%); }
+          to   { transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
@@ -867,7 +886,10 @@ export function ChecklistPage() {
                                       </div>
                                     )}
                                   </div>
-                                  <button onClick={() => setTaskMenu({ id: task.id, title: task.title })} className="flex size-8 shrink-0 items-center justify-center rounded-md text-gray-500 hover:bg-white/[0.06] transition-colors">
+                                  <button
+                                    onClick={() => setTaskMenu({ id: task.id, title: task.title })}
+                                    className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#132230] text-gray-400 hover:bg-[#1c3040] hover:text-white transition-colors"
+                                  >
                                     <MoreHorizontal className="size-4" />
                                   </button>
                                 </div>
@@ -898,7 +920,9 @@ export function ChecklistPage() {
                 <button onClick={handleCreateGroup} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#141b26] border border-[#1f2d3d] py-3 text-sm font-bold tracking-wide text-white hover:bg-[#1c2335] transition-colors">
                   <Plus className="size-5" /> Create Group
                 </button>
-                
+                <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#141b26] border border-[#1f2d3d] py-3 text-sm font-bold tracking-wide text-white hover:bg-[#1c2335] transition-colors">
+                  <Building2 className="size-5" /> Add Campus Tasks
+                </button>
               </div>
             </div>
           ) : (
@@ -928,33 +952,36 @@ export function ChecklistPage() {
           )}
         </main>
 
-        {/* Bottom Input */}
+        {/* Bottom Input – sticky with gradient fade */}
         {activeTab === "Checklist" && (
-          <div className="border-t border-[#1f2d3d] bg-[#0a0a0f] px-4 py-3 flex gap-3 z-40 shrink-0 w-full">
-            <div className="flex-1 flex items-center rounded-xl border border-[#2d3748] focus-within:border-gold bg-[#141b26] px-4 transition-colors">
+          <form
+            onSubmit={(e) => { e.preventDefault(); handleQuickAdd(); }}
+            className="sticky inset-x-0 bottom-0 z-20 flex w-full items-center gap-2 px-4 pt-3 pb-5 shrink-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/90 to-transparent"
+          >
+            <div className="relative h-[3.25rem] flex-1 overflow-hidden rounded-xl border border-[#2d3748] focus-within:border-gold/60 bg-[#141b26] transition-colors">
               <input
                 type="text"
                 placeholder="Describe your task"
-                className="w-full bg-transparent py-4 text-[15px] font-medium text-white placeholder-gray-500 outline-none"
+                className="absolute inset-0 h-full w-full bg-transparent pl-4 pr-14 text-[15px] font-medium text-white placeholder-white/45 outline-none"
                 value={newTaskTitle}
                 onChange={(e) => setNewTaskTitle(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleQuickAdd()}
               />
               <button
-                className="ml-2 text-gray-400 hover:text-white transition-colors"
+                type="button"
+                className="absolute inset-y-0 right-0 flex w-14 items-center justify-center text-gray-400 hover:text-white transition-colors"
                 onClick={() => { setDetailedGroupId(checklist[0]?.id); setShowDetailedModal(true); }}
               >
                 <CalendarIcon className="size-5" />
               </button>
             </div>
             <button
-                onClick={handleQuickAdd}
-                disabled={!newTaskTitle.trim() || createTaskMutation.isPending}
-                className="flex size-[52px] shrink-0 items-center justify-center rounded-lg bg-[#e2b96e] text-[#080b11] transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
+              type="submit"
+              disabled={!newTaskTitle.trim() || createTaskMutation.isPending}
+              className="flex size-[3.25rem] shrink-0 items-center justify-center rounded-xl bg-[#e2b96e] text-[#080b11] hover:bg-[#d4a843] active:scale-95 transition-all disabled:opacity-50"
             >
               <ArrowUp className="size-6" strokeWidth={2.5} />
             </button>
-          </div>
+          </form>
         )}
       </div>
     </>
