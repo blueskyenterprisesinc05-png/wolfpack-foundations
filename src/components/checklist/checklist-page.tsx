@@ -5,8 +5,9 @@ import {
   Coins, Building2, ArrowUp, Share2, FileUp, Clock, Pin, X
 } from "lucide-react";
 import html2canvas from "html2canvas";
-import { Target, Flame, Zap } from "lucide-react";
-import { getChecklistFn, toggleTaskFn, deleteTaskFn, createGroupFn, createTaskFn } from "@/lib/checklist";
+import { Target, Flame, Zap, GripVertical } from "lucide-react";
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
+import { getChecklistFn, toggleTaskFn, deleteTaskFn, createGroupFn, createTaskFn, moveTaskFn } from "@/lib/checklist";
 import { getCurrentProfileFn } from "@/lib/profile";
 
 // ─── Quick Add Modal ────────────────────────────────────────────────────────
@@ -553,6 +554,51 @@ export function ChecklistPage() {
     queryFn: () => getCurrentProfileFn(),
   });
 
+  const moveTaskMutation = useMutation({
+    mutationFn: moveTaskFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["checklist"] });
+    },
+  });
+
+  const onDragEnd = (result: DropResult) => {
+    const { source, destination, draggableId } = result;
+
+    if (!destination) return;
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+
+    // Optimistically update the UI
+    if (!checklistData) return;
+    
+    // Deep clone the checklist to modify locally before refetch
+    const newChecklist = JSON.parse(JSON.stringify(checklistData.checklist));
+    
+    const sourceGroup = newChecklist.find((g: any) => g.id === source.droppableId);
+    const destGroup = newChecklist.find((g: any) => g.id === destination.droppableId);
+    
+    if (sourceGroup && destGroup) {
+      const [movedTask] = sourceGroup.tasks.splice(source.index, 1);
+      movedTask.group_id = destination.droppableId;
+      destGroup.tasks.splice(destination.index, 0, movedTask);
+      
+      // Update positions within the destination group
+      destGroup.tasks.forEach((t: any, index: number) => {
+        t.position = index;
+      });
+
+      queryClient.setQueryData(["checklist"], { checklist: newChecklist });
+    }
+
+    // Persist change
+    moveTaskMutation.mutate({
+      data: {
+        id: draggableId,
+        group_id: destination.droppableId,
+        position: destination.index,
+      }
+    });
+  };
+
   const toggleMutation = useMutation({
     mutationFn: toggleTaskFn,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["checklist"] }),
@@ -682,57 +728,79 @@ export function ChecklistPage() {
               )}
 
               {/* Groups */}
-              {checklist.map((group) => (
-                <div key={group.id} className="rounded-xl border border-[#1f2937] bg-[#0a0a0f] overflow-visible">
-                  <div className="flex items-center justify-between bg-[#141b26] px-4 py-4 rounded-t-2xl">
-                    <h3 className="font-bold text-white text-base">{group.name}</h3>
-                    <div className="relative group/tooltip">
-                      <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
-                        Add task to this group
-                        <div className="absolute left-1/2 top-full -mt-[1px] h-0 w-0 -translate-x-1/2 border-l-[5px] border-r-[5px] border-t-[5px] border-transparent border-t-black" />
-                      </div>
-                      <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="text-gray-400 hover:text-white p-1">
-                        <Plus className="size-5" strokeWidth={2.5} />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="divide-y divide-[#252d3d] border-t border-[#252d3d]">
-                    {group.tasks.map((task) => (
-                      <div key={task.id} className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/[0.04] transition-colors group">
-                        <button
-                          onClick={() => handleToggle(task.id, task.completed)}
-                          className={"flex size-6 shrink-0 items-center justify-center rounded-[6px] border-[1.5px] transition-colors " + (task.completed ? "border-gold bg-gold text-[#080b11]" : "border-gold/80 hover:border-gold bg-transparent")}
-                        >
-                          {task.completed && <CheckSquare className="size-4" strokeWidth={3} />}
+              <DragDropContext onDragEnd={onDragEnd}>
+                {checklist.map((group) => (
+                  <div key={group.id} className="rounded-xl border border-[#1f2937] bg-[#0a0a0f] overflow-visible">
+                    <div className="flex items-center justify-between bg-[#141b26] px-4 py-4 rounded-t-2xl">
+                      <h3 className="font-bold text-white text-base">{group.name}</h3>
+                      <div className="relative group/tooltip">
+                        <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
+                          Add task to this group
+                          <div className="absolute left-1/2 top-full -mt-[1px] h-0 w-0 -translate-x-1/2 border-l-[5px] border-r-[5px] border-t-[5px] border-transparent border-t-black" />
+                        </div>
+                        <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="text-gray-400 hover:text-white p-1">
+                          <Plus className="size-5" strokeWidth={2.5} />
                         </button>
-                        <div className="flex flex-1 flex-col">
-                          <div className="flex items-center gap-2">
-                            {task.icon === "Coins" && <span className="text-lg">💰</span>}
-                            <span className={"text-[15px] font-bold " + (task.completed ? "text-gray-500 line-through" : "text-gray-100")}>{task.title}</span>
-                          </div>
-                          {(task.scheduled_time || task.recurrence) && (
-                            <div className="mt-1 flex items-center gap-2 text-[13px] font-semibold text-gray-400">
-                              {task.scheduled_time && <span className="flex items-center gap-1.5"><CalendarIcon className="size-3.5" /> Scheduled for {task.scheduled_time}</span>}
-                              {task.recurrence && <span className="flex items-center gap-1.5 text-emerald-400"><span>&#10227;</span> {task.recurrence}</span>}
-                            </div>
+                      </div>
+                    </div>
+
+                    <Droppable droppableId={group.id}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className="divide-y divide-[#252d3d] border-t border-[#252d3d]"
+                        >
+                          {group.tasks.map((task: any, index: number) => (
+                            <Draggable key={task.id} draggableId={task.id} index={index}>
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  className={"flex items-center gap-3 px-4 py-3.5 hover:bg-white/[0.04] transition-colors group " + (snapshot.isDragging ? "bg-[#1c2335] shadow-lg border-y border-[#1e2530]" : "")}
+                                >
+                                  <div {...provided.dragHandleProps} className="text-[#1f2d3d] group-hover:text-gray-500 transition-colors mr-1 cursor-grab active:cursor-grabbing">
+                                    <GripVertical className="size-4" />
+                                  </div>
+                                  <button
+                                    onClick={() => handleToggle(task.id, task.completed)}
+                                    className={"flex size-6 shrink-0 items-center justify-center rounded-[6px] border-[1.5px] transition-colors " + (task.completed ? "border-gold bg-gold text-[#080b11]" : "border-gold/80 hover:border-gold bg-transparent")}
+                                  >
+                                    {task.completed && <CheckSquare className="size-4" strokeWidth={3} />}
+                                  </button>
+                                  <div className="flex flex-1 flex-col">
+                                    <div className="flex items-center gap-2">
+                                      {task.icon === "Coins" && <span className="text-lg">💰</span>}
+                                      <span className={"text-[15px] font-bold " + (task.completed ? "text-gray-500 line-through" : "text-gray-100")}>{task.title}</span>
+                                    </div>
+                                    {(task.scheduled_time || task.recurrence) && (
+                                      <div className="mt-1 flex items-center gap-2 text-[13px] font-semibold text-gray-400">
+                                        {task.scheduled_time && <span className="flex items-center gap-1.5"><CalendarIcon className="size-3.5" /> Scheduled for {task.scheduled_time}</span>}
+                                        {task.recurrence && <span className="flex items-center gap-1.5 text-emerald-400"><span>&#10227;</span> {task.recurrence}</span>}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <button onClick={() => handleDelete(task.id)} className="flex size-9 items-center justify-center rounded-lg bg-white/5 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100">
+                                    <Trash2 className="size-4" />
+                                  </button>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                          {group.tasks.length === 0 && (
+                            <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="flex w-full items-center gap-3 px-4 py-4 text-left hover:bg-white/[0.04] transition-colors">
+                              <span className="text-[15px] font-medium text-gray-500">Add a task</span>
+                            </button>
                           )}
                         </div>
-                        <button onClick={() => handleDelete(task.id)} className="flex size-9 items-center justify-center rounded-lg bg-white/5 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors opacity-100 md:opacity-0 md:group-hover:opacity-100">
-                          <Trash2 className="size-4" />
-                        </button>
-                      </div>
-                    ))}
-                    {group.tasks.length === 0 && (
-                      <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="flex w-full items-center gap-3 px-4 py-4 text-left hover:bg-white/[0.04] transition-colors">
-                        <span className="text-[15px] font-medium text-gray-500">Add a task</span>
-                      </button>
-                    )}
+                      )}
+                    </Droppable>
                   </div>
-                </div>
-              ))}
+                ))}
+                </DragDropContext>
 
-              {/* Actions */}
+                {/* Actions */}
               <div className="space-y-3 pt-2 pb-6">
                 <button onClick={handleCreateGroup} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#141b26] border border-[#1f2d3d] py-4 text-sm font-bold text-white hover:bg-[#1c2335] transition-colors">
                   <Plus className="size-5" /> Create Group

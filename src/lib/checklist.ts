@@ -174,3 +174,20 @@ export const deleteTaskFn = createServerFn({ method: "POST" })
     if (error) throw error;
     return { success: true };
 });
+
+export const moveTaskFn = createServerFn({ method: "POST" })
+  .validator((input: { id: string; group_id: string; position: number }) => input)
+  .handler(async ({ data: { id, group_id, position } }) => {
+    const supabase = createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { error } = await supabase
+      .from("checklist_tasks")
+      .update({ group_id, position })
+      .eq("id", id)
+      .eq("user_id", user.id);
+
+    if (error) throw error;
+    return true;
+  });
