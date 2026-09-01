@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Trophy, Plus, CheckSquare, Trash2, Calendar as CalendarIcon,
   Coins, Building2, ArrowUp, Share2, FileUp, Clock, Pin, X,
-  MoreHorizontal, Pencil, Repeat2, FolderInput, ChevronRight, Info, RefreshCw
+  MoreHorizontal, Pencil, Repeat2, FolderInput, ChevronRight, ChevronLeft, Info, RefreshCw
 } from "lucide-react";
 import html2canvas from "html2canvas";
 import { Target, Flame, Zap, GripVertical } from "lucide-react";
@@ -847,7 +847,7 @@ export function ChecklistPage() {
                                   </button>
                                   <div className="flex flex-1 flex-col">
                                     <div className="flex items-center gap-2">
-                                      {task.icon === "Coins" && <span className="text-lg">💰</span>}
+                                      {task.icon === "Coins" && <Coins className="size-4 text-gold" />}
                                       <span className={"text-[15px] font-semibold " + (task.completed ? "text-gray-500 line-through" : "text-white")}>{task.title}</span>
                                     </div>
                                     {(task.scheduled_time || task.recurrence) && (
@@ -894,10 +894,10 @@ export function ChecklistPage() {
           ) : (
             <div className="space-y-6">
               <div className="flex items-center justify-between px-2">
-                <button className="p-2 text-gray-500 hover:text-white transition-colors">&lt;</button>
+                <button className="p-2 text-gray-500 hover:text-white transition-colors"><ChevronLeft className="size-5" /></button>
                 <h2 className="text-lg font-bold text-white">Today, {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric" })}</h2>
                 <div className="flex items-center gap-1">
-                  <button className="p-2 text-gray-500 hover:text-white transition-colors">&gt;</button>
+                  <button className="p-2 text-gray-500 hover:text-white transition-colors"><ChevronRight className="size-5" /></button>
                   <button className="p-2 text-gray-500 hover:text-white transition-colors"><CalendarIcon className="size-5" /></button>
                 </div>
               </div>
