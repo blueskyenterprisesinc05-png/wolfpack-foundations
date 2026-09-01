@@ -829,26 +829,14 @@ export function ChecklistPage() {
         <main className="flex-1 overflow-y-auto w-full">
           {activeTab === "Checklist" ? (
             <div className="space-y-2.5">
-              {/* Header */}
-              <div className="flex items-center justify-between pb-1">
-                  <div className="flex items-start gap-2 rounded bg-transparent px-1 py-1">
-                    <Clock className="size-3.5 text-gray-500 shrink-0 mt-[3px]" />
-                    <div className="flex flex-col">
-                      <span className="text-[13px] font-bold tracking-wide text-gray-300 leading-tight">
-                        {currentTime.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-                      </span>
-                      <span className="text-[10px] font-semibold text-gray-500">{profile?.daily_reset_time || "12:00 AM"}</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => setShowMissionReport(true)} className="flex items-center gap-1.5 rounded bg-gold/10 px-3 py-1.5 text-xs font-bold text-gold border border-gold/20 hover:bg-gold/20 transition-colors">
-                      <Share2 className="size-3.5" /> Share
-                    </button>
-                    <button className="flex items-center gap-1.5 rounded bg-gold/10 px-3 py-1.5 text-xs font-bold text-gold border border-gold/20 hover:bg-gold/20 transition-colors">
-                      <FileUp className="size-3.5" /> Import
-                    </button>
-                  </div>
-                </div>
+              <div className="flex gap-3 px-4 pt-4 pb-2">
+                <button onClick={() => setShowMissionReport(true)} className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#e2b96e]/30 bg-[#0d1118] py-3 text-sm font-bold text-[#e2b96e] hover:bg-[#e2b96e]/10 transition-colors">
+                  <Share2 className="size-4" /> Share
+                </button>
+                <button className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#e2b96e]/30 bg-[#0d1118] py-3 text-sm font-bold text-[#e2b96e] hover:bg-[#e2b96e]/10 transition-colors">
+                  <FileUp className="size-4" /> Import
+                </button>
+              </div>
 
               {/* Streak Banner */}
               {showStreakBanner && (
@@ -869,22 +857,16 @@ export function ChecklistPage() {
                       <div className="absolute inset-0 rounded-[inherit] border border-solid transition-all border-[#365169]" />
                     <div className="z-10 flex h-10 items-center rounded-xl bg-[#080b11] text-base pr-3 pl-5">
                         <span className="mr-auto flex items-center px-1 pr-3 font-semibold text-base">{group.name}</span>
-                        <div className="flex items-center gap-3 mr-3 text-white md:opacity-0 transition-opacity group-hover:opacity-100">
-                          <div className="relative group/tooltip">
-                            <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-[11px] font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
-                              Add task to this group
-                              <div className="absolute left-1/2 top-full -mt-[1px] h-0 w-0 -translate-x-1/2 border-l-[4px] border-r-[4px] border-t-[4px] border-transparent border-t-black" />
-                            </div>
-                            <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="cursor-pointer md:opacity-0 transition-all group-hover:opacity-100">
-                              <Plus width="1em" height="1em" />
-                            </button>
-                          </div>
+                        <div className="flex items-center gap-3 mr-3 text-white">
+                          <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="cursor-pointer text-gray-400 hover:text-white transition-colors">
+                            <Plus className="size-4" />
+                          </button>
                           {group.id !== "general" && group.id !== "campus" && (
                             <>
-                              <button className="cursor-pointer md:opacity-0 transition-all group-hover:opacity-100"><SquarePen width="1em" height="1em" /></button>
-                              <button className="cursor-pointer md:opacity-0 transition-all group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"><ArrowUp width="1em" height="1em" /></button>
-                              <button className="cursor-pointer md:opacity-0 transition-all group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"><ArrowDown width="1em" height="1em" /></button>
-                              <button className="cursor-pointer md:opacity-0 transition-all group-hover:opacity-100"><Trash2 width="1em" height="1em" /></button>
+                              <button className="cursor-pointer text-gray-400 hover:text-white transition-colors"><SquarePen className="size-4" /></button>
+                              <button className="cursor-pointer text-gray-400 hover:text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"><ArrowUp className="size-4" /></button>
+                              <button className="cursor-pointer text-gray-400 hover:text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"><ArrowDown className="size-4" /></button>
+                              <button className="cursor-pointer text-gray-400 hover:text-red-400 transition-colors"><Trash2 className="size-4" /></button>
                             </>
                           )}
                       </div>
