@@ -31,22 +31,30 @@
 
 :root {
   /* Surfaces */
-  --bg-obsidian: oklch(0.145 0.004 285);
-  --surface-charcoal: oklch(0.202 0.004 285);
-  --surface-card: oklch(0.256 0.005 285);
-  --border-graphite: oklch(0.332 0.006 285);
+  --bg-obsidian: #192534;
+  --surface-charcoal: #0c1923;
+  --surface-card: #172939;
+  --border-graphite: #213043;
 
   /* Text */
-  --text-primary: oklch(0.955 0 0);
-  --text-muted: oklch(0.642 0.005 285);
+  --text-primary: #ffffff;
+  --text-muted: #bbc2cc;
 
   /* Brand */
-  --brand-crimson: oklch(0.565 0.183 12);
-  --brand-crimson-tint: oklch(0.755 0.128 10); /* small crimson text only (AA on obsidian) */
-  --brand-gold: oklch(0.755 0.108 84);
-  --brand-gold-tint: oklch(0.85 0.075 86);
-  --brand-forest: oklch(0.675 0.077 149);
-  --brand-forest-tint: oklch(0.8 0.07 150);
+  --brand-crimson: #c52222;
+  --brand-crimson-tint: #ff6467;
+  --brand-gold: #ecc879;
+  --brand-gold-tint: #ecc870;
+  --brand-forest: #36d399;
+  --brand-forest-tint: #7bf1a8;
+
+  /* Additional Real World Tokens */
+  --trw-foreground: #d0d5e1;
+  --trw-block: #2d2d2d;
+  --trw-hover: #0000001a;
+  --scrollbar: #3f576f;
+  --bubble-gradient-start: #1d2b3a;
+  --bubble-gradient-end: #1d3346;
 
   /* Shadcn semantic layer */
   --radius: 0.5rem;
