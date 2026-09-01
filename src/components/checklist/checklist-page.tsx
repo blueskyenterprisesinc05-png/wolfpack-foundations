@@ -586,14 +586,7 @@ export function ChecklistPage() {
     if (name) createGroupMutation.mutate({ data: name });
   };
 
-  const handleAddCampusTasks = () => {
-    const campusGroup = checklistData?.checklist.find((g) => g.name === "Hustler's Campus");
-    createTaskMutation.mutate({
-      data: { group_id: campusGroup?.id, title: "Log in to Hustler's Campus", scheduled_time: "2:57 AM", recurrence: "Daily", icon: "Coins" },
-    });
-  };
-
-  const handleQuickAdd = () => {
+    const handleQuickAdd = () => {
     if (!newTaskTitle.trim()) return;
     const firstGroup = checklistData?.checklist[0];
     createTaskMutation.mutate({ data: { group_id: firstGroup?.id, title: newTaskTitle } });
@@ -744,9 +737,7 @@ export function ChecklistPage() {
                 <button onClick={handleCreateGroup} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#141b26] border border-[#1f2d3d] py-4 text-sm font-bold text-white hover:bg-[#1c2335] transition-colors">
                   <Plus className="size-5" /> Create Group
                 </button>
-                <button onClick={handleAddCampusTasks} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#141b26] border border-[#1f2d3d] py-4 text-sm font-bold text-white hover:bg-[#1c2335] transition-colors">
-                  <Building2 className="size-5" /> Add Campus Tasks
-                </button>
+                
               </div>
             </div>
           ) : (
