@@ -2,13 +2,67 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Trophy, Plus, CheckSquare, Trash2, Calendar as CalendarIcon,
-  Coins, Building2, ArrowUp, Share2, FileUp, Clock, Pin, X
+  Coins, Building2, ArrowUp, Share2, FileUp, Clock, Pin, X,
+  MoreHorizontal, Pencil, Repeat2, FolderInput, ChevronRight, Info, RefreshCw
 } from "lucide-react";
 import html2canvas from "html2canvas";
 import { Target, Flame, Zap, GripVertical } from "lucide-react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { getChecklistFn, toggleTaskFn, deleteTaskFn, createGroupFn, createTaskFn, moveTaskFn } from "@/lib/checklist";
 import { getCurrentProfileFn } from "@/lib/profile";
+
+// ─── Task Context Menu ───────────────────────────────────────────────────────
+function TaskContextMenu({
+  task,
+  onClose,
+  onDelete,
+}: {
+  task: { id: string; title: string };
+  onClose: () => void;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/60" />
+      <div
+        className="relative z-10 w-full max-w-lg overflow-hidden rounded-t-2xl bg-[#141b26] shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Task name header */}
+        <div className="bg-[#0a0a0f] px-5 py-4">
+          <h2 className="text-base font-bold text-white">"{task.title}"</h2>
+        </div>
+
+        {/* Menu items */}
+        <div className="py-2 pb-6">
+          <button className="flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-white/[0.04] transition-colors">
+            <Pencil className="size-5 text-gray-400" />
+            <span className="text-[15px] font-medium text-white">Edit Task</span>
+          </button>
+          <button className="flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-white/[0.04] transition-colors">
+            <Pin className="size-5 text-gray-400" />
+            <span className="text-[15px] font-medium text-white">Repeat Daily</span>
+          </button>
+          <button className="flex w-full items-center justify-between px-5 py-4 text-left hover:bg-white/[0.04] transition-colors">
+            <div className="flex items-center gap-4">
+              <FolderInput className="size-5 text-gray-400" />
+              <span className="text-[15px] font-medium text-white">Add to Group</span>
+            </div>
+            <ChevronRight className="size-5 text-gray-500" />
+          </button>
+          <div className="mx-5 my-1 border-t border-[#1f2d3d]" />
+          <button
+            onClick={() => { onDelete(task.id); onClose(); }}
+            className="flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-white/[0.04] transition-colors"
+          >
+            <Trash2 className="size-5 text-red-500" />
+            <span className="text-[15px] font-medium text-red-500">Delete Task</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ─── Quick Add Modal ────────────────────────────────────────────────────────
 function QuickAddModal({
@@ -546,6 +600,8 @@ export function ChecklistPage() {
   const [detailedGroupId, setDetailedGroupId] = useState<string | undefined>();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showMissionReport, setShowMissionReport] = useState(false);
+  const [taskMenu, setTaskMenu] = useState<{ id: string; title: string } | null>(null);
+  const [showDragHint, setShowDragHint] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -655,6 +711,19 @@ export function ChecklistPage() {
 
   return (
     <>
+      {taskMenu && (
+        <TaskContextMenu
+          task={taskMenu}
+          onClose={() => setTaskMenu(null)}
+          onDelete={handleDelete}
+        />
+      )}
+      {showDragHint && (
+        <div className="fixed top-0 left-0 right-0 z-50 flex items-center gap-3 bg-[#1a1f2e] px-4 py-3 shadow-lg animate-fade-in">
+          <Info className="size-5 text-gray-300 shrink-0" />
+          <span className="text-sm font-medium text-white">Drag and drop to add a task</span>
+        </div>
+      )}
       {showMissionReport && (
         <MissionReportModal
           onClose={() => setShowMissionReport(false)}
@@ -740,7 +809,7 @@ export function ChecklistPage() {
                 {checklist.map((group) => (
                   <div key={group.id} className="rounded-2xl border border-[#1f2d3d] bg-[#141b26] overflow-visible p-[6px]">
                     <div className="flex items-center justify-between bg-[#0a0a0f] px-4 py-4 rounded-xl">
-                      <h3 className="font-bold text-white text-base">{group.name}</h3>
+                      <h3 className="text-[15px] font-bold text-white tracking-tight">{group.name}</h3>
                       <div className="relative group/tooltip">
                         <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
                           Add task to this group
@@ -779,12 +848,12 @@ export function ChecklistPage() {
                                   <div className="flex flex-1 flex-col">
                                     <div className="flex items-center gap-2">
                                       {task.icon === "Coins" && <span className="text-lg">💰</span>}
-                                      <span className={"text-[15px] font-bold " + (task.completed ? "text-gray-500 line-through" : "text-gray-100")}>{task.title}</span>
+                                      <span className={"text-[15px] font-semibold " + (task.completed ? "text-gray-500 line-through" : "text-white")}>{task.title}</span>
                                     </div>
                                     {(task.scheduled_time || task.recurrence) && (
                                       <div className="mt-1 flex items-center gap-2 text-[13px] font-semibold text-gray-400">
                                         {task.scheduled_time && <span className="flex items-center gap-1.5"><CalendarIcon className="size-3.5" /> Scheduled for {task.scheduled_time}</span>}
-                                        {task.recurrence && <span className="flex items-center gap-1.5 text-emerald-400"><span>&#10227;</span> {task.recurrence}</span>}
+                                        {task.recurrence && <span className="flex items-center gap-1 text-emerald-400"><RefreshCw className="size-3" strokeWidth={2.5} /><span className="font-bold">{task.recurrence}</span></span>}
                                       </div>
                                     )}
                                   </div>
@@ -797,8 +866,14 @@ export function ChecklistPage() {
                           ))}
                           {provided.placeholder}
                           {group.tasks.length === 0 && (
-                            <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="flex w-full items-center gap-3 px-4 py-4 text-left hover:bg-white/[0.04] transition-colors">
-                              <span className="text-[15px] font-medium text-gray-500">Add a task</span>
+                            <button
+                              onClick={() => {
+                                setShowDragHint(true);
+                                setTimeout(() => setShowDragHint(false), 3000);
+                              }}
+                              className="flex w-full items-center gap-3 px-5 py-4 text-left hover:bg-white/[0.04] transition-colors"
+                            >
+                              <span className="text-[14px] font-medium text-gray-500">Add a task</span>
                             </button>
                           )}
                         </div>
