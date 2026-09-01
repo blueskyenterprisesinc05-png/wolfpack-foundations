@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Trophy, Plus, CheckSquare, Trash2, Calendar as CalendarIcon,
   Coins, Building2, ArrowUp, ArrowDown, Share2, FileUp, Clock, Pin, X,
-  MoreHorizontal, Pencil, Repeat2, FolderInput, ChevronRight, ChevronLeft, Info, RefreshCw
+  MoreHorizontal, Pencil, SquarePen, Repeat2, FolderInput, ChevronRight, ChevronLeft, Info, RefreshCw
 } from "lucide-react";
 import html2canvas from "html2canvas";
 import { Target, Flame, Zap, GripVertical } from "lucide-react";
@@ -770,25 +770,63 @@ export function ChecklistPage() {
         />
       )}
 
-      <div className="flex h-[100dvh] flex-col bg-[#0a0a0f] text-white pb-[70px] font-sans overflow-hidden">
-        {/* Tabs */}
-        <div className="flex border-b border-[#1f2d3d] bg-[#0a0a0f]">
+      <div className="flex h-[100dvh] flex-col bg-[#080b11] text-white font-sans overflow-hidden">
+        {/* Tabs – TRW-style sliding indicator */}
+        <div role="tablist" className="relative flex h-auto w-full justify-stretch bg-[#080b11]">
           <button
-            className={"flex-1 py-4 text-center text-sm font-bold flex items-center justify-center gap-2 transition-colors " + (activeTab === "Checklist" ? "border-b-2 border-gold text-white" : "text-gray-500 hover:text-gray-300")}
+            role="tab"
+            className="relative flex flex-1 items-center justify-center py-3 cursor-pointer text-sm"
             onClick={() => setActiveTab("Checklist")}
           >
-            {activeTab === "Checklist" && <Pin className="size-4" fill="currentColor" />}
-            Checklist
+            <span
+              className="block h-full capitalize transition-all duration-100 will-change-[transform,opacity,font-weight]"
+              style={{ fontWeight: activeTab === "Checklist" ? 600 : 400, opacity: activeTab === "Checklist" ? 1 : 0.7 }}
+            >
+              <Pin
+                className="float-left mt-[3px] mr-[6px] ml-[-20px] cursor-pointer"
+                width={14} height={14}
+                fill={activeTab === "Checklist" ? "currentColor" : "transparent"}
+                aria-hidden="true"
+                style={{ opacity: activeTab === "Checklist" ? 1 : 0 }}
+              />
+              checklist
+            </span>
+            <div
+              className="absolute bottom-0 left-0 z-[1] h-1 w-full overflow-visible"
+              style={{ backgroundColor: activeTab === "Checklist" ? "rgb(40,46,51)" : "rgb(63,72,79)" }}
+            />
           </button>
           <button
-            className={"flex-1 py-4 text-center text-sm font-bold transition-colors " + (activeTab === "Schedule" ? "border-b-2 border-gold text-white" : "text-gray-500 hover:text-gray-300")}
+            role="tab"
+            className="relative flex flex-1 items-center justify-center py-3 cursor-pointer text-sm"
             onClick={() => setActiveTab("Schedule")}
           >
-            Schedule
+            <span
+              className="block h-full capitalize transition-all duration-100 will-change-[transform,opacity,font-weight]"
+              style={{ fontWeight: activeTab === "Schedule" ? 600 : 400, opacity: activeTab === "Schedule" ? 1 : 0.7 }}
+            >
+              <Pin
+                className="float-left mt-[3px] mr-[6px] ml-[-20px] cursor-pointer"
+                width={14} height={14}
+                fill="transparent"
+                aria-hidden="true"
+                style={{ opacity: 0 }}
+              />
+              schedule
+            </span>
+            <div
+              className="absolute bottom-0 left-0 z-[1] h-1 w-full overflow-visible"
+              style={{ backgroundColor: activeTab === "Schedule" ? "rgb(40,46,51)" : "rgb(63,72,79)" }}
+            />
           </button>
+          {/* Sliding active indicator */}
+          <div
+            className="pointer-events-none absolute bottom-0 left-0 z-[10000] h-1 w-[50dvw] overflow-hidden bg-[#e2b96e] will-change-auto transition-transform duration-200"
+            style={{ transform: activeTab === "Schedule" ? "translateX(100%)" : "translateX(0)" }}
+          />
         </div>
 
-        <main className="flex-1 overflow-y-auto px-3 py-2 max-w-3xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto w-full">
           {activeTab === "Checklist" ? (
             <div className="space-y-2.5">
               {/* Header */}
@@ -826,29 +864,31 @@ export function ChecklistPage() {
               {/* Groups */}
               <DragDropContext onDragEnd={onDragEnd}>
                 {checklist.map((group) => (
-                  <div key={group.id} className="rounded-2xl border border-[#1f2d3d] bg-[#141b26] overflow-visible p-[6px]">
-                    <div className="flex items-center justify-between bg-[#0a0a0f] px-4 py-3.5 rounded-xl">
-                        <h3 className="text-[15px] font-bold text-white tracking-tight">{group.name}</h3>
-                        <div className="flex items-center gap-2">
+                  <div key={group.id} className="group relative w-full rounded-xl mt-2 mb-2 inline-flex flex-col justify-around overflow-visible" style={{backgroundColor:"#0d1118"}}>
+                    <div className="rounded-xl m-[1px] px-[5.5px] pt-[7.5px] pb-[0.79rem] z-10 inline-flex flex-col justify-around gap-1 w-[calc(100%-2px)] transition-all relative" style={{backgroundColor:"#141b23"}}>
+                      <div className="absolute inset-0 rounded-[inherit] border border-solid transition-all border-[#365169]" />
+                    <div className="z-10 flex h-10 items-center rounded-xl bg-[#080b11] text-base pr-3 pl-5">
+                        <span className="mr-auto flex items-center px-1 pr-3 font-semibold text-base">{group.name}</span>
+                        <div className="flex items-center gap-3 mr-3 text-white md:opacity-0 transition-opacity group-hover:opacity-100">
                           <div className="relative group/tooltip">
                             <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-3 py-1.5 text-[11px] font-semibold text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 pointer-events-none z-10">
                               Add task to this group
                               <div className="absolute left-1/2 top-full -mt-[1px] h-0 w-0 -translate-x-1/2 border-l-[4px] border-r-[4px] border-t-[4px] border-transparent border-t-black" />
                             </div>
-                            <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="text-gray-400 hover:text-white p-0.5">
-                              <Plus className="size-4" strokeWidth={2.5} />
+                            <button onClick={() => setQuickAddGroup({ id: group.id, name: group.name })} className="cursor-pointer md:opacity-0 transition-all group-hover:opacity-100">
+                              <Plus width="1em" height="1em" />
                             </button>
                           </div>
                           {group.id !== "general" && group.id !== "campus" && (
                             <>
-                              <button className="text-gray-400 hover:text-white p-0.5"><Pencil className="size-4" /></button>
-                              <button className="text-gray-400 hover:text-white p-0.5"><ArrowUp className="size-4" /></button>
-                              <button className="text-gray-400 hover:text-white p-0.5"><ArrowDown className="size-4" /></button>
-                              <button className="text-gray-400 hover:text-white p-0.5"><Trash2 className="size-4" /></button>
+                              <button className="cursor-pointer md:opacity-0 transition-all group-hover:opacity-100"><SquarePen width="1em" height="1em" /></button>
+                              <button className="cursor-pointer md:opacity-0 transition-all group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"><ArrowUp width="1em" height="1em" /></button>
+                              <button className="cursor-pointer md:opacity-0 transition-all group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-50"><ArrowDown width="1em" height="1em" /></button>
+                              <button className="cursor-pointer md:opacity-0 transition-all group-hover:opacity-100"><Trash2 width="1em" height="1em" /></button>
                             </>
                           )}
-                        </div>
                       </div>
+                    </div>
 
                     <Droppable droppableId={group.id}>
                       {(provided) => (
@@ -863,54 +903,69 @@ export function ChecklistPage() {
                                 <div
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
-                                  className={"flex items-center gap-3 px-4 py-3.5 hover:bg-white/[0.04] transition-colors group " + (snapshot.isDragging ? "bg-[#1c2335] shadow-lg border-y border-[#1e2530]" : "")}
+                                  className={"relative inline-flex w-full items-center rounded-md bg-transparent hover:bg-[#080b11]/50 pt-[0.41rem] pb-[0.205rem] " + (snapshot.isDragging ? "bg-[#1c2335] shadow-lg" : "")}
                                 >
-                                  <div {...provided.dragHandleProps} className="text-[#1f2d3d] group-hover:text-gray-500 transition-colors mr-1 cursor-grab active:cursor-grabbing">
-                                    <GripVertical className="size-4" />
+                                  <section className="relative flex w-full items-center gap-3 rounded-md bg-transparent pr-[8.4px] pl-[0.65rem] font-semibold active:bg-transparent cursor-grab" {...provided.dragHandleProps}>
+                                  <div className="flex items-center px-2 py-[3px]">
+                                    <input
+                                      readOnly
+                                      type="checkbox"
+                                      checked={task.completed}
+                                      onClick={() => handleToggle(task.id, task.completed)}
+                                      className="appearance-none relative inline-flex shrink-0 cursor-pointer rounded-md border border-[#e2b96e]/80 bg-[#141b26] transition-all duration-150 hover:border-[#e2b96e] w-6 h-6 checked:bg-[#e2b96e] checked:border-[#e2b96e]"
+                                      style={{
+                                        backgroundImage: task.completed ? "url('data:image/svg+xml,%3csvg viewBox=\"0 0 16 16\" fill=\"black\" xmlns=\"http://www.w3.org/2000/svg\"%3e%3cpath d=\"M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z\"/%3e%3c/svg%3e')" : "none",
+                                        backgroundSize: "100% 100%",
+                                      }}
+                                    />
                                   </div>
-                                  <button
-                                    onClick={() => handleToggle(task.id, task.completed)}
-                                    className={"flex size-6 shrink-0 items-center justify-center rounded-[6px] border-[1.5px] transition-colors " + (task.completed ? "border-gold bg-gold text-[#080b11]" : "border-gold/80 hover:border-gold bg-transparent")}
-                                  >
-                                    {task.completed && <CheckSquare className="size-4" strokeWidth={3} />}
-                                  </button>
-                                  <div className="flex flex-1 flex-col">
-                                    <div className="flex items-center gap-2">
-                                      {task.icon === "Coins" && <Coins className="size-4 text-gold" />}
-                                      <span className={"text-[15px] font-bold tracking-tight " + (task.completed ? "text-gray-500 line-through" : "text-white")}>{task.title}</span>
+                                  <div className="relative flex-1 overflow-hidden truncate">
+                                    <div className="flex flex-wrap items-center justify-start gap-1">
+                                      <div className="relative flex h-auto flex-wrap items-center gap-1 truncate whitespace-nowrap break-keep">
+                                        {task.icon === "Coins" && <Coins className="size-4 text-[#e2b96e]" />}
+                                        <span className={"m-0 w-auto whitespace-pre-wrap rounded-none border-none bg-transparent p-0 text-[0.875rem] leading-snug outline-0 cursor-grab " + (task.completed ? "opacity-50 line-through" : "text-white")}>{task.title}</span>
+                                      </div>
                                     </div>
                                     {(task.scheduled_time || task.recurrence) && (
-                                      <div className="mt-1 flex items-center gap-2 text-xs font-bold text-gray-400">
-                                        {task.scheduled_time && <span className="flex items-center gap-1.5"><CalendarIcon className="size-3.5" /> Scheduled for {task.scheduled_time}</span>}
-                                        {task.recurrence && <span className="flex items-center gap-1 text-emerald-400"><RefreshCw className="size-3" strokeWidth={2.5} /><span className="font-bold">{task.recurrence}</span></span>}
+                                      <div className="flex flex-wrap">
+                                        <div className="whitespace-nowrap flex items-center gap-2 text-xs font-semibold text-gray-400 mt-0.5">
+                                          {task.scheduled_time && <span className="flex items-center gap-1"><CalendarIcon className="size-3" /> {task.scheduled_time}</span>}
+                                          {task.recurrence && <span className="flex items-center gap-1 text-emerald-400"><RefreshCw className="size-3" strokeWidth={2.5} /> {task.recurrence}</span>}
+                                        </div>
                                       </div>
                                     )}
                                   </div>
-                                  <button
-                                    onClick={() => setTaskMenu({ id: task.id, title: task.title })}
-                                    className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#132230] text-gray-400 hover:bg-[#1c3040] hover:text-white transition-colors"
-                                  >
-                                    <MoreHorizontal className="size-4" />
-                                  </button>
-                                </div>
-                              )}
+                                  <div className="flex shrink-0 justify-end">
+                                    <button
+                                      data-task-id-menu-trigger={task.id}
+                                      onClick={() => setTaskMenu({ id: task.id, title: task.title })}
+                                      className="btn btn-ghost btn-sm btn-square flex items-center justify-center bg-[#132230] px-0"
+                                    >
+                                      <div><MoreHorizontal width={16} height={16} /></div>
+                                    </button>
+                                  </div>
+                                  </section></div>)}
                             </Draggable>
                           ))}
                           {provided.placeholder}
                           {group.tasks.length === 0 && (
-                            <button
-                              onClick={() => {
-                                setShowDragHint(true);
-                                setTimeout(() => setShowDragHint(false), 3000);
-                              }}
-                              className="flex w-full items-center gap-3 px-5 py-4 text-left hover:bg-white/[0.04] transition-colors"
-                            >
-                              <span className="text-sm font-bold text-gray-400">Add a task</span>
-                            </button>
+                            <div className="relative inline-flex w-full items-center rounded-md bg-transparent hover:bg-[#080b11]/50 pt-[0.41rem] pb-[0.205rem]">
+                              <section className="relative flex w-full items-center gap-3 rounded-md bg-transparent pr-[8.4px] pl-[0.65rem] font-semibold">
+                                <div className="flex items-center px-2 py-[3px] hidden">
+                                  <input readOnly type="checkbox" className="appearance-none relative inline-flex shrink-0 rounded-md border border-[#e2b96e]/80 w-6 h-6" />
+                                </div>
+                                <div className="relative flex-1 overflow-hidden truncate">
+                                  <div className="flex flex-wrap items-center justify-start gap-1">
+                                    <span className="m-0 w-auto whitespace-pre-wrap text-[0.875rem] leading-snug text-gray-400">Add a task</span>
+                                  </div>
+                                </div>
+                              </section>
+                            </div>
                           )}
                         </div>
                       )}
                     </Droppable>
+                  </div>
                   </div>
                 ))}
                 </DragDropContext>
@@ -952,23 +1007,26 @@ export function ChecklistPage() {
           )}
         </main>
 
-        {/* Bottom Input – sticky with gradient fade */}
+        {/* Bottom Input – TRW exact */}
         {activeTab === "Checklist" && (
           <form
             onSubmit={(e) => { e.preventDefault(); handleQuickAdd(); }}
-            className="sticky inset-x-0 bottom-0 z-20 flex w-full items-center gap-2 px-4 pt-3 pb-5 shrink-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/90 to-transparent"
+            className="sticky inset-x-0 bottom-0 z-20 flex w-auto items-center justify-start gap-2 px-[15px] h-[calc(3.5rem+25px)] pb-[25px] bg-gradient-to-t from-[#080b11] via-[#080b11]/75 to-transparent"
           >
-            <div className="relative h-[3.25rem] flex-1 overflow-hidden rounded-xl border border-[#2d3748] focus-within:border-gold/60 bg-[#141b26] transition-colors">
+            <div className="relative h-[3.5rem] w-10/12 overflow-hidden rounded-lg border border-[#e2b96e]">
               <input
+                required
                 type="text"
                 placeholder="Describe your task"
-                className="absolute inset-0 h-full w-full bg-transparent pl-4 pr-14 text-[15px] font-medium text-white placeholder-white/45 outline-none"
+                name="task-title"
+                maxLength={1000}
+                className="absolute inset-0 h-full w-full bg-[#141b23] px-5 text-white placeholder:text-white/45 outline-none text-[0.9375rem]"
                 value={newTaskTitle}
                 onChange={(e) => setNewTaskTitle(e.target.value)}
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 flex w-14 items-center justify-center text-gray-400 hover:text-white transition-colors"
+                className="absolute inset-y-0 right-0 flex w-14 items-center justify-center bg-[#12212F] text-white/60 hover:text-white transition-colors"
                 onClick={() => { setDetailedGroupId(checklist[0]?.id); setShowDetailedModal(true); }}
               >
                 <CalendarIcon className="size-5" />
@@ -977,7 +1035,7 @@ export function ChecklistPage() {
             <button
               type="submit"
               disabled={!newTaskTitle.trim() || createTaskMutation.isPending}
-              className="flex size-[3.25rem] shrink-0 items-center justify-center rounded-xl bg-[#e2b96e] text-[#080b11] hover:bg-[#d4a843] active:scale-95 transition-all disabled:opacity-50"
+              className="h-full w-2/12 rounded-lg bg-[#e2b96e] text-slate-800 hover:bg-[#e2b96e] hover:opacity-80 active:opacity-70 disabled:opacity-50 flex items-center justify-center"
             >
               <ArrowUp className="size-6" strokeWidth={2.5} />
             </button>
