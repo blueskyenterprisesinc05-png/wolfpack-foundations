@@ -1,18 +1,20 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import {
-  BookOpen,
-  Home,
   LogOut,
   ChevronDown,
   MessageCircle,
   Brain,
   Inbox,
   Briefcase,
-  MoreVertical,
+  MoreHorizontal,
+  Menu,
+  Hash,
+  Search,
+  Users,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/brand/logo";
+
 import { BottomNav, isTabActive } from "@/components/brand/bottom-nav";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -23,27 +25,26 @@ const SIDEBAR_LINKS = [
   { label: "Courses", to: "/courses", icon: Brain },
   { label: "Inbox", to: "/inbox", icon: Inbox },
   { label: "Market", to: "/market", icon: Briefcase },
-  { label: "More", to: "/more", icon: MoreVertical },
+  { label: "More", to: "/more", icon: MoreHorizontal },
 ] as const;
 
-function getHeaderTitle(pathname: string): string {
-  if (pathname === "/dashboard") return "Den";
-  if (pathname.startsWith("/courses") || pathname.startsWith("/lessons")) {
-    if (pathname.includes("mind-lab")) return "Mind Lab";
-    if (pathname.includes("trading-room")) return "Trading Room";
-    return "Learning";
-  }
-  if (pathname.startsWith("/community")) return "Pack";
-  if (pathname.startsWith("/progress")) return "Progress";
-  if (pathname.startsWith("/more")) return "More";
-  if (pathname.startsWith("/mindset")) return "Mind Lab";
-  if (pathname.startsWith("/trading")) return "Trading Room";
-  if (pathname.startsWith("/checklist")) return "Checklist";
-  if (pathname.startsWith("/accountability")) return "Accountability";
-  if (pathname.startsWith("/sessions")) return "Sessions";
-  if (pathname.startsWith("/profile")) return "Profile";
-  if (pathname.startsWith("/settings")) return "Settings";
-  return "";
+/** Returns the TRW-style channel slug shown in the mobile topbar. */
+function getChannelName(pathname: string): string {
+  if (pathname.startsWith("/chat")) return "chat";
+  if (pathname.startsWith("/courses") || pathname.startsWith("/lessons")) return "courses";
+  if (pathname.startsWith("/checklist")) return "daily-checklist";
+  if (pathname.startsWith("/accountability")) return "accountability-log";
+  if (pathname.startsWith("/sessions")) return "sessions-room";
+  if (pathname.startsWith("/mindset")) return "mind-lab";
+  if (pathname.startsWith("/trading")) return "trading-room";
+  if (pathname.startsWith("/community")) return "pack-wins";
+  if (pathname.startsWith("/progress")) return "progress";
+  if (pathname.startsWith("/inbox")) return "inbox";
+  if (pathname.startsWith("/market")) return "market";
+  if (pathname.startsWith("/profile")) return "profile";
+  if (pathname.startsWith("/settings")) return "settings";
+  if (pathname.startsWith("/more")) return "more";
+  return "home";
 }
 
 function hasPathSwitcher(pathname: string): boolean {
@@ -65,42 +66,73 @@ function hasPathSwitcher(pathname: string): boolean {
 export function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const channelName = getChannelName(pathname);
 
   return (
     <div className="min-h-dvh bg-background">
-      {/* ── Mobile Contextual Header (<lg) ────────────────────────── */}
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur lg:hidden">
-        <Logo size="sm" />
-
-        <div className="flex items-center gap-1.5">
-          <span className="text-sm font-semibold">{getHeaderTitle(pathname)}</span>
-          {hasPathSwitcher(pathname) && (
-            <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
-                  aria-label="Switch paths"
-                >
-                  <ChevronDown className="size-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent
-                side="left"
-                className="w-80 bg-charcoal p-5 border-r border-border text-foreground"
+      {/* Mobile Topbar (<lg) — TRW style: hamburger | # channel-name | search | members */}
+      <header className="sticky top-0 z-30 flex h-12 items-center border-b border-border bg-background px-1 gap-1 lg:hidden">
+        {/* Hamburger — opens path switcher sheet when relevant */}
+        {hasPathSwitcher(pathname) ? (
+          <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 text-foreground hover:bg-accent cursor-pointer shrink-0"
+                aria-label="Open navigation"
               >
-                <SheetHeader className="text-left mb-6">
-                  <SheetTitle className="text-foreground display-lg">My Paths</SheetTitle>
-                </SheetHeader>
-                <NestedPathNav pathname={pathname} onClose={() => setDrawerOpen(false)} />
-              </SheetContent>
-            </Sheet>
-          )}
-        </div>
+                <Menu className="size-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="w-80 bg-charcoal p-5 border-r border-border text-foreground"
+            >
+              <SheetHeader className="text-left mb-6">
+                <SheetTitle className="text-foreground display-lg">My Paths</SheetTitle>
+              </SheetHeader>
+              <NestedPathNav pathname={pathname} onClose={() => setDrawerOpen(false)} />
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 text-foreground hover:bg-accent cursor-pointer shrink-0"
+            aria-label="Open navigation"
+          >
+            <Menu className="size-5" />
+          </Button>
+        )}
 
-        {/* Optional utility slot */}
-        <div className="w-8" aria-hidden="true" />
+        {/* Channel hash icon */}
+        <Hash className="size-4 text-muted-foreground shrink-0" aria-hidden="true" />
+
+        {/* Channel / page name */}
+        <span className="flex-1 text-sm font-semibold text-foreground truncate">
+          {channelName}
+        </span>
+
+        {/* Search */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent shrink-0"
+          aria-label="Search"
+        >
+          <Search className="size-[18px]" />
+        </Button>
+
+        {/* Member list */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent shrink-0"
+          aria-label="Member list"
+        >
+          <Users className="size-[18px]" />
+        </Button>
       </header>
 
       {/* ── Desktop sidebar (lg+) ──────────────────────────────────── */}
@@ -108,9 +140,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-border bg-charcoal lg:flex"
         aria-label="Sidebar navigation"
       >
-        {/* Logo */}
-        <div className="shrink-0 px-5 py-6">
-          <Logo size="sm" />
+        {/* Campus header */}
+        <div className="shrink-0 flex items-center justify-between px-4 py-4 border-b border-border">
+          <span className="text-sm font-bold text-foreground">The 1% Club</span>
+          <ChevronDown className="size-4 text-muted-foreground" />
         </div>
 
         {/* Primary nav links */}
@@ -151,17 +184,17 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      {/* ── Main content area ──────────────────────────────────────── */}
-      {/*
-        pt-14: offsets contextual mobile header.
-        pb-16: clears the mobile bottom nav bar (64px).
-        lg:pt-0 lg:pb-0: no padding adjustments needed on desktop.
-        lg:pl-64: pushes content clear of the fixed sidebar.
+      {/* Main content area
+          pt-12: clears 48px mobile topbar.
+          pb-16: clears 64px mobile bottom nav.
+          lg:pt-0 lg:pb-0: no offset needed on desktop.
+          lg:pl-64: pushes content clear of the fixed sidebar.
       */}
-      <main className="lg:pl-64 pt-14 lg:pt-0 pb-16 lg:pb-0">{children}</main>
+      <main className="lg:pl-64 pt-12 lg:pt-0 pb-16 lg:pb-0">{children}</main>
 
       {/* ── Mobile bottom nav (<lg) ────────────────────────────────── */}
       <BottomNav />
     </div>
   );
 }
+
