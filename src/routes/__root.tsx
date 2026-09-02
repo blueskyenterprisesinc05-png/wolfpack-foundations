@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
@@ -156,8 +157,8 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      {/* AppLayout wraps all routes with Topbar, ServerNav, and BottomNav */}
+      <AppLayout />
       <Toaster />
     </QueryClientProvider>
   );
