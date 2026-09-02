@@ -297,3 +297,32 @@
   transition-duration: var(--motion-base);
   transition-timing-function: var(--ease-out);
 }
+
+/* ---- App Resets & Layout Locks ---- */
+html, body {
+  overscroll-behavior: none !important;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+
+::-webkit-scrollbar {
+  border-radius: var(--radius-md);
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: var(--radius-xs);
+  background-color: var(--scrollbar);
+}
+
+::-webkit-scrollbar-track {
+  border-radius: var(--radius-xs);
+  background-color: transparent;
+}
